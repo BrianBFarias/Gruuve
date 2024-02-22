@@ -41,7 +41,6 @@ export const Explore = () =>{
             />
         </View>
         
-        <Text style={{ alignSelf:'center', fontSize:20 }}>EXPLOREE</Text>
     </LinearGradient>
     )
 }

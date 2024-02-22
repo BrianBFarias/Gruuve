@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import { View, SafeAreaView, Text, Button } from "react-native"
-import LinearGradient from 'react-native-linear-gradient';
-import Loading from "../../components/Loading";
-export const Messages = () =>{
+import LinearGradient from "react-native-linear-gradient";
+
+export const NewEvent = ({navigation}) =>{
 
     return(
     <LinearGradient 
@@ -11,8 +11,7 @@ export const Messages = () =>{
         locations={[0.4,1]}
         style={{flex:1}}>
         <SafeAreaView />
-        {/* <Text style={{ alignSelf:'center', fontSize:20 }}>MESAGGESS</Text> */}
-        <Loading />
+
     </LinearGradient>
     )
 }

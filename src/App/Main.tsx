@@ -17,7 +17,7 @@ const Main = () =>{
 
     return(
         <Tab.Navigator 
-        initialRouteName={"Explore"}
+        initialRouteName={"Events"}
         screenOptions={({route}) => ({
             tabBarIcon:({focused, color, size}) =>{
                 let rn = route.name
@@ -25,13 +25,13 @@ const Main = () =>{
                 if(rn === 'Explore'){
                     return <Image style={focused ? {objectFit:'contain', height:50, tintColor:'rgba(25, 94, 43,1)'}:{objectFit:'contain', height:50, tintColor:'black', opacity:0.5}} source={Logo}/>
                 }else if(rn === 'Messages'){
-                    return <icons.MaterialCommunityIcons name={'message-processing'} size={size} color={'black'} opacity={focused? 1:0.5} />
+                    return <icons.MaterialCommunityIcons name={'message-processing'} size={size} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
                 }
                 else if(rn === 'Events'){
-                    return <icons.MaterialCommunityIcons name={'reorder-horizontal'} size={size} color={'black'} opacity={focused? 1:0.5} />
+                    return <icons.MaterialCommunityIcons name={'reorder-horizontal'} size={size} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
                 }
                 else if(rn === 'Profile'){
-                    return <icons.FontAwesome6 name={'user-large'} size={size} color={'black'} opacity={focused? 1:0.5} />
+                    return <icons.FontAwesome6 name={'user-large'} size={size} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
                 }
 
             },

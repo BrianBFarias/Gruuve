@@ -1,5 +1,4 @@
 import { View, Animated, Easing} from "react-native"
-import * as Progress from 'react-native-progress';
 import { useEffect } from "react";
 import Logo from '../../assets/images/logo.png'
 
@@ -29,9 +28,8 @@ export default function Loading(){
     return(
         <View style={{position:'absolute',flex:1, display:'flex', justifyContent:'center', height:'100%', width:'100%', left:0, top:0}}>
             <View style={{justifyContent:'center'}}>
-            <View style={{backgroundColor:'rgba(0,0,0,0.1)', borderRadius:50, padding:8, alignSelf:'center'}}>
+            <View style={{backgroundColor:'rgba(0,0,0,0.0)', borderRadius:50, padding:8, alignSelf:'center'}}>
                 <Animated.Image source={Logo} style={{position:'relative', alignSelf:'center', height:80, width:80, resizeMode:'contain', transform:[{rotate: spin}]}} />
-                <Progress.CircleSnail size={96} indeterminate={true} style={{position:'absolute', opacity:0.5}} color={'green'} />
             </View>
             </View>
         </View>
