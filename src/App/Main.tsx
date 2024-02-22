@@ -17,7 +17,7 @@ const Main = () =>{
 
     return(
         <Tab.Navigator 
-        initialRouteName={"Profile"}
+        initialRouteName={"Explore"}
         screenOptions={({route}) => ({
             tabBarIcon:({focused, color, size}) =>{
                 let rn = route.name
