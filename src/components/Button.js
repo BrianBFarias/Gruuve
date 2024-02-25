@@ -32,6 +32,16 @@ export function Button2({ text }) {
     );
 }
 
+export function Button2Solid({ text, color }) {
+    return (
+        <View style={style.container}>
+            <View style={[{backgroundColor:color}, style.submit2]}>
+                <Text style={style.submit_Text}>{text}</Text>
+            </View>
+        </View>
+    );
+}
+
 export function Button3({ text }) {
 
     return (

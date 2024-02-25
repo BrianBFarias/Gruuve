@@ -3,7 +3,6 @@ import { View, SafeAreaView, TouchableOpacity, Animated, Keyboard, TouchableWith
 import {AuthForm} from '../AuthenticationStyling'
 import Icon1 from 'react-native-vector-icons/Ionicons'
 import Logo from '../../../assets/images/logo.png'
-import LinearGradient from 'react-native-linear-gradient';
 
 import Section1 from './RegisterParts/Register(Section 1)';
 import Section2 from './RegisterParts/Register(Section 2)'
@@ -219,10 +218,8 @@ const Register = ({navigation}: any) => {
                 AgeRange:{min: Number(ageMin), max: Number(ageMax)},
                 Radius: radius,
               }
-          };
-            console.log(data)
-            
-            const usersRef = firestore().collection('users')
+          };            
+            const usersRef = firestore().collection('Users')
             usersRef
                 .doc(uid)
                 .set(data)

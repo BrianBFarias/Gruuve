@@ -11,7 +11,6 @@ import GoogleAuth from './GoogleAuth';
 import Button1 from '../../components/Button';
 import auth from '@react-native-firebase/auth';
 
-import LinearGradient from 'react-native-linear-gradient';
 import { SignInContext } from '../authTriggers/authContext';
 
 

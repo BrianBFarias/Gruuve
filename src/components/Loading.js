@@ -10,20 +10,18 @@ export default function Loading(){
         outputRange: ['180deg', '0deg'],
       });
 
-      useEffect(() => {
-        Animated.loop(
-          Animated.timing(
-            loadSpin,
-            {
-              toValue: 1,
-              delay:500,
-              easing: Easing.elastic(1.2),
-              duration: 1000,
-              useNativeDriver: true,
-            }
-          )
-        ).start();
-      }, []);
+      Animated.loop(
+        Animated.timing(
+          loadSpin,
+          {
+            toValue: 1,
+            delay:500,
+            easing: Easing.elastic(1.2),
+            duration: 1000,
+            useNativeDriver: true,
+          }
+        )
+      ).start();
 
     return(
         <View style={{position:'absolute',flex:1, display:'flex', justifyContent:'center', height:'100%', width:'100%', left:0, top:0}}>

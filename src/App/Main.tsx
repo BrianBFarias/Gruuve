@@ -28,7 +28,7 @@ const Main = () =>{
                     return <icons.MaterialCommunityIcons name={'message-processing'} size={size} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
                 }
                 else if(rn === 'Events'){
-                    return <icons.MaterialCommunityIcons name={'reorder-horizontal'} size={size} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
+                    return <icons.MaterialCommunityIcons name={'reorder-horizontal'} size={size+4} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
                 }
                 else if(rn === 'Profile'){
                     return <icons.FontAwesome6 name={'user-large'} size={size} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
