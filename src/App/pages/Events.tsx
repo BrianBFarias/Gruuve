@@ -7,7 +7,7 @@ import { NewEvent } from "./EventsStack/CreateEvent";
 import icons from "../../components/icons";
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import Loading from '../../components/Loading';
+import Loading from "../../components/Loading";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,36 +31,21 @@ export const Events = () => {
 
   useEffect(()=>{
     fetchData();
-
   })
 
   return (
     <View style={{ flex: 1 }}>
-      {loading ? (
-        <View style={{ flex: 1 }}>
-          <LinearGradient
-            colors={['#29612F', '#0a400b']}
-            start={{ x: 1, y: 0 }} end={{ x: 0, y: 0 }}
-            locations={[0.4, 1]}
-            style={{ paddingBottom: 10, paddingHorizontal: 20 }}>
-              <SafeAreaView />
-               <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, alignItems: 'center' }}>
-                  <Text style={{ fontWeight: '800', fontSize: 26, opacity: 1, color: 'white' }}>Your Events</Text>
-                </View>
-          </LinearGradient>
-          <Loading />
-        </View>
-      ) : (
-        <EventsContent user={user} />
-      )}
+        <EventsContent user={user} loading={loading}/>
     </View>
   );
 };
 
-const EventsContent = ({ user }:any) => {
+const EventsContent = ({ user, loading }:any) => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: true }} initialRouteName="EventList">
-    <Stack.Screen
+      {!loading ?
+      <>
+      <Stack.Screen
       name="EventList"
       component={EventsPage}
       initialParams={{ user: { user } }}
@@ -82,7 +67,7 @@ const EventsContent = ({ user }:any) => {
         headerStyle: {
           backgroundColor: 'rgb(255,255,255)',
         },
-        animation: 'simple_push'
+        animation:'fade'
       }}
     />
     <Stack.Screen
@@ -112,7 +97,31 @@ const EventsContent = ({ user }:any) => {
         },
         animation: 'simple_push'
       }}
-    />
+    /></>:
+    <Stack.Screen
+    name="Loading"
+    component={Loading}
+    initialParams={{ user: { user } }}
+    options={{
+      header: () => (
+        <LinearGradient
+          colors={['#29612F', '#0a400b']}
+          start={{ x: 1, y: 0 }} end={{ x: 0, y: 0 }}
+          locations={[0.4, 1]}
+          style={{ paddingBottom: 10, paddingHorizontal: 20 }}>
+          <SafeAreaView />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, alignItems: 'center' }}>
+            <Text style={{ fontWeight: '800', fontSize: 26, opacity: 1, color: 'white' }}>Your Events</Text>
+          </View>
+        </LinearGradient>
+      ),
+      headerShadowVisible: false,
+      headerBackTitleVisible: false,
+      headerStyle: {
+        backgroundColor: 'rgb(255,255,255)',
+      },
+    }}
+  />}
     </Stack.Navigator> 
   );
 };
