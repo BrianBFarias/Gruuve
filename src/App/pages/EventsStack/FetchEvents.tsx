@@ -28,7 +28,7 @@ async function retrieveCardDate({date}:any){
   const dateVal = new Date(date.seconds * 1000);
   const currDateVal = new Date()
 
-  const Difference_In_Time = dateVal.getTime()-currDateVal.getTime()
+  let Difference_In_Time = dateVal.getTime()-currDateVal.getTime()
   let Difference_In_Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
 
   let weekday;

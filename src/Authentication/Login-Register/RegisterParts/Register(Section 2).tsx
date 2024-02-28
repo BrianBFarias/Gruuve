@@ -25,8 +25,6 @@ export default function Section2({location, setLocation, organization, setOrgani
   
   async function grantAccess(){
     request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then((result:any) => {
-      console.log(result)
-
       switch (result) {
           case RESULTS.UNAVAILABLE:
               setPermissionGranted(false)
@@ -96,7 +94,6 @@ export default function Section2({location, setLocation, organization, setOrgani
 
        await setLocation({Location:data.description,Coordinates: {Longitude: lng,Latitude: lat}})
       })
-      console.log(location)
   } 
   
   useEffect(() => {
@@ -104,8 +101,6 @@ export default function Section2({location, setLocation, organization, setOrgani
   }, [ref]);
 
   const AgeConfirmation = (date:any) => {
-    console.log("A date has been picked: ", date);
-
     const ageNum = findAge(date)
     if(ageNum<18){
       Alert.alert('Age Warning', 'You Must be at least 18 to register with Gruuve')

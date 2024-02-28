@@ -19,8 +19,8 @@ type EventProp ={
 }
 
 export const EventsPage = ({navigation, route}:any) =>{
-    const [loading, setLoading] = useState(false)
-    const [Events, setEvents] = useState<EventProp[]>([])
+    const [loading, setLoading] = useState(true)
+    const [Events, setEvents] = useState<EventProp[]>()
     const [showPopup, setShowPopup] = useState(false);
     const [deletionSelection, setDeletionSelection] = useState([{} as EventProp, -1]);
     const [fetching, setFetching] = useState(false)
@@ -40,10 +40,10 @@ export const EventsPage = ({navigation, route}:any) =>{
 
     useEffect(() => {
       setFetching(true);
-      setLoading(true);
       fetchEvents()
-      setLoading(false);
       setFetching(false);
+      setLoading(false);
+
     }, []);
 
     const renderItem = (item:EventProp, index:any , onClick:any) => {
@@ -148,12 +148,12 @@ export const EventsPage = ({navigation, route}:any) =>{
         {loading ?
         <Loading />:
         <GestureHandlerRootView style={{ flex: 2,marginTop:20 }}>
-          {Events.length === 0 ?
+          {Events && Events.length == 0 && !loading ?
           <FlatList
           data={[{}]}
           onRefresh={() => onRefresh()}
           refreshing={fetching}
-          renderItem={({ item, index }) =>
+          renderItem={() =>
             <Text style={{alignSelf:'center', fontWeight:'600', fontSize:20, opacity:0.5, marginTop:'20%'}}>No Events</Text>
           }
           />:
@@ -174,9 +174,10 @@ export const EventsPage = ({navigation, route}:any) =>{
           </TouchableOpacity>
         </GestureHandlerRootView>}
       <Modal isVisible={showPopup} animationOut={'slideOutDown'} onSwipeCancel={cancelDeletion} onBackdropPress={cancelDeletion} swipeDirection={'down'} useNativeDriver={true} hideModalContentWhileAnimating={true} style={{flex:1}} animationIn={'slideInUp'}>
-        <View style={{ alignSelf:'center', gap:20, backgroundColor:'white', width:'100%', padding:20,  borderRadius:20, height:'auto',justifyContent:'flex-start', position:'absolute', bottom:0}}>
+        <View style={{ alignSelf:'center', gap:10, backgroundColor:'white', width:'100%', paddingHorizontal:20, paddingBottom:15,  borderRadius:20, height:'auto',justifyContent:'flex-start', position:'absolute', bottom:0}}>
+          <View style={{height:4, backgroundColor:'black', width:'20%', borderRadius:4, alignSelf:'center', opacity:0.5, marginTop:10}}/>
           <Text style={{textAlign:'center', fontSize:20, fontWeight:'500', paddingHorizontal:10}}>Are you sure You Want to Delete this Event?</Text>
-          <Text style={{textAlign:'center', fontSize:14, fontWeight:'700', opacity:0.6}}>This action is irreversible and you will lose all you're likes</Text>
+          <Text style={{textAlign:'center', fontSize:14, fontWeight:'700', opacity:0.6}}>This action is irreversible and you will lose all you're likes for this event.</Text>
           <TouchableOpacity onPress={deleteEvent}>
             <Button2Solid text={"Yes, I'm sure"} color={'#ad1717'}/>
           </TouchableOpacity>

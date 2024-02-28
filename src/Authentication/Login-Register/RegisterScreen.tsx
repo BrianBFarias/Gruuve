@@ -166,7 +166,7 @@ const Register = ({navigation}: any) => {
       if (image?.uri) {
         let path = `${uid}/`;
         let fileName =path + image.uri.substring(image.uri.lastIndexOf('/') + 1);
-        ImageURLs.set(index+1, fileName)
+        ImageURLs.set(index+2, fileName)
 
         try{
           await storage().ref(fileName).putFile(image.uri);
@@ -199,32 +199,37 @@ const Register = ({navigation}: any) => {
             const lng = location.Coordinates.Longitude
             const lat = location.Coordinates.Latitude
 
+            console.log(ImageList);
+
             const data = {
               uid: uid,
-              newAccount:true,
+              newAccount: true,
               Email: email,
               First: first,
               Last: last,
               Sex: gender,
               Organization: organization,
-              Location: {Latitude:lng, Longitude:lat},
+              Location: { Latitude: lng, Longitude: lat },
               BirthDate: birthDate,
-              Hobbies:hobbies,
+              Hobbies: hobbies,
+              Age: age,
               ImageURLs: ImageList,
-              Reject:[],
-              Decline:[],
-              Preference:{
+              Reject: [],
+              Decline: [],
+              Preference: {
                 Sex: genderPreference,
-                AgeRange:{min: Number(ageMin), max: Number(ageMax)},
+                AgeRange: { min: Number(ageMin), max: Number(ageMax) },
                 Radius: radius,
               }
-          };            
-            const usersRef = firestore().collection('Users')
-            usersRef
+            };
+
+          console.log(data)
+
+          firestore().
+                collection('Users')
                 .doc(uid)
                 .set(data)
                 .then(() => {
-                    navigation.navigate('Login')
                     setLoad(false)
                     return;
                 })

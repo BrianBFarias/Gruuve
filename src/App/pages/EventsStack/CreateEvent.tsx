@@ -73,7 +73,9 @@ export const NewEvent = ({navigation, route}:any) =>{
     
             const userData = await firestore().collection('Users').doc(uid).get()
             const location = userData._data?.Location;
-    
+            const sex = userData._data?.Sex
+            const age = userData._data?.Age
+
             if(!location){
                 Alert.alert("There was an error", "Please try again later")
                 return;
@@ -87,7 +89,9 @@ export const NewEvent = ({navigation, route}:any) =>{
                 Date: date,
                 Individual:individual,
                 Host:uid,
-                Location:location
+                Location:location,
+                Sex: sex,
+                Age:age,
             }
         
             const usersRef = firestore().collection('Events')
