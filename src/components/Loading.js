@@ -24,7 +24,7 @@ export default function Loading(){
       ).start();
 
     return(
-        <View style={{position:'absolute',flex:1, display:'flex', justifyContent:'center', height:'100%', width:'100%', left:0, top:0}}>
+        <View style={{position:'relative',flex:1, display:'flex', justifyContent:'center', height:'100%', width:'100%', left:0, top:0}}>
             <View style={{justifyContent:'center'}}>
             <View style={{backgroundColor:'rgba(0,0,0,0.0)', borderRadius:50, padding:8, alignSelf:'center'}}>
                 <Animated.Image source={Logo} style={{position:'relative', alignSelf:'center', height:80, width:80, resizeMode:'contain', transform:[{rotate: spin}]}} />

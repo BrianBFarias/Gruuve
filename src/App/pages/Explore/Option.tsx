@@ -1,20 +1,10 @@
 import { View } from "react-native"
 
-export const Option = ({userUid, reject, decline, accept}:any) =>{
-
-
-    return(
-    <View>
-        
-    </View>
-    )
+export function accept({ eventID }: { eventID: string }){
 }
 
-function accept(){
+export function decline({ eventID }: { eventID: string }){
 }
 
-function reject(){
-}
-
-function decline(){
+export function reject({ eventID }: { eventID: string }){
 }

@@ -194,7 +194,14 @@ const Register = ({navigation}: any) => {
 
             await SaveImages(uid);
 
-            const ImageList = [await ImageURLs.get(1), await ImageURLs.get(2), await ImageURLs.get(3), await ImageURLs.get(4)];
+            const ImageList = [];
+
+            for (let i = 1; i <= 4; i++) {
+                const imageURL = await ImageURLs.get(i);
+                if (imageURL !== null) {
+                    ImageList.push(imageURL);
+                }
+            }
 
             const lng = location.Coordinates.Longitude
             const lat = location.Coordinates.Latitude
@@ -209,10 +216,9 @@ const Register = ({navigation}: any) => {
               Last: last,
               Sex: gender,
               Organization: organization,
-              Location: { Latitude: lng, Longitude: lat },
+              Location: { Latitude: lat, Longitude: lng },
               BirthDate: birthDate,
               Hobbies: hobbies,
-              Age: age,
               ImageURLs: ImageList,
               Reject: [],
               Decline: [],
@@ -250,7 +256,6 @@ const Register = ({navigation}: any) => {
 
  const moveBack = () =>{
   setSection(section-1);
-
  }
 
   return (

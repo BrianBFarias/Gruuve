@@ -4,8 +4,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import LinearGradient from "react-native-linear-gradient";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Button1 from "../../../components/Button";
+import firebase from '@react-native-firebase/app'
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import * as geofirestore from 'geofirestore';
 
 const TITLELIMIT = 20
 const DESCRIPTIONLIMIT = 80
@@ -54,8 +56,6 @@ export const NewEvent = ({navigation, route}:any) =>{
         const currDate = new Date()
         const {user} = route.params
 
-        console.log(user)
-
         if(title === ''){
             setInvalidTitle(true)
         }else{
@@ -69,45 +69,74 @@ export const NewEvent = ({navigation, route}:any) =>{
 
             setLoading(true) //start loading screen
 
+            const firestoreRef = firebase.firestore();
+
+            // @ts-ignore
+            const GeoFirestore = geofirestore.initializeApp(firestoreRef);
+
+            const geocollection = GeoFirestore.collection('Events');
+
             const uid = auth().currentUser?.uid
     
             const userData = await firestore().collection('Users').doc(uid).get()
-            const location = userData._data?.Location;
+            const lat = userData._data?.Location.Latitude;
+            const long = userData._data?.Location.Longitude;
             const sex = userData._data?.Sex
             const age = userData._data?.Age
+            
 
-            if(!location){
+            if(!lat || !long){
                 Alert.alert("There was an error", "Please try again later")
                 return;
             }
             const id = firestore().collection("Events").doc().id;
 
-            const data={
+            geocollection.add({
                 id:id,
                 Title:title,
                 Description:description,
                 Date: date,
                 Individual:individual,
                 Host:uid,
-                Location:location,
                 Sex: sex,
                 Age:age,
-            }
-        
-            const usersRef = firestore().collection('Events')
-            usersRef
-                .doc(id)
-                .set(data)
-                .then(() => {
-                    setLoading(false)
-                    return;
-                })
-                .catch((error:any) => {
-                  console.log(error)
-                  Alert.alert("Error", error.message || "An unknown error occurred");
-                  setLoading(false)
-                });
+                coordinates: new firebase.firestore.GeoPoint(lat, long)
+              }).then(()=>{
+                setLoading(false)
+                return;
+              }).catch((error:any)=>{
+                console.log(error)
+                Alert.alert("Error", error.message || "An unknown error occurred");
+                setLoading(false)             
+            })
+
             navigation.goBack()
+
+            // const data={
+            //     id:id,
+            //     Title:title,
+            //     Description:description,
+            //     Date: date,
+            //     Individual:individual,
+            //     Host:uid,
+            //     Location:location,
+            //     Sex: sex,
+            //     Age:age,
+            // }
+        
+            // const usersRef = firestore().collection('Events')
+            // usersRef
+            //     .doc(id)
+            //     .set(data)
+            //     .then(() => {
+            //         setLoading(false)
+            //         return;
+            //     })
+            //     .catch((error:any) => {
+            //       console.log(error)
+            //       Alert.alert("Error", error.message || "An unknown error occurred");
+            //       setLoading(false)
+            //     });
         }
         return;
     }
