@@ -8,5 +8,6 @@ export default function findAge(birthDate){
     {
         age_now--;
     }
+
     return age_now;
 }

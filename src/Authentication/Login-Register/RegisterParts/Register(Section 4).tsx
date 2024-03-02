@@ -171,7 +171,7 @@ export default function Section4({setImage1,setImage2, setImage3, setImage4, Ima
               </TouchableOpacity>
             ))}
           </View>
-          <TouchableOpacity style={{alignSelf:'center'}} onPress={()=>{onRegister()}} >
+          <TouchableOpacity style={{alignSelf:'center'}} onPress={()=>{validate()}} >
             <Button1 text={'Finalize'}/>
         </TouchableOpacity>
         </View>

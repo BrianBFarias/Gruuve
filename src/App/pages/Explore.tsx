@@ -10,6 +10,7 @@ import auth from '@react-native-firebase/auth';
 import firestore, { firebase } from '@react-native-firebase/firestore';
 import * as geofirestore from 'geofirestore';
 import { reject, accept, decline } from "./Explore/Option";
+
 const Stack = createNativeStackNavigator();
 
 export const Explore = () =>{
@@ -18,7 +19,6 @@ export const Explore = () =>{
     const [EventInfo, setEventInfo] = useState<any>();
     const [GroupEventInfo, setGroupEventInfo] = useState<any>();
     const [loading, setLoading] = useState(false)
-    const [user, setUser] = useState({})
  
     const fade = new Animated.Value(0);
     const fadeOut = new Animated.Value(1);
@@ -40,7 +40,7 @@ export const Explore = () =>{
         duration: 100,
         delay:0,
         useNativeDriver: true,
-      }).start(()=>{setSelection(!selection)})
+      }).start(()=>{})
    }
 
     const fetchEvent = async ({userData}:any) =>{
@@ -89,10 +89,8 @@ export const Explore = () =>{
     },[toggle])
 
     function switchScreen(){
-        startFadeOut();
-        setTimeout(()=>{
-            setToggle(!toggle)
-        }, 100)
+        setToggle(!toggle)
+        setSelection(!selection)
     }
 
     const empty = ({ text }: { text: string }) =>{

@@ -8,6 +8,7 @@ import firebase from '@react-native-firebase/app'
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import * as geofirestore from 'geofirestore';
+import { toDate } from "../../../components/ConstantFunctions/Date";
 
 const TITLELIMIT = 20
 const DESCRIPTIONLIMIT = 80
@@ -82,7 +83,6 @@ export const NewEvent = ({navigation, route}:any) =>{
             const lat = userData._data?.Location.Latitude;
             const long = userData._data?.Location.Longitude;
             const sex = userData._data?.Sex
-            const age = userData._data?.Age
             
 
             if(!lat || !long){
@@ -99,7 +99,6 @@ export const NewEvent = ({navigation, route}:any) =>{
                 Individual:individual,
                 Host:uid,
                 Sex: sex,
-                Age:age,
                 coordinates: new firebase.firestore.GeoPoint(lat, long)
               }).then(()=>{
                 setLoading(false)
@@ -111,32 +110,6 @@ export const NewEvent = ({navigation, route}:any) =>{
             })
 
             navigation.goBack()
-
-            // const data={
-            //     id:id,
-            //     Title:title,
-            //     Description:description,
-            //     Date: date,
-            //     Individual:individual,
-            //     Host:uid,
-            //     Location:location,
-            //     Sex: sex,
-            //     Age:age,
-            // }
-        
-            // const usersRef = firestore().collection('Events')
-            // usersRef
-            //     .doc(id)
-            //     .set(data)
-            //     .then(() => {
-            //         setLoading(false)
-            //         return;
-            //     })
-            //     .catch((error:any) => {
-            //       console.log(error)
-            //       Alert.alert("Error", error.message || "An unknown error occurred");
-            //       setLoading(false)
-            //     });
         }
         return;
     }
