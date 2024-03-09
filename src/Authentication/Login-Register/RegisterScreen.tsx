@@ -147,13 +147,13 @@ const Register = ({navigation}: any) => {
 
   const SaveImages = async (uid: any) => {
     // path to existing file on filesystem
-    if(Image1 && Image1.uri){
+    if(Image1 && Image1.uri && Image1.data){
       let path = `${uid}/`;
       let fileName = path + Image1.uri.substring(Image1.uri.lastIndexOf('/') + 1);
       ImageURLs.set(1, fileName)
 
       try{
-        await storage().ref(fileName).putFile(Image1.uri);
+        await storage().ref(fileName).putString(Image1.data, "base64", {contentType: 'image/jpg'});
       }
       catch(e){
         console.log(e)
@@ -206,8 +206,6 @@ const Register = ({navigation}: any) => {
             const lng = location.Coordinates.Longitude
             const lat = location.Coordinates.Latitude
 
-            console.log(ImageList);
-
             const data = {
               uid: uid,
               newAccount: true,
@@ -228,9 +226,6 @@ const Register = ({navigation}: any) => {
                 Radius: radius,
               }
             };
-
-          console.log(data)
-
           firestore().
                 collection('Users')
                 .doc(uid)

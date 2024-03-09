@@ -73,7 +73,7 @@ export const EventsPage = ({navigation, route}:any) =>{
 
     
         return (
-            <View style={{backgroundColor:'rgba(0,0,0,0.1)', marginVertical:5, marginHorizontal:15, borderRadius:4, overflow:'hidden'}}>
+            <View style={{backgroundColor:'rgba(0,0,0,0.1)', marginVertical:5, marginHorizontal:5, borderRadius:2, overflow:'hidden'}}>
                 <Swipeable
                 renderRightActions={() =>
                 renderRightActions(onClick)

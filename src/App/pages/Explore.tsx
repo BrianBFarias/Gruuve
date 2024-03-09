@@ -10,15 +10,16 @@ import auth from '@react-native-firebase/auth';
 import firestore, { firebase } from '@react-native-firebase/firestore';
 import * as geofirestore from 'geofirestore';
 import { reject, accept, decline } from "./Explore/Option";
+import {PopUp} from '../../components/popUp'
 
 const Stack = createNativeStackNavigator();
 
-export const Explore = () =>{
+export const Explore = ({route}:any) =>{
     const [toggle, setToggle] = useState(true);
     const [selection, setSelection] = useState(toggle)
     const [EventInfo, setEventInfo] = useState<any>();
     const [GroupEventInfo, setGroupEventInfo] = useState<any>();
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
  
     const fade = new Animated.Value(0);
     const fadeOut = new Animated.Value(1);
@@ -31,16 +32,6 @@ export const Explore = () =>{
         delay:0,
         useNativeDriver: true,
       }).start();
-   }
-   
-   const startFadeOut = () =>{
-    fadeOut.setValue(1);
-    Animated.timing(fade, {
-        toValue: 0,
-        duration: 100,
-        delay:0,
-        useNativeDriver: true,
-      }).start(()=>{})
    }
 
     const fetchEvent = async ({userData}:any) =>{
@@ -62,6 +53,7 @@ export const Explore = () =>{
 
 
     useEffect(()=>{
+        const {userData} = route.params
         if(EventInfo?.length === 0 || GroupEventInfo?.length === 0){
             const fetchData = async () => {
                 const userData = await fetchUser();
@@ -107,6 +99,7 @@ export const Explore = () =>{
         start={{x: 0.0, y: 0}} end={{x: 0, y: 1}}
         locations={[0.4,1]}
         style={{flex:1}}>
+        {/* <PopUp /> */}
         <SafeAreaView />
         {loading ? <Loading />:
         <View style={{alignSelf:'center', alignItems:'center', flex:1}}>
@@ -200,7 +193,7 @@ const fetchIndividualEvents = async ({userData}:any) =>{
     const lng = userData.Location.Longitude;
     const minAge = userData.Preference.AgeRange.min;
     const maxAge = userData.Preference.AgeRange.max;
-    const sex = userData.Preference.Sex;
+    const desiredSex = userData.Preference.Sex;
     const uid = userData.uid;
 
     const firestoreRef = firebase.firestore();
@@ -216,7 +209,7 @@ const fetchIndividualEvents = async ({userData}:any) =>{
         const AgeFiltered = query
         .where('Age', '>=', minAge)
         .where('Age', '<=', maxAge)
-        .where('Sex', '==', `${sex}`)
+        .where('Sex', '==', `${desiredSex}`)
         .where('Individual', '==', true)
         .orderBy('Age')
         .orderBy('Date', 'desc')

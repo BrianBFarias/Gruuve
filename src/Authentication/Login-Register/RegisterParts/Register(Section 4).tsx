@@ -50,21 +50,24 @@ export default function Section4({setImage1,setImage2, setImage3, setImage4, Ima
     const onImageGalleryClick = (imageNum:any) => {
         ImagePicker.openPicker({
             width: 300,
-            height: 340,
+            height: 320,
             cropping: true,
             mediaType:'photo',
             includeBase64:true,
+            forceJpg:true
           }).then(image => {
             if (image && image.sourceURL && image.cropRect) {
                 const saveImage = {
                     uri: image.sourceURL,
                     data: image.data,
                     mime: image.mime,
-                    height: 340,
+                    height: 320,
                     width: 300,
                     x: image.cropRect.x,
                     y: image.cropRect.y,
                 }
+                console.log(saveImage.data)
+
                 switch (imageNum) {
                   case 1:
                     setImage1(saveImage);
@@ -147,7 +150,7 @@ export default function Section4({setImage1,setImage2, setImage3, setImage4, Ima
                 key={index}
                 style={{
                   width: "45%",
-                  aspectRatio: 3 / 3.4,
+                  aspectRatio: 3 / 3.2,
                   margin: "2%",
                   borderRadius: 5,
                 }}
