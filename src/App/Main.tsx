@@ -48,7 +48,7 @@ const Main = () =>{
         <>
         {showIntro && <PopUp onAccept={closeIntro}/>}
             <Tab.Navigator 
-            initialRouteName={"Explore"}
+            initialRouteName={"Profile"}
             screenOptions={({route}) => ({
                 tabBarIcon:({focused, color, size}) =>{
                     let rn = route.name
@@ -69,7 +69,8 @@ const Main = () =>{
                 tabBarLabel: ({focused}) => <Text style={[focused ? {opacity:1}:{opacity:0.5}, {color:'black', fontSize:10, fontWeight:'700'}]}>{route.name}</Text>,
                 headerShown:false, title:route.name, unmountOnBlur:true
             })}>
-                {userData == null ? 
+                {/* userData !== null  */}
+                {userData === null ? 
                     <Tab.Screen name={"Loading"} component={Loading} initialParams={{userData}} />
                 :
                 (<>

@@ -43,7 +43,7 @@ export const EventsPage = ({navigation, route}:any) =>{
       fetchEvents()
       setFetching(false);
       setLoading(false);
-
+      
     }, []);
 
     const renderItem = (item:EventProp, index:any , onClick:any) => {
@@ -64,7 +64,7 @@ export const EventsPage = ({navigation, route}:any) =>{
                 alignContent: 'center',
                 justifyContent: 'center',
               }}>
-              <TouchableOpacity onPress={onClick} style={{paddingHorizontal:20}}>
+              <TouchableOpacity onPress={onClick} style={{marginHorizontal:30}}>
                 <icons.FontAwesome6 name='trash' color="#9c2222" size={20} style={{shadowColor:'white', shadowRadius:3, shadowOpacity:0.4, shadowOffset:{height:0, width:0}}} />
               </TouchableOpacity>
             </View>
@@ -73,7 +73,7 @@ export const EventsPage = ({navigation, route}:any) =>{
 
     
         return (
-            <View style={{backgroundColor:'rgba(0,0,0,0.1)', marginVertical:5, marginHorizontal:5, borderRadius:2, overflow:'hidden'}}>
+            <View style={{backgroundColor:'rgba(0,0,0,0.1)'}}>
                 <Swipeable
                 renderRightActions={() =>
                 renderRightActions(onClick)
@@ -86,7 +86,7 @@ export const EventsPage = ({navigation, route}:any) =>{
                       colors={['#4A8050', '#5EAC52']}
                       start={{x: 0, y: 0}} end={{x: 1, y: 0}}
                       locations={[0.4,1]}
-                      style={{padding: 10, borderRadius:4}}>
+                      style={{padding: 10, paddingVertical:14}}>
 
                   {/* TOP */}
                   <View style={{flexDirection:'row', justifyContent:'space-between'}} >
@@ -135,8 +135,10 @@ export const EventsPage = ({navigation, route}:any) =>{
 
       function onRefresh() {
         setFetching(true)
-        fetchEvents();
-        setFetching(false)
+        // fetchEvents();
+        setTimeout(()=>{
+          setFetching(false)
+        }, 600)
       }
 
     return(
@@ -147,7 +149,7 @@ export const EventsPage = ({navigation, route}:any) =>{
         style={{flex:1}}>
         {loading ?
         <Loading />:
-        <GestureHandlerRootView style={{ flex: 2,marginTop:20 }}>
+        <GestureHandlerRootView style={{ flex: 1}}>
           {Events && Events.length == 0 && !loading ?
           <FlatList
           data={[{}]}
@@ -157,30 +159,34 @@ export const EventsPage = ({navigation, route}:any) =>{
             <Text style={{alignSelf:'center', fontWeight:'600', fontSize:20, opacity:0.5, marginTop:'20%'}}>No Events</Text>
           }
           />:
-          <FlatList
-          data={Events}
-          onRefresh={() => onRefresh()}
-          refreshing={fetching}
-          renderItem={({ item, index }) =>
-            renderItem(item, index, () => {
-              // confirm deletion here
-              confirmDeleteItem({ item, index });
-            })
-          }
-          keyExtractor={(item:any) => item.id} 
-          />}
+          <>
+            <View style={{height: 4, backgroundColor:'#3c6941'}} />
+            <FlatList
+            data={Events}
+            onRefresh={() => onRefresh()}
+            refreshing={fetching}
+            ItemSeparatorComponent={() => <View style={{height: 4, backgroundColor:'#3c6941'}} />}
+            renderItem={({ item, index }) =>
+              renderItem(item, index, () => {
+                // confirm deletion here
+                confirmDeleteItem({ item, index });
+              })
+            }
+            keyExtractor={(item:any) => item.id} 
+            />
+          </>}
           <TouchableOpacity style={{position:'absolute', bottom:0, right:0, shadowColor:'black', shadowRadius:5, shadowOpacity:0.6, shadowOffset:{width:2, height:1}, borderRadius: 50, backgroundColor:'#29612F', margin:30, padding:5}} onPress={()=>{navigation.navigate('New Event')}}>
               <icons.Ionicons name={'add'} size={40} color={'white'} />
           </TouchableOpacity>
         </GestureHandlerRootView>}
       <Modal isVisible={showPopup} animationOut={'slideOutDown'} onSwipeCancel={cancelDeletion} onBackdropPress={cancelDeletion} swipeDirection={'down'} useNativeDriver={true} hideModalContentWhileAnimating={true} style={{flex:1}} animationIn={'slideInUp'}>
-        <View style={{ alignSelf:'center', gap:10, backgroundColor:'white', width:'100%', paddingHorizontal:20, paddingBottom:15,  borderRadius:20, height:'auto',justifyContent:'flex-start', position:'absolute', bottom:0}}>
-          <View style={{height:4, backgroundColor:'black', width:'20%', borderRadius:4, alignSelf:'center', opacity:0.5, marginTop:10}}/>
+        <View style={{ alignSelf:'center', gap:10, backgroundColor:'white', width:'100%', paddingHorizontal:20, paddingVertical:15,  borderRadius:15, height:'auto',justifyContent:'flex-start', position:'absolute', bottom:0}}>
           <Text style={{textAlign:'center', fontSize:20, fontWeight:'500', paddingHorizontal:10}}>Are you sure You Want to Delete this Event?</Text>
           <Text style={{textAlign:'center', fontSize:14, fontWeight:'700', opacity:0.6}}>This action is irreversible and you will lose all you're likes for this event.</Text>
           <TouchableOpacity onPress={deleteEvent}>
             <Button2Solid text={"Yes, I'm sure"} color={'#ad1717'}/>
           </TouchableOpacity>
+          <View style={{height:4, backgroundColor:'black', width:'20%', borderRadius:4, alignSelf:'center', opacity:0.5, marginTop:10}}/>
         </View>
       </Modal>
     </LinearGradient>

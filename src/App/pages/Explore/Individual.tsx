@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { View, Text, Animated, StyleSheet, TouchableOpacity, Image, Button, Dimensions, Pressable } from "react-native"
+import { View, Text, Animated, StyleSheet, TouchableOpacity, Image, Button, Dimensions, Pressable, Easing, PanResponder } from "react-native"
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import Swiper from 'react-native-swiper'
@@ -8,58 +8,55 @@ import { toDate } from "../../../components/ConstantFunctions/Date";
 import Loading from "../../../components/Loading";
 import LinearGradient from "react-native-linear-gradient";
 import findAge from "../../../components/ConstantFunctions/Age";
+import { PanGestureHandler } from 'react-native-gesture-handler';
 
 const windowWidth = Dimensions.get('window').width;
+const rotate = new Animated.Value(0);
 
 export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline}:any) =>{
     const [images, setImages] = useState<string[]>();
     const [userInfo,setUserInfo] = useState<any>()
     const [age,setAge] = useState<any>()
     const [load, setLoad] = useState(true)
-    const [isFront, setIsFront] = useState(true)
 
-    const descriptionShown = useRef(false)
+    const hideDescription = useRef(true)
 
     // [0] = Days till, [1] = weekday, [2] = timestamp
     const [eventDate, setEventDate] = useState<any[]>();
 
-    const rotate = new Animated.Value(0);
-    const cardFade = new Animated.Value(1);
-
-    const spin = rotate.interpolate({
+    const move = rotate.interpolate({
         inputRange: [0, 1],
-        outputRange: ['0deg', '90deg'],
+        outputRange: [0,  -(windowWidth-15)],
       });
 
-    const fetchImages = async() =>{
-        const user = await firestore().collection('Users').doc(EventInfo.Host).get()
-        if(user._data && user._data.ImageURLs){
-            setUserInfo(user._data)
-            const BirthDateTimeStamp = new Date(user._data.BirthDate.seconds * 1000)
+    // const fetchImages = async() =>{
+    //     const user = await firestore().collection('Users').doc(EventInfo.Host).get()
+    //     if(user._data && user._data.ImageURLs){
+    //         setUserInfo(user._data)
+    //         const BirthDateTimeStamp = new Date(user._data.BirthDate.seconds * 1000)
 
-            setAge(findAge(BirthDateTimeStamp))
+    //         setAge(findAge(BirthDateTimeStamp))
 
-            setEventDate(toDate({date:EventInfo.Date}));
+    //         setEventDate(toDate({date:EventInfo.Date}));
 
-            const imageUrls = user._data.ImageURLs
-            const downloadPromises = imageUrls.map(async (url: string) => {
+    //         const imageUrls = user._data.ImageURLs
+    //         const downloadPromises = imageUrls.map(async (url: string) => {
 
-                try {
-                    return await storage().refFromURL('gs://greekgators-38675.appspot.com/' + url).getDownloadURL();
-                } catch (error) {
-                    console.log(error);
-                }
-            });
+    //             try {
+    //                 return await storage().refFromURL('gs://greekgators-38675.appspot.com/' + url).getDownloadURL();
+    //             } catch (error) {
+    //                 console.log(error);
+    //             }
+    //         });
         
-            const downloadedUrls = await Promise.all(downloadPromises);
-            setImages(downloadedUrls)
-        }
-    }
+    //         const downloadedUrls = await Promise.all(downloadPromises);
+    //         setImages(downloadedUrls)
+    //     }
+    // }
 
     useEffect(()=>{
-        console.log('loading')
         startFadeIn()
-        fetchImages()
+        // fetchImages()
     },[])
 
     const position = ()=>{
@@ -68,9 +65,19 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     const activePosition = ()=>{
         return(<View style={{backgroundColor:'rgba(255,255,255,.8)', width:'20%', height: 5,borderRadius: 4, marginLeft: 3, marginRight: 3}} />)
     }
+
     async function flip(){
-        setIsFront(!isFront)
-        descriptionShown.current = !descriptionShown.current;
+        console.log(hideDescription.current)
+        hideDescription.current = !hideDescription.current;
+        Animated.timing(
+            rotate,
+            {
+              toValue: hideDescription.current ? 0:1,
+              easing: Easing.elastic(1.1),
+              duration: 300,
+              useNativeDriver: true,
+            }
+          ).start();
     }
 
 
@@ -124,10 +131,9 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
             </View>  }
       </View>
       <View style={{height:'15%', margin:10, shadowColor:'white', shadowOpacity:1, shadowRadius:3, shadowOffset:{height:0, width:0}}}>
-        <View style={{overflow:'hidden', flex:1, width:windowWidth-15, transform:[{rotateX:'0deg'}]}}>
-            <Animated.View style={[{backgroundColor:'transparent', flex:1}]}>
-            {!descriptionShown.current ? 
-            <View style={[styles.description]}>
+        <View style={{overflow:'hidden', flex:1, width:windowWidth-15}}>
+            <Animated.View style={[{backgroundColor:'transparent', flexDirection:'row', width:'200%', transform:[{ translateX: move }]}]}>
+                <View style={[styles.description]}>
                     <View style={{flexDirection:'row', width:'100%', justifyContent:'space-between'}}>
                         <View style={{}}>
                             <Text style={{fontSize:24, fontWeight:'800'}}>{EventInfo.Title}</Text>
@@ -143,16 +149,16 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
                             <Text style={{fontSize:20, fontWeight:'700'}}>Tuesday</Text>
                             <Text style={{fontSize:20, fontWeight:'600', opacity:0.8}}>8:00 pm</Text>
                         </View>
-                        {EventInfo.Description && <TouchableOpacity style={{alignSelf:'center', backgroundColor:'rgba(0,0,0,0.7)', padding:6, borderRadius:20, shadowColor:'black', shadowOpacity:0.4, shadowRadius:3, shadowOffset:{height:0, width:0}}} onPress={flip}>
+                        {EventInfo.Description && 
+                        <TouchableOpacity style={{alignSelf:'center', backgroundColor:'rgba(0,0,0,0.7)', padding:6, borderRadius:20, shadowColor:'black', shadowOpacity:0.4, shadowRadius:3, shadowOffset:{height:0, width:0}}} onPress={flip}>
                             <Text style={{color:'white', fontWeight:'600', fontSize:12}}> View Description </Text>
                         </TouchableOpacity>}
                     </View>
-            </View>:
-            <View style={[styles.description2]} >
-                <Text style={{fontSize:20, fontWeight:'800'}}>Description</Text>
-                <Text style={{fontSize:16, textAlign:'center', flexWrap:'wrap'}}>adkfhsdh fsdhf sdhf sdhf shdf sdhfsdfhs dfhsdfhsfd</Text>
-                <Button title="Back" onPress={flip}/>
-            </View>}
+                </View>
+                <Pressable style={[styles.description2]} onPress={flip}>
+                    <Text style={{fontSize:20, fontWeight:'800'}}>Description</Text>
+                    <Text style={{fontSize:16, textAlign:'center', flexWrap:'wrap'}}>adkfhsdh fsdhf sdhf sdhf shdf sdhfsdfhs dfhsdfhsfd</Text>
+                </Pressable>
             </Animated.View>
         </View>
       </View>
@@ -168,9 +174,9 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
         </Pressable>
         <View style={{position:'absolute',width:'100%', height:'100%', left:0}}>
             <LinearGradient
-            colors={['rgba(0,0,0,0)', 'green']}
+            colors={['rgba(225,225,225,0.3)', 'green']}
             start={{x: 0.0, y: 0}} end={{x: 0, y: 1}}
-            locations={[0.3,1]} 
+            locations={[0.2,0.9]} 
             style={{flex:1}}/>
         </View>
       </View>
@@ -199,6 +205,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding:10,
+        width:'100%'
     },
     description2:{
         flex: 1,
@@ -206,6 +213,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap:10,
         padding:10,
+        width:'100%'
     },
     text: {
       color: '#fff',
@@ -226,7 +234,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         marginTop:'4%',
         shadowColor:'green',
-        shadowRadius:15,
+        shadowRadius:5,
         shadowOpacity:0.9,
         shadowOffset:{height:0, width:0}
     },
@@ -239,7 +247,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         marginTop:'4%',
         shadowColor:'green',
-        shadowRadius:15,
+        shadowRadius:5,
         shadowOpacity:0.9,
         shadowOffset:{height:0, width:0}
     },

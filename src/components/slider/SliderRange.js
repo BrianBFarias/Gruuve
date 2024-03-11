@@ -5,10 +5,11 @@ import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-g
 import ReText from "./ReText";
 
 const KNOBSIZE = 20
-const WIDTH = Dimensions.get('window').width - 80;
-const MAXWIDTH = WIDTH - KNOBSIZE/4;
 
-export const SliderRange = ({min, max, onValueChange, title, currMin, currMax}) =>{
+export const SliderRange = ({min, max, onValueChange, title, currMin, currMax, WIDTH}) =>{
+
+    const MAXWIDTH = WIDTH - KNOBSIZE/4;
+
     const knob1 = useSharedValue(((currMin - min)/(max-min)) * WIDTH);
     const knob1x = useSharedValue(0);
     const scaleKnob1 = useSharedValue(1);
@@ -78,14 +79,14 @@ export const SliderRange = ({min, max, onValueChange, title, currMin, currMax}) 
     });
 
     return(
-        <View style={{backgroundColor:'rgba(0,0,0,0)', paddingBottom:20, paddingTop:14, borderRadius:20, paddingHorizontal:10}}>
+        <View style={{paddingBottom:20, paddingTop:14, borderRadius:20, paddingHorizontal:10, alignSelf:'center', width:WIDTH}}>
             <View style={styles.rangeContainer}>
                 <View style={styles.labelContainer}>
                     <ReText text={animatedText1} style={[styles.label,{position:'absolute', left:0}]}/>
                     <Text style={[styles.label2]}>{title}</Text>
                     <ReText text={animatedText2} style={[styles.label,{position:'absolute', right:0}]}/>
                 </View>
-            <View style={styles.track} />
+            <View style={[styles.track, {width:WIDTH}]} />
                 <Animated.View style={styleLine} />
                 <GestureHandlerRootView>
                     <GestureDetector gesture={onDrag1}>
@@ -100,7 +101,9 @@ export const SliderRange = ({min, max, onValueChange, title, currMin, currMax}) 
     )
 }
 
-export const Slider = ({min, max, onValueChange, radius, title, unit}) =>{
+export const Slider = ({min, max, onValueChange, radius, title, unit, WIDTH}) =>{
+    const MAXWIDTH = WIDTH - KNOBSIZE/4;
+
     const knob1 = useSharedValue((radius/max) * MAXWIDTH);
     const knob1x = useSharedValue(0);
     const scaleKnob1 = useSharedValue(1);
@@ -151,7 +154,7 @@ export const Slider = ({min, max, onValueChange, radius, title, unit}) =>{
                         <Text style={styles.label}>{unit}</Text>
                     </View>
                 </View>
-            <View style={styles.track} />
+            <View style={[styles.track, {width:WIDTH}]} />
                 <Animated.View style={styleLine} />
                 <GestureHandlerRootView>
                     <GestureDetector gesture={onDrag1}>
@@ -173,7 +176,6 @@ const styles = StyleSheet.create({
         height:4,
         backgroundColor:'rgba(0,0,0,0.5)',
         borderRadius:10,
-        width:WIDTH,
     },
     labelContainer:{
         display:'flex',

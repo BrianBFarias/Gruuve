@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, Button, Alert, Animated} from "react-native";
+import { StyleSheet, Text, TextInput, View, TouchableOpacity, Button, Alert, Animated, Dimensions} from "react-native";
 import {AuthForm} from '../../AuthenticationStyling'
 import Button1 from '../../../components/Button';
 import {SliderRange, Slider} from '../../../components/slider/SliderRange';
@@ -8,6 +8,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon3 from 'react-native-vector-icons/FontAwesome6'
 import { GenderPreferences } from '../../ProfileOptions';
+
+const windowWidth = Dimensions.get('window').width;
 
 export default function Section3({nextSection, currMin, currMax, setCurrMin, setCurrMax, genderPreference, setGenderPreference, radius, setRadius}:any){
   const [isFocus0, setIsFocus0] = useState(false);
@@ -53,10 +55,10 @@ export default function Section3({nextSection, currMin, currMax, setCurrMin, set
         )} />
           </View>
           <View style={styles.option}>
-            <SliderRange min={18} max={70} currMin={currMin} currMax={currMax} onValueChange={(range: any) =>{setCurrMax(range.max); setCurrMin(range.min)}} title={'Desired Age Range'}/>
+            <SliderRange min={18} max={70} currMin={currMin} currMax={currMax} onValueChange={(range: any) =>{setCurrMax(range.max); setCurrMin(range.min)}} title={'Desired Age Range'} WIDTH={windowWidth*.8}/>
           </View>
           <View>
-            <Slider min={10} max={100} onValueChange={(range: any) =>{setRadius(range.radius)}} radius={radius} title={'Search Radius'} unit={'miles'}/>
+            <Slider min={10} max={100} onValueChange={(range: any) =>{setRadius(range.radius)}} radius={radius} title={'Search Radius'} unit={'miles'} WIDTH={windowWidth*.8}/>
           </View>
         </View>
       <TouchableOpacity style={{alignSelf:'center'}} onPress={next}>

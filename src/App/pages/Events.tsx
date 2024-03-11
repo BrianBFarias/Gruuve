@@ -25,7 +25,7 @@ export const Events = () => {
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
-      setLoading(false); // Set loading to false after data fetching is complete
+      setLoading(false); 
     }
   };
 

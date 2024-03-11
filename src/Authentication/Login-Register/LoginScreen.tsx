@@ -15,7 +15,7 @@ import { SignInContext } from '../authTriggers/authContext';
 
 
 const LoginScreen = ({ navigation }: any) => {
-    const [email, setemail] = useState("Test1@gmail.com")
+    const [email, setemail] = useState("Admin@gmail.com")
     const [password, setPassword] = useState("12345678")
     const [loading, setLoading] = useState(false)
 

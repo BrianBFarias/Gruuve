@@ -10,7 +10,6 @@ import auth from '@react-native-firebase/auth';
 import firestore, { firebase } from '@react-native-firebase/firestore';
 import * as geofirestore from 'geofirestore';
 import { reject, accept, decline } from "./Explore/Option";
-import {PopUp} from '../../components/popUp'
 
 const Stack = createNativeStackNavigator();
 
@@ -36,7 +35,6 @@ export const Explore = ({route}:any) =>{
 
     const fetchEvent = async ({userData}:any) =>{
         // Indivudal
-
         if(toggle && !EventInfo){
             setLoading(true)
             const results = await fetchIndividualEvents({userData})
@@ -54,31 +52,14 @@ export const Explore = ({route}:any) =>{
 
     useEffect(()=>{
         const {userData} = route.params
-        if(EventInfo?.length === 0 || GroupEventInfo?.length === 0){
+        
+        if(EventInfo?.length === 0 || GroupEventInfo?.length === 0 || !EventInfo || !GroupEventInfo){
             const fetchData = async () => {
-                const userData = await fetchUser();
                 fetchEvent({userData});
             };
             fetchData();
         }
-    },[EventInfo, GroupEventInfo])
-
-    
-    async function fetchUser(){
-        const uid = auth().currentUser?.uid;
-        const userData = await firestore().collection('Users').doc(uid).get();
-        if(userData?._data){
-            return userData?._data;
-        }
-    }
-
-    useEffect(()=>{
-        const fetchData = async () => {
-            const userData = await fetchUser();
-            fetchEvent({userData});
-        };
-        fetchData();
-    },[toggle])
+    },[EventInfo, GroupEventInfo, toggle])
 
     function switchScreen(){
         setToggle(!toggle)
