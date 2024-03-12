@@ -1,4 +1,4 @@
-import { Button, ScrollView, Text, View, Image, TouchableOpacity } from "react-native";
+import { Text, View, Image, TouchableOpacity } from "react-native";
 import {AuthForm} from '../../AuthenticationStyling'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';

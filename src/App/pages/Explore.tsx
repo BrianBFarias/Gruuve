@@ -41,7 +41,7 @@ export const Explore = ({route}:any) =>{
             setEventInfo(results)
         }
         // Group
-        else if(!toggle && !GroupEventInfo){
+        else if(!GroupEventInfo){
             setLoading(true)
             const results = await fetchGroupEvents({userData});
             setGroupEventInfo(results)
@@ -194,7 +194,7 @@ const fetchIndividualEvents = async ({userData}:any) =>{
         .where('Individual', '==', true)
         .orderBy('Age')
         .orderBy('Date', 'desc')
-        .limit(3)
+        .limit(6)
         .get();
         
         const results  = (await AgeFiltered).docs;

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, FlatList, Text, TouchableOpacity, Button, Dimensions, Touchable, Pressable, Image } from "react-native"
+import { View, FlatList, Text, TouchableOpacity, Button, Dimensions, Touchable, Pressable, Image, StyleSheet } from "react-native"
 import LinearGradient from "react-native-linear-gradient";
 import icons from "../../../components/icons";
 import Loading from "../../../components/Loading";
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Modal from "react-native-modal";
-import { Button2Solid } from "../../../components/Button";
 import { FetchEvents } from "./FetchEvents";
-const WIDTH = Dimensions.get('window').width;
 
 type EventProp ={
     id:string,
@@ -183,8 +181,13 @@ export const EventsPage = ({navigation, route}:any) =>{
         <View style={{ alignSelf:'center', gap:10, backgroundColor:'white', width:'100%', paddingHorizontal:20, paddingVertical:15,  borderRadius:15, height:'auto',justifyContent:'flex-start', position:'absolute', bottom:0}}>
           <Text style={{textAlign:'center', fontSize:20, fontWeight:'500', paddingHorizontal:10}}>Are you sure You Want to Delete this Event?</Text>
           <Text style={{textAlign:'center', fontSize:14, fontWeight:'700', opacity:0.6}}>This action is irreversible and you will lose all you're likes for this event.</Text>
-          <TouchableOpacity onPress={deleteEvent}>
-            <Button2Solid text={"Yes, I'm sure"} color={'#ad1717'}/>
+          <TouchableOpacity onPress={deleteEvent} style={{flexDirection:'column', justifyContent:'space-between', gap:10}}>
+            <Text style={[styles.confirmationOption, {color:'#ab0c0c'}]}>Yes, Im sure</Text>
+            <View style={{height:2, width:'100%', backgroundColor:'black', opacity:0.3, borderRadius:5}}/>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={()=>{setShowPopup(false)}} style={{flexDirection:'column', justifyContent:'space-between', gap:10}}>
+            <Text style={styles.confirmationOption}>No, I want more likes!!</Text>
+            <View style={{height:2, width:'100%', backgroundColor:'black', opacity:0.3, borderRadius:5}}/>
           </TouchableOpacity>
           <View style={{height:4, backgroundColor:'black', width:'20%', borderRadius:4, alignSelf:'center', opacity:0.5, marginTop:10}}/>
         </View>
@@ -192,3 +195,11 @@ export const EventsPage = ({navigation, route}:any) =>{
     </LinearGradient>
     )
 }
+
+const styles = StyleSheet.create({
+  confirmationOption:{
+    textAlign:'center',
+    fontSize:16,
+    fontWeight:'600'
+  },
+})

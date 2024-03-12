@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { View, Text, Animated, StyleSheet, TouchableOpacity, Image, Button, Dimensions, Pressable, Easing, PanResponder } from "react-native"
+import { View, Text, Animated, StyleSheet, TouchableOpacity, Image, Dimensions, Pressable, Easing } from "react-native"
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import Swiper from 'react-native-swiper'
@@ -8,10 +8,16 @@ import { toDate } from "../../../components/ConstantFunctions/Date";
 import Loading from "../../../components/Loading";
 import LinearGradient from "react-native-linear-gradient";
 import findAge from "../../../components/ConstantFunctions/Age";
-import { PanGestureHandler } from 'react-native-gesture-handler';
 
 const windowWidth = Dimensions.get('window').width;
 const rotate = new Animated.Value(0);
+
+const button1 = new Animated.Value(0);
+const button2 = new Animated.Value(0);
+const inputRange = [0, 1];
+const outputRange = [1, 0.9];
+const scale1 = button1.interpolate({inputRange, outputRange});
+const scale2 = button2.interpolate({inputRange, outputRange});
 
 export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline}:any) =>{
     const [images, setImages] = useState<string[]>();
@@ -28,6 +34,20 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
         inputRange: [0, 1],
         outputRange: [0,  -(windowWidth-15)],
       });
+
+    // Button Press in and Out Animation
+    const onPressIn = ({val}:any) => {
+        Animated.spring(val==1?button1:button2, {
+          toValue: 1,
+          useNativeDriver: true,
+        }).start();
+      };
+      const onPressOut = ({val}:any) => {
+        Animated.spring(val==1?button1:button2, {
+          toValue: 0,
+          useNativeDriver: true,
+        }).start();
+      };
 
     // const fetchImages = async() =>{
     //     const user = await firestore().collection('Users').doc(EventInfo.Host).get()
@@ -67,7 +87,6 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     }
 
     async function flip(){
-        console.log(hideDescription.current)
         hideDescription.current = !hideDescription.current;
         Animated.timing(
             rotate,
@@ -162,22 +181,34 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
             </Animated.View>
         </View>
       </View>
-      <View style={{flex:1, flexDirection:'row', justifyContent:'space-around'}}>
-        <Pressable style={[styles.button1, { backgroundColor: 'white' }]} onPress={reject(EventInfo.id)}>
-            <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="close" color={'#8B2929'} size={40}/></Text>
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', position: 'relative' }}>
+        <Animated.View style={[styles.button13, {transform: [{scale: scale1}]}]}>
+            <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]} 
+                onPress={() => reject(EventInfo.id)}
+                onPressIn={() => onPressIn({ val: 1 })}
+                onPressOut={() => onPressOut({ val: 1 })}>
+                <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="close" color={'#8B2929'} size={40} /></Text>
+            </Pressable>
+        </Animated.View>
+        <Pressable style={[styles.button2, { paddingHorizontal: '15%', backgroundColor: '#1c2e1a' }]} 
+            onPress={() => decline(EventInfo.id)}>
+            <Text style={styles.buttonText}><icons.Entypo name="infinity" size={40} /></Text>
         </Pressable>
-        <Pressable style={[styles.button2, { paddingHorizontal: '15%', backgroundColor: 'rgba(0,0,0,0.85)' }]} onPress={decline(EventInfo.id)}>
-            <Text style={styles.buttonText}><icons.Entypo name="infinity" size={40}/></Text>
-        </Pressable>
-        <Pressable style={[styles.button3, { backgroundColor: 'white' }]} onPress={accept(EventInfo.Host)}>
-            <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="send-check" color={'#5F8B58'} size={30}/></Text>
-        </Pressable>
-        <View style={{position:'absolute',width:'100%', height:'100%', left:0}}>
+        <Animated.View style={[styles.button13, { transform: [{ scale: scale2 }] }]}>
+            <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]}
+                onPress={() => reject(EventInfo.id)}
+                onPressIn={() => onPressIn({ val: 2 })}
+                onPressOut={() => onPressOut({ val: 2 })}>
+            <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="send-check" color={'#5F8B58'} size={30} /></Text>
+            </Pressable>
+        </Animated.View>
+        <View style={{ position: 'absolute', width: '100%', height: '90%', borderTopRightRadius: 40, bottom:0, borderTopLeftRadius: 40, overflow: 'hidden', left: 0, right: 0,justifyContent: 'center' }}>
             <LinearGradient
-            colors={['rgba(225,225,225,0.3)', 'green']}
-            start={{x: 0.0, y: 0}} end={{x: 0, y: 1}}
-            locations={[0.2,0.9]} 
-            style={{flex:1}}/>
+                colors={['#4b8a43', 'transparent']}
+                start={{ x: 0.0, y: 0 }} end={{ x: 0, y: 1 }}
+                locations={[0.401, 0.4]}
+                style={{ flex: 1 }}
+            />
         </View>
       </View>
     </Animated.View>
@@ -225,31 +256,17 @@ const styles = StyleSheet.create({
         color: 'white',
         alignSelf:'center'
     },
-    button1:{
+    button13:{
         alignSelf:'center',
-        width:65,
-        height:65,
+        overflow:'hidden',
+        width:95,
+        height:80,
         borderRadius:40,
+        padding:12,
         zIndex:10,
         justifyContent:'center',
+        backgroundColor:'#4b8a43',
         marginTop:'4%',
-        shadowColor:'green',
-        shadowRadius:5,
-        shadowOpacity:0.9,
-        shadowOffset:{height:0, width:0}
-    },
-    button3:{
-        alignSelf:'center',
-        width:65,
-        height:65,
-        borderRadius:40,
-        zIndex:10,
-        justifyContent:'center',
-        marginTop:'4%',
-        shadowColor:'green',
-        shadowRadius:5,
-        shadowOpacity:0.9,
-        shadowOffset:{height:0, width:0}
     },
     button2:{
         alignSelf:'center',
@@ -259,24 +276,5 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         marginBottom:'4%',
         borderRadius:10,
-        shadowColor:'white',
-        shadowRadius:20,
-        shadowOpacity:0.9,
-        shadowOffset:{height:0, width:0}
     },
-    buttons:{
-        alignSelf:'center',
-        top:0,
-        height:'100%',
-        width:'120%',
-        zIndex:5,
-        flexDirection:'row', 
-        justifyContent:'space-between', 
-        alignContent:'center',  
-        borderTopLeftRadius:200, 
-        borderTopRightRadius:200, 
-        backgroundColor:'transparent',
-        opacity:0.7,
-        overflow:'hidden'
-    }
   })
