@@ -1,10 +1,43 @@
-import { View } from "react-native"
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+import firebase from "@react-native-firebase/firestore";
 
-export function accept({ eventID }: { eventID: string }){
+const options = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: false,
+  };
+
+export async function accept({ eventID, userID }: { eventID: string, userID: string }){
+    ReactNativeHapticFeedback.trigger("impactLight", options);
+    // const data = {
+    //     eventID: eventID,
+    //     userID: userID
+    // }
+    // await firebase().collection('Interests').add(data).then(()=>{
+
+    // })
+    return(true)
 }
 
-export function decline({ eventID }: { eventID: string }){
+export async function decline({ eventID, userID }: { eventID: string, userID: string }){
+    ReactNativeHapticFeedback.trigger("impactLight", options);
+    // const data = {
+    //     eventID: eventID,
+    //     userID: userID
+    // }
+    // await firebase().collection('Declines').add(data).then(()=>{
+
+    // })
+    return(true)
 }
 
-export function reject({ hostId }: { hostId: string }){
+export async function reject({ hostId, userID }: { hostId: string, userID: string }){
+    ReactNativeHapticFeedback.trigger("impactLight", options);
+    // const data = {
+    //     eventID: hostId,
+    //     userID: userID
+    // }
+    // await firebase().collection('Rejects').add(data).then(()=>{
+
+    // })
+    return(true)
 }

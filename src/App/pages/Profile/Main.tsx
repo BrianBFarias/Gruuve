@@ -24,6 +24,7 @@ export default function ProfileMain({userData, disabled}:any){
                 </View>
             </TouchableOpacity>
             <Text style={{textAlign:'center', margin:20, fontSize:18, fontWeight:'600'}}>{userData.First}</Text>
+            
         </ScrollView>
     )
 }

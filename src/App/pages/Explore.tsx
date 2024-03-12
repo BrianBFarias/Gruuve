@@ -11,7 +11,6 @@ import firestore, { firebase } from '@react-native-firebase/firestore';
 import * as geofirestore from 'geofirestore';
 import { reject, accept, decline } from "./Explore/Option";
 
-const Stack = createNativeStackNavigator();
 
 export const Explore = ({route}:any) =>{
     const [toggle, setToggle] = useState(true);
@@ -19,6 +18,7 @@ export const Explore = ({route}:any) =>{
     const [EventInfo, setEventInfo] = useState<any>();
     const [GroupEventInfo, setGroupEventInfo] = useState<any>();
     const [loading, setLoading] = useState(false);
+    const [userID, setUserID] = useState(null)
  
     const fade = new Animated.Value(0);
     const fadeOut = new Animated.Value(1);
@@ -52,6 +52,7 @@ export const Explore = ({route}:any) =>{
 
     useEffect(()=>{
         const {userData} = route.params
+        setUserID(userData.id)
         
         if(EventInfo?.length === 0 || GroupEventInfo?.length === 0 || !EventInfo || !GroupEventInfo){
             const fetchData = async () => {
@@ -110,12 +111,12 @@ export const Explore = ({route}:any) =>{
                     (<View style={{}}><Loading /></View>):
                     (EventInfo.length === 0 ?
                         empty({text:'No Individual Events'}): 
-                        <Indiivudal setEventInfo={setEventInfo} fade={fade} startFadeIn={startFadeIn} EventInfo={EventInfo[0]._data} reject={reject} decline={decline} accept={accept}/>)):
+                        <Indiivudal setEventInfo={setEventInfo} fade={fade} startFadeIn={startFadeIn} EventInfo={EventInfo[0]._data} reject={reject} decline={decline} accept={accept} userID={userID}/>)):
                 (!GroupEventInfo ? 
                     (<View style={{flex:1}}><Loading /></View>):
                     (GroupEventInfo.length === 0 ?
                         empty({text:'No Group Events'}): 
-                        <Group setGroupEventInfo={setGroupEventInfo} fade={fade} startFadeIn={startFadeIn} GroupEventInfo = {GroupEventInfo[0]._data} reject={reject} decline={decline} accept={accept}/>))
+                        <Group setGroupEventInfo={setGroupEventInfo} fade={fade} startFadeIn={startFadeIn} GroupEventInfo = {GroupEventInfo[0]._data} reject={reject} decline={decline} accept={accept} />))
                 }
             </Animated.View>
         </View>}

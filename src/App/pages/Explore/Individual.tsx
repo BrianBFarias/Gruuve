@@ -14,12 +14,15 @@ const rotate = new Animated.Value(0);
 
 const button1 = new Animated.Value(0);
 const button2 = new Animated.Value(0);
+const centerButton = new Animated.Value(0);
+
 const inputRange = [0, 1];
 const outputRange = [1, 0.9];
 const scale1 = button1.interpolate({inputRange, outputRange});
 const scale2 = button2.interpolate({inputRange, outputRange});
+const scaleCenter = centerButton.interpolate({inputRange, outputRange});
 
-export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline}:any) =>{
+export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline, userID}:any) =>{
     const [images, setImages] = useState<string[]>();
     const [userInfo,setUserInfo] = useState<any>()
     const [age,setAge] = useState<any>()
@@ -37,13 +40,13 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
 
     // Button Press in and Out Animation
     const onPressIn = ({val}:any) => {
-        Animated.spring(val==1?button1:button2, {
+        Animated.spring(val===1?button1:val===2?centerButton:button2, {
           toValue: 1,
           useNativeDriver: true,
         }).start();
       };
       const onPressOut = ({val}:any) => {
-        Animated.spring(val==1?button1:button2, {
+        Animated.spring(val==1?button1: val==2?centerButton:button2, {
           toValue: 0,
           useNativeDriver: true,
         }).start();
@@ -184,21 +187,25 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', position: 'relative' }}>
         <Animated.View style={[styles.button13, {transform: [{scale: scale1}]}]}>
             <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]} 
-                onPress={() => reject(EventInfo.id)}
+                onPress={() => reject(EventInfo.Host, userID)}
                 onPressIn={() => onPressIn({ val: 1 })}
                 onPressOut={() => onPressOut({ val: 1 })}>
                 <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="close" color={'#8B2929'} size={40} /></Text>
             </Pressable>
         </Animated.View>
-        <Pressable style={[styles.button2, { paddingHorizontal: '15%', backgroundColor: '#1c2e1a' }]} 
-            onPress={() => decline(EventInfo.id)}>
-            <Text style={styles.buttonText}><icons.Entypo name="infinity" size={40} /></Text>
-        </Pressable>
-        <Animated.View style={[styles.button13, { transform: [{ scale: scale2 }] }]}>
-            <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]}
-                onPress={() => reject(EventInfo.id)}
+        <Animated.View style={[styles.button2,{ transform: [{ scale: scaleCenter }]}]}>
+            <Pressable style={[{backgroundColor:'#1c2e1a', justifyContent:'center', borderRadius:10, paddingVertical:5}]}
+                onPress={() => decline(EventInfo.id, userID)}
                 onPressIn={() => onPressIn({ val: 2 })}
                 onPressOut={() => onPressOut({ val: 2 })}>
+                <Text style={styles.buttonText}><icons.Entypo name="infinity" size={40} /></Text>
+            </Pressable>
+        </Animated.View>
+        <Animated.View style={[styles.button13, { transform: [{ scale: scale2 }] }]}>
+            <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]}
+                onPress={() => accept(EventInfo.id, userID)}
+                onPressIn={() => onPressIn({ val: 3 })}
+                onPressOut={() => onPressOut({ val: 3 })}>
             <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="send-check" color={'#5F8B58'} size={30} /></Text>
             </Pressable>
         </Animated.View>
@@ -271,10 +278,11 @@ const styles = StyleSheet.create({
     button2:{
         alignSelf:'center',
         padding:10,
+        width:'35%',
+        height:'100%',
         zIndex:10,
-        height:60,
         justifyContent:'center',
-        marginBottom:'4%',
+        marginBottom:'2%',
         borderRadius:10,
     },
   })
