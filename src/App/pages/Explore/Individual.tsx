@@ -22,7 +22,7 @@ const scale1 = button1.interpolate({inputRange, outputRange});
 const scale2 = button2.interpolate({inputRange, outputRange});
 const scaleCenter = centerButton.interpolate({inputRange, outputRange});
 
-export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline, userID}:any) =>{
+export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline, userID, setNextPost}:any) =>{
     const [images, setImages] = useState<string[]>();
     const [userInfo,setUserInfo] = useState<any>()
     const [age,setAge] = useState<any>()
@@ -51,6 +51,19 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
           useNativeDriver: true,
         }).start();
       };
+
+      async function handleOption({val}:any){
+        setNextPost(1)
+
+        switch(val){
+            case 1: await reject(EventInfo.Host, userID);
+            case 2: await decline(EventInfo.id, userID);
+            case 3: await accept(EventInfo.id, userID);
+        }
+
+        setNextPost(2)
+      }
+
 
     // const fetchImages = async() =>{
     //     const user = await firestore().collection('Users').doc(EventInfo.Host).get()
@@ -187,7 +200,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', position: 'relative' }}>
         <Animated.View style={[styles.button13, {transform: [{scale: scale1}]}]}>
             <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]} 
-                onPress={() => reject(EventInfo.Host, userID)}
+                onPress={() => handleOption({val:1})}
                 onPressIn={() => onPressIn({ val: 1 })}
                 onPressOut={() => onPressOut({ val: 1 })}>
                 <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="close" color={'#8B2929'} size={40} /></Text>
@@ -195,7 +208,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
         </Animated.View>
         <Animated.View style={[styles.button2,{ transform: [{ scale: scaleCenter }]}]}>
             <Pressable style={[{backgroundColor:'#1c2e1a', justifyContent:'center', borderRadius:10, paddingVertical:5}]}
-                onPress={() => decline(EventInfo.id, userID)}
+                onPress={() => handleOption({val:2})}
                 onPressIn={() => onPressIn({ val: 2 })}
                 onPressOut={() => onPressOut({ val: 2 })}>
                 <Text style={styles.buttonText}><icons.Entypo name="infinity" size={40} /></Text>
@@ -203,10 +216,10 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
         </Animated.View>
         <Animated.View style={[styles.button13, { transform: [{ scale: scale2 }] }]}>
             <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]}
-                onPress={() => accept(EventInfo.id, userID)}
+                onPress={() => handleOption({val:3})}
                 onPressIn={() => onPressIn({ val: 3 })}
                 onPressOut={() => onPressOut({ val: 3 })}>
-            <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="send-check" color={'#5F8B58'} size={30} /></Text>
+            <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="send-check" color={'#5F8B58'} size={30}/></Text>
             </Pressable>
         </Animated.View>
         <View style={{ position: 'absolute', width: '100%', height: '90%', borderTopRightRadius: 40, bottom:0, borderTopLeftRadius: 40, overflow: 'hidden', left: 0, right: 0,justifyContent: 'center' }}>

@@ -15,7 +15,6 @@ export async function accept({ eventID, userID }: { eventID: string, userID: str
     // await firebase().collection('Interests').add(data).then(()=>{
 
     // })
-    return(true)
 }
 
 export async function decline({ eventID, userID }: { eventID: string, userID: string }){
@@ -27,7 +26,6 @@ export async function decline({ eventID, userID }: { eventID: string, userID: st
     // await firebase().collection('Declines').add(data).then(()=>{
 
     // })
-    return(true)
 }
 
 export async function reject({ hostId, userID }: { hostId: string, userID: string }){
@@ -39,5 +37,4 @@ export async function reject({ hostId, userID }: { hostId: string, userID: strin
     // await firebase().collection('Rejects').add(data).then(()=>{
 
     // })
-    return(true)
 }

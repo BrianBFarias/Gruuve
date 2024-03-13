@@ -81,7 +81,7 @@ export const EventsPage = ({navigation, route}:any) =>{
                 >
                 <Pressable onPress={()=>{console.log('pressed')}}>
                   <LinearGradient 
-                      colors={['#4A8050', '#5EAC52']}
+                      colors={['whitesmoke', 'rgb(120,160,120)']}
                       start={{x: 0, y: 0}} end={{x: 1, y: 0}}
                       locations={[0.4,1]}
                       style={{padding: 10, paddingVertical:14}}>
@@ -89,13 +89,13 @@ export const EventsPage = ({navigation, route}:any) =>{
                   {/* TOP */}
                   <View style={{flexDirection:'row', justifyContent:'space-between'}} >
                       <View style={{flexDirection:'row', justifyContent:'flex-start', gap:10, padding:2}}>
-                        <Text style={{color:'white', fontWeight:'700', fontSize:25}}>{item.weekday}</Text>
-                        <Text style={{color:'white', fontWeight:'500', fontSize:18, opacity:0.7, alignSelf:'flex-end', marginBottom:3}}> {item.days == 'Today'? 'Today' :  (`in ${item.days} `+ (item.days === '1' ? `Day`:'Days'))}</Text>
+                        <Text style={{color:'black', fontWeight:'700', fontSize:25, opacity:0.7}}>{item.weekday}</Text>
+                        <Text style={{color:'black', fontWeight:'500', fontSize:18, opacity:0.5, alignSelf:'flex-end', marginBottom:3}}> {item.days == 'Today'? 'Today' :  (`in ${item.days} `+ (item.days === '1' ? `Day`:'Days'))}</Text>
                       </View>
                       <icons.Foundation name='torsos-all' size={30} color={'white'} style={{alignSelf:'center'}}/>
                   </View>
 
-                  <View style={{backgroundColor:'black', borderRadius:10, height:3, width:'80%', opacity:0.3}} />
+                  <View style={{backgroundColor:'black', borderRadius:10, height:2, width:'80%', opacity:0.3}} />
 
                   {/* Bottom */}
                   <View style={{flexDirection:'row', justifyContent:'space-between', width:'96%', marginTop:6, paddingHorizontal:4}}>
@@ -181,13 +181,14 @@ export const EventsPage = ({navigation, route}:any) =>{
         <View style={{ alignSelf:'center', gap:10, backgroundColor:'white', width:'100%', paddingHorizontal:20, paddingVertical:15,  borderRadius:15, height:'auto',justifyContent:'flex-start', position:'absolute', bottom:0}}>
           <Text style={{textAlign:'center', fontSize:20, fontWeight:'500', paddingHorizontal:10}}>Are you sure You Want to Delete this Event?</Text>
           <Text style={{textAlign:'center', fontSize:14, fontWeight:'700', opacity:0.6}}>This action is irreversible and you will lose all you're likes for this event.</Text>
+          <View style={{height:2, width:'100%', backgroundColor:'black', opacity:0.3, borderRadius:5}}/>
           <TouchableOpacity onPress={deleteEvent} style={{flexDirection:'column', justifyContent:'space-between', gap:10}}>
             <Text style={[styles.confirmationOption, {color:'#ab0c0c'}]}>Yes, Im sure</Text>
-            <View style={{height:2, width:'100%', backgroundColor:'black', opacity:0.3, borderRadius:5}}/>
+            <View style={{height:1, width:'85%', backgroundColor:'black', opacity:0.3, borderRadius:5, alignSelf:'center'}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={()=>{setShowPopup(false)}} style={{flexDirection:'column', justifyContent:'space-between', gap:10}}>
             <Text style={styles.confirmationOption}>No, I want more likes!!</Text>
-            <View style={{height:2, width:'100%', backgroundColor:'black', opacity:0.3, borderRadius:5}}/>
+            <View style={{height:1, width:'85%', backgroundColor:'black', opacity:0.3, borderRadius:5, alignSelf:'center'}}/>
           </TouchableOpacity>
           <View style={{height:4, backgroundColor:'black', width:'20%', borderRadius:4, alignSelf:'center', opacity:0.5, marginTop:10}}/>
         </View>

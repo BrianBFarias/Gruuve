@@ -11,6 +11,8 @@ import firestore, { firebase } from '@react-native-firebase/firestore';
 import * as geofirestore from 'geofirestore';
 import { reject, accept, decline } from "./Explore/Option";
 
+const fade = new Animated.Value(0);
+const eventCard = new Animated.Value(1);
 
 export const Explore = ({route}:any) =>{
     const [toggle, setToggle] = useState(true);
@@ -19,9 +21,25 @@ export const Explore = ({route}:any) =>{
     const [GroupEventInfo, setGroupEventInfo] = useState<any>();
     const [loading, setLoading] = useState(false);
     const [userID, setUserID] = useState(null)
- 
-    const fade = new Animated.Value(0);
-    const fadeOut = new Animated.Value(1);
+    const [nextPost, setNextPost] = useState(0)
+
+    const fadeOutCard = () =>{
+        Animated.timing(eventCard, {
+            toValue: 0,
+            duration: 600,
+            delay:0,
+            useNativeDriver: true,
+          }).start();
+       }
+
+    const fadeInCard = () =>{
+        Animated.timing(eventCard, {
+            toValue: 1,
+            duration: 600,
+            delay:0,
+            useNativeDriver: true,
+          }).start();
+       }
 
    const startFadeIn = () =>{
     fade.setValue(0);
@@ -67,6 +85,18 @@ export const Explore = ({route}:any) =>{
         setSelection(!selection)
     }
 
+    // 0 - no action, 1 - fetching new Post, 2 - newPost Fetched
+    useEffect(()=>{
+        if(nextPost === 1){
+            fadeOutCard();
+        }else if(nextPost === 2){
+            setNextPost(0)
+            setTimeout(()=>{
+                fadeInCard()
+            }, 1000)
+        }
+    },[nextPost])
+
     const empty = ({ text }: { text: string }) =>{
         return(
         <View style={{marginTop:'50%', alignItems: 'center'}}>
@@ -105,18 +135,36 @@ export const Explore = ({route}:any) =>{
                 outerCircleStyle={{alignSelf:'center', flex:1, gap:15}} 
                 switchWidthMultiplier={5}
                 />
-            <Animated.View style={{opacity:fadeOut, flex:1}}>
+            <Animated.View style={{opacity:eventCard, flex:1}}>
                 {toggle ?
                 (!EventInfo ? 
                     (<View style={{}}><Loading /></View>):
                     (EventInfo.length === 0 ?
                         empty({text:'No Individual Events'}): 
-                        <Indiivudal setEventInfo={setEventInfo} fade={fade} startFadeIn={startFadeIn} EventInfo={EventInfo[0]._data} reject={reject} decline={decline} accept={accept} userID={userID}/>)):
+                        <Indiivudal 
+                        setEventInfo={setEventInfo} 
+                        fade={fade} 
+                        startFadeIn={startFadeIn} 
+                        EventInfo={EventInfo[0]._data} 
+                        reject={reject} 
+                        decline={decline} 
+                        accept={accept} 
+                        userID={userID}
+                        setNextPost={setNextPost}
+                        />)):
                 (!GroupEventInfo ? 
                     (<View style={{flex:1}}><Loading /></View>):
                     (GroupEventInfo.length === 0 ?
                         empty({text:'No Group Events'}): 
-                        <Group setGroupEventInfo={setGroupEventInfo} fade={fade} startFadeIn={startFadeIn} GroupEventInfo = {GroupEventInfo[0]._data} reject={reject} decline={decline} accept={accept} />))
+                        <Group 
+                        setGroupEventInfo={setGroupEventInfo} 
+                        fade={fade} 
+                        startFadeIn={startFadeIn} 
+                        GroupEventInfo = {GroupEventInfo[0]._data} 
+                        reject={reject} 
+                        decline={decline} 
+                        accept={accept} 
+                        />))
                 }
             </Animated.View>
         </View>}
