@@ -22,13 +22,26 @@ const scale1 = button1.interpolate({inputRange, outputRange});
 const scale2 = button2.interpolate({inputRange, outputRange});
 const scaleCenter = centerButton.interpolate({inputRange, outputRange});
 
-export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline, userID, setNextPost}:any) =>{
+export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline, userID, setNextPost, slideUp}:any) =>{
     const [images, setImages] = useState<string[]>();
     const [userInfo,setUserInfo] = useState<any>()
     const [age,setAge] = useState<any>()
     const [load, setLoad] = useState(true)
 
     const hideDescription = useRef(true)
+
+    const slideUpButtons = slideUp.interpolate({
+        inputRange: [0, 1],
+        outputRange: [150, 0],
+      }); 
+      
+      Animated.timing(slideUp, {
+        toValue: 1,
+        duration:800,
+        easing:Easing.bezier(0.7,0.4,0.4,1),
+        useNativeDriver: true,
+      }).start();
+    
 
     // [0] = Days till, [1] = weekday, [2] = timestamp
     const [eventDate, setEventDate] = useState<any[]>();
@@ -53,15 +66,14 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
       };
 
       async function handleOption({val}:any){
-        setNextPost(1)
+        setNextPost(val)
 
         switch(val){
             case 1: await reject(EventInfo.Host, userID);
             case 2: await decline(EventInfo.id, userID);
             case 3: await accept(EventInfo.id, userID);
         }
-
-        setNextPost(2)
+        setNextPost(-1)
       }
 
 
@@ -197,7 +209,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
             </Animated.View>
         </View>
       </View>
-      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', position: 'relative' }}>
+      <Animated.View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', position: 'relative',transform:[{translateY:slideUpButtons}] }}>
         <Animated.View style={[styles.button13, {transform: [{scale: scale1}]}]}>
             <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]} 
                 onPress={() => handleOption({val:1})}
@@ -230,7 +242,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
                 style={{ flex: 1 }}
             />
         </View>
-      </View>
+      </Animated.View>
     </Animated.View>
     )
 }

@@ -16,6 +16,8 @@ type EventProp ={
     weekday:string
 }
 
+const windowWidth = Dimensions.get('window').width;
+
 export const EventsPage = ({navigation, route}:any) =>{
     const [loading, setLoading] = useState(true)
     const [Events, setEvents] = useState<EventProp[]>()
@@ -56,22 +58,25 @@ export const EventsPage = ({navigation, route}:any) =>{
         const renderRightActions = (onClick:any) => {
 
           return (
-            <View
+            <TouchableOpacity
               style={{
                 margin: 0,
                 alignContent: 'center',
                 justifyContent: 'center',
-              }}>
-              <TouchableOpacity onPress={onClick} style={{marginHorizontal:30}}>
-                <icons.FontAwesome6 name='trash' color="#9c2222" size={20} style={{shadowColor:'white', shadowRadius:3, shadowOpacity:0.4, shadowOffset:{height:0, width:0}}} />
-              </TouchableOpacity>
-            </View>
+                backgroundColor:'#9c2222',
+                opacity:0.8
+              }}
+              onPress={onClick} >
+              <View style={{marginHorizontal:30}}>
+                <icons.FontAwesome6 name='trash' color="whitesmoke" size={20} style={{shadowColor:'black', shadowRadius:3, shadowOpacity:0.4, shadowOffset:{height:0, width:0}}} />
+              </View>
+            </TouchableOpacity>
           );
         };
 
     
         return (
-            <View style={{backgroundColor:'rgba(0,0,0,0.1)'}}>
+            <View style={{backgroundColor:'#9c2222'}}>
                 <Swipeable
                 renderRightActions={() =>
                 renderRightActions(onClick)
@@ -81,7 +86,7 @@ export const EventsPage = ({navigation, route}:any) =>{
                 >
                 <Pressable onPress={()=>{console.log('pressed')}}>
                   <LinearGradient 
-                      colors={['whitesmoke', 'rgb(120,160,120)']}
+                      colors={['whitesmoke', 'whitesmoke']}
                       start={{x: 0, y: 0}} end={{x: 1, y: 0}}
                       locations={[0.4,1]}
                       style={{padding: 10, paddingVertical:14}}>
@@ -92,7 +97,7 @@ export const EventsPage = ({navigation, route}:any) =>{
                         <Text style={{color:'black', fontWeight:'700', fontSize:25, opacity:0.7}}>{item.weekday}</Text>
                         <Text style={{color:'black', fontWeight:'500', fontSize:18, opacity:0.5, alignSelf:'flex-end', marginBottom:3}}> {item.days == 'Today'? 'Today' :  (`in ${item.days} `+ (item.days === '1' ? `Day`:'Days'))}</Text>
                       </View>
-                      <icons.Foundation name='torsos-all' size={30} color={'white'} style={{alignSelf:'center'}}/>
+                      <icons.Foundation name='torsos-all' size={30} color={'#3c6941'} style={{alignSelf:'center', opacity:0.8}}/>
                   </View>
 
                   <View style={{backgroundColor:'black', borderRadius:10, height:2, width:'80%', opacity:0.3}} />
@@ -178,19 +183,17 @@ export const EventsPage = ({navigation, route}:any) =>{
           </TouchableOpacity>
         </GestureHandlerRootView>}
       <Modal isVisible={showPopup} animationOut={'slideOutDown'} onSwipeCancel={cancelDeletion} onBackdropPress={cancelDeletion} swipeDirection={'down'} useNativeDriver={true} hideModalContentWhileAnimating={true} style={{flex:1}} animationIn={'slideInUp'}>
-        <View style={{ alignSelf:'center', gap:10, backgroundColor:'white', width:'100%', paddingHorizontal:20, paddingVertical:15,  borderRadius:15, height:'auto',justifyContent:'flex-start', position:'absolute', bottom:0}}>
-          <Text style={{textAlign:'center', fontSize:20, fontWeight:'500', paddingHorizontal:10}}>Are you sure You Want to Delete this Event?</Text>
-          <Text style={{textAlign:'center', fontSize:14, fontWeight:'700', opacity:0.6}}>This action is irreversible and you will lose all you're likes for this event.</Text>
+        <View style={{ alignSelf:'center', gap:10, backgroundColor:'white', width:windowWidth, paddingHorizontal:20, paddingBottom:45,  borderRadius:15,justifyContent:'flex-start', position:'absolute', bottom:-20}}>
+        <View style={{height:4, backgroundColor:'black', width:'20%', borderRadius:4, alignSelf:'center', opacity:0.5, marginTop:10}}/>
+          <Text style={{textAlign:'center', fontSize:20, fontWeight:'700', paddingHorizontal:10}}>Confirm Event Deletion?</Text>
+          <Text style={{textAlign:'center', fontSize:12, fontWeight:'500', opacity:0.6}}>This action is irreversible and you will lose all you're likes for this event.</Text>
           <View style={{height:2, width:'100%', backgroundColor:'black', opacity:0.3, borderRadius:5}}/>
           <TouchableOpacity onPress={deleteEvent} style={{flexDirection:'column', justifyContent:'space-between', gap:10}}>
             <Text style={[styles.confirmationOption, {color:'#ab0c0c'}]}>Yes, Im sure</Text>
-            <View style={{height:1, width:'85%', backgroundColor:'black', opacity:0.3, borderRadius:5, alignSelf:'center'}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={()=>{setShowPopup(false)}} style={{flexDirection:'column', justifyContent:'space-between', gap:10}}>
             <Text style={styles.confirmationOption}>No, I want more likes!!</Text>
-            <View style={{height:1, width:'85%', backgroundColor:'black', opacity:0.3, borderRadius:5, alignSelf:'center'}}/>
           </TouchableOpacity>
-          <View style={{height:4, backgroundColor:'black', width:'20%', borderRadius:4, alignSelf:'center', opacity:0.5, marginTop:10}}/>
         </View>
       </Modal>
     </LinearGradient>
@@ -200,7 +203,7 @@ export const EventsPage = ({navigation, route}:any) =>{
 const styles = StyleSheet.create({
   confirmationOption:{
     textAlign:'center',
-    fontSize:16,
+    fontSize:18,
     fontWeight:'600'
   },
 })

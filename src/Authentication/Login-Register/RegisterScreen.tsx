@@ -286,7 +286,16 @@ const Register = ({navigation}: any) => {
     
               {section === 3 &&
                 <Animated.View style={{opacity: section3, height:'75%'}}>
-                  <Section4 setImage1={setImage1} setImage2={setImage2} setImage3={setImage3} setImage4={setImage4} Image1={Image1} Image2={Image2} Image3={Image3} Image4={Image4} onRegister={onRegister}/>
+                  <Section4 
+                  setImage1={setImage1} 
+                  setImage2={setImage2} 
+                  setImage3={setImage3} 
+                  setImage4={setImage4} 
+                  Image1={Image1} 
+                  Image2={Image2} 
+                  Image3={Image3} 
+                  Image4={Image4} 
+                  onRegister={onRegister}/>
                 </Animated.View>}
             </View>
               </View>

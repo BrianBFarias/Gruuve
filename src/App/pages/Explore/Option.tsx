@@ -7,7 +7,7 @@ const options = {
   };
 
 export async function accept({ eventID, userID }: { eventID: string, userID: string }){
-    ReactNativeHapticFeedback.trigger("impactLight", options);
+    ReactNativeHapticFeedback.trigger("impactMedium", options);
     // const data = {
     //     eventID: eventID,
     //     userID: userID
@@ -18,7 +18,7 @@ export async function accept({ eventID, userID }: { eventID: string, userID: str
 }
 
 export async function decline({ eventID, userID }: { eventID: string, userID: string }){
-    ReactNativeHapticFeedback.trigger("impactLight", options);
+    ReactNativeHapticFeedback.trigger("impactMedium", options);
     // const data = {
     //     eventID: eventID,
     //     userID: userID
@@ -29,7 +29,7 @@ export async function decline({ eventID, userID }: { eventID: string, userID: st
 }
 
 export async function reject({ hostId, userID }: { hostId: string, userID: string }){
-    ReactNativeHapticFeedback.trigger("impactLight", options);
+    ReactNativeHapticFeedback.trigger("impactMedium", options);
     // const data = {
     //     eventID: hostId,
     //     userID: userID

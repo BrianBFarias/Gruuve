@@ -66,8 +66,7 @@ const Main = () =>{
                     }
 
                 },
-                tabBarLabel: ({focused}) => <Text style={[focused ? {opacity:1}:{opacity:0.5}, {color:'black', fontSize:10, fontWeight:'700'}]}>{route.name}</Text>,
-                headerShown:false, title:route.name, unmountOnBlur:true
+                headerShown:false, title:route.name, unmountOnBlur:true, tabBarShowLabel:false
             })}>
                 {/* userData !== null  */}
                 {userData === null ? 

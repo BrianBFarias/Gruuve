@@ -52,7 +52,7 @@ export const Profile = ({route}:any) =>{
       }); 
     const move = settingsTab.interpolate({
         inputRange: [0, 1],
-        outputRange: [toggleSize+(inlineToggleMargin*2), windowWidth*0.8],
+        outputRange: [0, windowWidth*0.8],
       });
 
     function signOut(){
@@ -68,8 +68,6 @@ export const Profile = ({route}:any) =>{
     })
 
     async function settingsToggle(){
-        console.log(openToggle.current)
-
         openToggle.current = !openToggle.current;
         
         if(openToggle.current){
@@ -98,6 +96,7 @@ export const Profile = ({route}:any) =>{
     function savePreferences(){
         //  Save new preferences
     }
+    
 
     const settingTab = () => {
         return(                            
@@ -183,7 +182,7 @@ export const Profile = ({route}:any) =>{
                             {settingTab()}
                         </Animated.View>
                         {/* Gear Icon */}
-                        <Animated.View style={{position:'absolute', marginHorizontal:inlineToggleMargin, marginVertical:10, display:settingIcon}}>
+                        <Animated.View style={{position:'absolute', marginHorizontal:inlineToggleMargin, marginTop:22, display:settingIcon}}>
                             <SafeAreaView />
                             <TouchableOpacity onPress={settingsToggle} style={{marginTop:10}}>
                                 <icons.FontAwesome6 name='sliders' size={25} color='black'/>
@@ -192,8 +191,8 @@ export const Profile = ({route}:any) =>{
                 </Animated.View>
             </Animated.View>
 
-            <Animated.View style={{flex:1, minWidth:windowWidth, marginLeft:-(toggleSize+inlineToggleMargin*2), zIndex:4}}>
-                <AnimatedPress style={{flex:1, backgroundColor:'black', display:(settingsInverse), opacity:bgFade, position:'absolute', width:'100%', height:'100%', zIndex:5}} onPress={settingsToggle}/>
+            <Animated.View style={{flex:1, minWidth:windowWidth, zIndex:10}}>
+                <AnimatedPress style={{flex:1, backgroundColor:'black', display:(settingsInverse), left:-20, opacity:bgFade, position:'absolute', width:'100%', height:'100%', zIndex:5}} onPress={settingsToggle}/>
                 <ProfileMain userData={userData} disabled={isDisabled}/>
             </Animated.View>
         </View>

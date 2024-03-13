@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {SafeAreaView, StyleSheet, Text, View, Animated} from "react-native"
+import React, {useEffect, useRef, useState} from "react";
+import {SafeAreaView, StyleSheet, Text, View, Animated, Easing} from "react-native"
 import LinearGradient from 'react-native-linear-gradient';
 import { Switch } from 'react-native-switch';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -10,23 +10,57 @@ import auth from '@react-native-firebase/auth';
 import firestore, { firebase } from '@react-native-firebase/firestore';
 import * as geofirestore from 'geofirestore';
 import { reject, accept, decline } from "./Explore/Option";
+import Icons from "../../components/icons";
 
 const fade = new Animated.Value(0);
 const eventCard = new Animated.Value(1);
+const slideUp = new Animated.Value(0);
+const nextAnimation = new Animated.Value(0);
 
 export const Explore = ({route}:any) =>{
     const [toggle, setToggle] = useState(true);
     const [selection, setSelection] = useState(toggle)
     const [EventInfo, setEventInfo] = useState<any>();
+    const [EventInfoEmpty, setEventInfoEmpty] = useState(false)
     const [GroupEventInfo, setGroupEventInfo] = useState<any>();
+    const [GroupEventInfoEmpty, setGroupEventInfoEmpty] = useState(false)
     const [loading, setLoading] = useState(false);
     const [userID, setUserID] = useState(null)
     const [nextPost, setNextPost] = useState(0)
 
+    const transitionIconName = useRef('');
+
+    const transitionIconPop = nextAnimation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0.6, 1.2],
+      }); 
+    const transitionIconRotate = nextAnimation.interpolate({
+        inputRange: [0, 0.5, 1],
+        outputRange: ['0deg', '15deg', '0deg'],
+      }); 
+
+    const TransitionIcon = () =>{
+        Animated.timing(nextAnimation, {
+            toValue: 1,
+            duration: 200,
+            delay:100,
+            useNativeDriver: true,
+          }).start();
+
+        setTimeout(()=>{
+            Animated.timing(nextAnimation, {
+                toValue: 0,
+                duration: 200,
+                delay:0,
+                useNativeDriver: true,
+              }).start();
+        }, 700)
+       }
+
     const fadeOutCard = () =>{
         Animated.timing(eventCard, {
             toValue: 0,
-            duration: 600,
+            duration: 200,
             delay:0,
             useNativeDriver: true,
           }).start();
@@ -51,11 +85,19 @@ export const Explore = ({route}:any) =>{
       }).start();
    }
 
+   useEffect(()=>{
+    slideUp.setValue(0)
+   },[])
+
     const fetchEvent = async ({userData}:any) =>{
+        console.log('Getting more events')
         // Indivudal
-        if(toggle && !EventInfo){
+        if(toggle && (!EventInfo || EventInfo.length===0)){
             setLoading(true)
             const results = await fetchIndividualEvents({userData})
+            if(results?.length !== 0){
+                setEventInfoEmpty(false)
+            }
             setEventInfo(results)
         }
         // Group
@@ -67,11 +109,11 @@ export const Explore = ({route}:any) =>{
         setLoading(false)
     }
 
-
     useEffect(()=>{
         const {userData} = route.params
         setUserID(userData.id)
-        
+        console.log(EventInfo?.length)
+
         if(EventInfo?.length === 0 || GroupEventInfo?.length === 0 || !EventInfo || !GroupEventInfo){
             const fetchData = async () => {
                 fetchEvent({userData});
@@ -85,15 +127,34 @@ export const Explore = ({route}:any) =>{
         setSelection(!selection)
     }
 
-    // 0 - no action, 1 - fetching new Post, 2 - newPost Fetched
+    // 0 - no action, -1 - newPost Fetched
+    // 1 - Reject/fetching new Post
+    // 2 - Decline/fetching new Post
+    // 3 - Like/fetching new Post
     useEffect(()=>{
-        if(nextPost === 1){
+        if(nextPost >= 1 && nextPost <= 3){
+            switch(nextPost){
+                case 1: transitionIconName.current = 'close';
+                    break;
+                case 2: transitionIconName.current = 'infinity';
+                    break; 
+                case 3: transitionIconName.current = 'send-check';
+                    break;
+            }
             fadeOutCard();
-        }else if(nextPost === 2){
+            TransitionIcon()
+            setTimeout(()=>{
+                const newArray = [...EventInfo.slice(1)];
+                if(newArray.length === 0){
+                    setEventInfoEmpty(true)
+                    setEventInfo(newArray);
+                }
+            },300)
+        }else if(nextPost === -1){
             setNextPost(0)
             setTimeout(()=>{
-                fadeInCard()
-            }, 1000)
+                fadeInCard();
+            }, 800)
         }
     },[nextPost])
 
@@ -113,7 +174,6 @@ export const Explore = ({route}:any) =>{
         style={{flex:1}}>
         {/* <PopUp /> */}
         <SafeAreaView />
-        {loading ? <Loading />:
         <View style={{alignSelf:'center', alignItems:'center', flex:1}}>
                 <Switch
                 value={!selection}
@@ -135,24 +195,28 @@ export const Explore = ({route}:any) =>{
                 outerCircleStyle={{alignSelf:'center', flex:1, gap:15}} 
                 switchWidthMultiplier={5}
                 />
+                <Animated.View style={{position:"absolute", height:'100%', width:'100%', alignItems:'center', justifyContent:'center', zIndex:10, pointerEvents:'none', opacity:nextAnimation, transform:[{scale:transitionIconPop}, {rotate:transitionIconRotate}]}}>
+                    <Icons.MaterialCommunityIcons name={transitionIconName.current} color={transitionIconName.current === 'close' ? 'red': transitionIconName.current === 'infinity'? 'black':'green'} size={80}/>
+                </Animated.View>
             <Animated.View style={{opacity:eventCard, flex:1}}>
                 {toggle ?
-                (!EventInfo ? 
-                    (<View style={{}}><Loading /></View>):
-                    (EventInfo.length === 0 ?
+                (!EventInfo || loading ? 
+                    (<View><Loading /></View>):
+                    (EventInfoEmpty?
                         empty({text:'No Individual Events'}): 
                         <Indiivudal 
                         setEventInfo={setEventInfo} 
                         fade={fade} 
+                        slideUp={slideUp}
                         startFadeIn={startFadeIn} 
-                        EventInfo={EventInfo[0]._data} 
+                        EventInfo={!EventInfoEmpty ? EventInfo[0]._data:null} 
                         reject={reject} 
                         decline={decline} 
                         accept={accept} 
                         userID={userID}
                         setNextPost={setNextPost}
                         />)):
-                (!GroupEventInfo ? 
+                (GroupEventInfoEmpty ? 
                     (<View style={{flex:1}}><Loading /></View>):
                     (GroupEventInfo.length === 0 ?
                         empty({text:'No Group Events'}): 
@@ -167,7 +231,7 @@ export const Explore = ({route}:any) =>{
                         />))
                 }
             </Animated.View>
-        </View>}
+        </View>
     </LinearGradient>
     )
 }
@@ -247,10 +311,11 @@ const fetchIndividualEvents = async ({userData}:any) =>{
         .get();
         
         const results  = (await AgeFiltered).docs;
+        console.log(results.length)
         return results;
 
     }catch(error){
         console.log(error)
-        return [];
+        return null;
     }
 }
