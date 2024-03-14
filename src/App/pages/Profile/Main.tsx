@@ -5,21 +5,44 @@ import {Images} from './Images'
 import LinearGradient from "react-native-linear-gradient";
 import ImagePicker from 'react-native-image-crop-picker';
 
-interface ImageRetrieveData {
-    uri: string | undefined;
-    data: string | undefined;
-    mime: string | undefined;
-    height: number | undefined;
-    width: number | undefined;
-    x: number | undefined;
-    y: number | undefined;
-  }
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import findAge from "../../../components/ConstantFunctions/Age";
+import { toDate } from "../../../components/ConstantFunctions/Date";
 
 export default function ProfileMain({userData, disabled, navigation}:any){
-    const [Image1, setImage1] = useState<ImageRetrieveData | undefined>();
-    const [Image2, setImage2] = useState<ImageRetrieveData | undefined>();
-    const [Image3, setImage3] = useState<ImageRetrieveData | undefined>();
-    const [Image4, setImage4] = useState<ImageRetrieveData | undefined>();
+    const [Image1, setImage1] = useState<any>();
+    const [allImages, setAllImages]  = useState<any>();
+    const [age,setAge] = useState<any>()
+
+    useEffect(()=>{
+        fetchImages();
+    },[])
+
+    const fetchImages = async() =>{
+        const user = await firestore().collection('Users').doc(userData.uid).get()
+        if(user._data && user._data.ImageURLs){
+            const BirthDateTimeStamp = new Date(userData.BirthDate.seconds * 1000)
+
+            setAge(findAge(BirthDateTimeStamp))
+
+            const imageUrls = user._data.ImageURLs
+            const downloadPromises = imageUrls.map(async (url: string) => {
+
+                try {
+                    return await storage().refFromURL('gs://greekgators-38675.appspot.com/' + url).getDownloadURL();
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+
+            const downloadedUrls = await Promise.all(downloadPromises);
+            setImage1('https://picsum.photos/200/300')
+            downloadedUrls.shift()
+            console.log(downloadedUrls)
+            setAllImages(['https://picsum.photos/200/300', 'https://picsum.photos/200/300'])
+        }
+    }
 
     function Subscription(){
         // Show Subscription Page
@@ -44,9 +67,13 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                     x: image.cropRect.x,
                     y: image.cropRect.y,
                 }
-                setImage1(saveImage);
+                // Save new Image
               }
         });
+    }
+
+    function refetch(){
+        // refetch all userData
     }
 
     return(
@@ -62,7 +89,7 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                         <Text style={{color:'white', fontWeight:'700', textAlign:'center'}}> Account Disabled</Text>
                     </View>}
                     <Image 
-                        source={{uri:"https://picsum.photos/300/320"}} 
+                        source={{uri:`${Image1}`}} 
                         style={{height:'100%', width:'100%'}}
                         resizeMode="cover"
                     />
@@ -71,12 +98,9 @@ export default function ProfileMain({userData, disabled, navigation}:any){
             <Text style={{textAlign:'center', margin:10, fontSize:18, fontWeight:'600'}}>{userData.First} {userData.Last}</Text>
             <View style={{width:'100%', backgroundColor:'rgba(0,0,0,0)', paddingVertical:20}}>
                 <Images 
-                setImage2={setImage2} 
-                setImage3={setImage3} 
-                setImage4={setImage4} 
-                Image2={Image2} 
-                Image3={Image3} 
-                Image4={Image4}/>
+                allImages={allImages}
+                setAllImages ={setAllImages}
+                refetch = {refetch} />
             </View>
             <TouchableOpacity style={{marginHorizontal:8, shadowColor:'black', shadowRadius:8, shadowOffset:{height:1, width:0}, shadowOpacity:0.6}} onPress={Subscription}>
                 <LinearGradient

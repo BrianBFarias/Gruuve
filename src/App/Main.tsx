@@ -12,7 +12,7 @@ import { Events } from "./pages/Events";
 import { Messages } from "./pages/Messages";
 
 import Logo from '../../assets/images/logo.png'
-import { PopUp } from "../components/popUp";
+import { PopUp } from "../components/popUpIntro";
 
 const Tab = createBottomTabNavigator();
 
@@ -41,7 +41,6 @@ const Main = () =>{
         const uid = auth().currentUser?.uid;
         await firestore().collection('Users').doc(uid).update({newAccount:false});
         setShowIntro(false)
-        console.log('closing')
     }
 
     return(

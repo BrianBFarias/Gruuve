@@ -2,11 +2,9 @@ import React, {useEffect, useRef, useState} from "react";
 import {SafeAreaView, StyleSheet, Text, View, Animated, Easing} from "react-native"
 import LinearGradient from 'react-native-linear-gradient';
 import { Switch } from 'react-native-switch';
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Loading from "../../components/Loading";
 import { Indiivudal } from "./Explore/Individual";
 import { Group } from "./Explore/Group";
-import auth from '@react-native-firebase/auth';
 import firestore, { firebase } from '@react-native-firebase/firestore';
 import * as geofirestore from 'geofirestore';
 import { reject, accept, decline } from "./Explore/Option";

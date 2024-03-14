@@ -8,6 +8,7 @@ import { toDate } from "../../../components/ConstantFunctions/Date";
 import Loading from "../../../components/Loading";
 import LinearGradient from "react-native-linear-gradient";
 import findAge from "../../../components/ConstantFunctions/Age";
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 
 const windowWidth = Dimensions.get('window').width;
 const rotate = new Animated.Value(0);
@@ -77,34 +78,37 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
       }
 
 
-    // const fetchImages = async() =>{
-    //     const user = await firestore().collection('Users').doc(EventInfo.Host).get()
-    //     if(user._data && user._data.ImageURLs){
-    //         setUserInfo(user._data)
-    //         const BirthDateTimeStamp = new Date(user._data.BirthDate.seconds * 1000)
+    const fetchImages = async() =>{
+        const user = await firestore().collection('Users').doc(EventInfo.Host).get()
+        if(user._data && user._data.ImageURLs){
+            setUserInfo(user._data)
+            const BirthDateTimeStamp = new Date(user._data.BirthDate.seconds * 1000)
 
-    //         setAge(findAge(BirthDateTimeStamp))
+            setAge(findAge(BirthDateTimeStamp))
 
-    //         setEventDate(toDate({date:EventInfo.Date}));
+            setEventDate(toDate({date:EventInfo.Date}));
 
-    //         const imageUrls = user._data.ImageURLs
-    //         const downloadPromises = imageUrls.map(async (url: string) => {
+            const imageUrls = user._data.ImageURLs
+            // const downloadPromises = imageUrls.map(async (url: string) => {
 
-    //             try {
-    //                 return await storage().refFromURL('gs://greekgators-38675.appspot.com/' + url).getDownloadURL();
-    //             } catch (error) {
-    //                 console.log(error);
-    //             }
-    //         });
+            //     try {
+            //         return await storage().refFromURL('gs://greekgators-38675.appspot.com/' + url).getDownloadURL();
+            //     } catch (error) {
+            //         console.log(error);
+            //     }
+            // });
         
-    //         const downloadedUrls = await Promise.all(downloadPromises);
-    //         setImages(downloadedUrls)
-    //     }
-    // }
+            // const downloadedUrls = await Promise.all(downloadPromises);
+            // setImages(downloadedUrls)
+            // setLoad(false);
+            setImages(['https://picsum.photos/200/300', 'https://picsum.photos/200/300','https://picsum.photos/200/300'])
+            setLoad(false);
+        }
+    }
 
     useEffect(()=>{
         startFadeIn()
-        // fetchImages()
+        fetchImages()
     },[])
 
     const position = ()=>{
@@ -131,14 +135,31 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     
     return(
     <Animated.View style={{ flex:1, opacity:fade, alignSelf:'center'}}>
-      <View style={{height:'60%', marginBottom:5, marginTop:5, backgroundColor:'white'}}>
-            {images ?
+      <View style={{height:'62%', marginBottom:5, marginTop:5, }}>
+            {images && !load?
             <View style={styles.slide}>
                 <View style={{flex:1}}>
-                    <Swiper showsButtons={false} dot={position()} activeDot={activePosition()} paginationStyle={{position:'absolute', bottom:10}} containerStyle={{overflow:'hidden'}} loadMinimal={true} loadMinimalSize={images.length}loadMinimalLoader={<Loading />} loop={true} scrollEnabled={load ? false:true}>
+                    <Swiper 
+                    showsButtons={true} 
+                    dot={position()} 
+                    activeDot={activePosition()} 
+                    paginationStyle={{position:'absolute', bottom:10}} 
+                    containerStyle={{overflow:'hidden'}} 
+                    loadMinimal={true} 
+                    loadMinimalSize={images.length}
+                    loadMinimalLoader={<Loading />} 
+                    loop={false} 
+                    scrollEnabled={load ? false:true} 
+                    bounces={true}
+                    onIndexChanged={()=>{ReactNativeHapticFeedback.trigger("impactSmall")}}
+                    buttonWrapperStyle={styles.selectionWrapper}
+                    nextButton={<View style={styles.imageTapSection}/>}
+                    prevButton={<View style={styles.imageTapSection}/>}
+                    >
+
                     {images.map((url, index)=>{
                         // Main Image
-                        if(index == 0){
+                        if(index === 0){
                             return(<View style={styles.innerSlide} key={index}>
                                     <View style={[{position:'absolute', bottom:0, width:'100%', zIndex:4}]}>
                                     <LinearGradient 
@@ -157,7 +178,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
                                 </View>)
                         }
                         // other Images
-                        else{
+                        else if(index>0){
                             return(    
                             <View style={styles.innerSlide} key={index}>
                                 <View style={{position:'absolute', height:'100%', width:'100%', backgroundColor:'rgba(0,0,0,0.9)'}}>
@@ -249,18 +270,17 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
 
 const styles = StyleSheet.create({
     slide: {
-      flex: 1,
+      width:'100%',
       justifyContent: 'center',
       alignSelf:'center',
-      marginBottom:4,
       alignItems: 'center',
-      backgroundColor: 'white',
+      backgroundColor: 'black',
       borderRadius:6,
       overflow:'hidden',
       aspectRatio:3/3.2
     },
     innerSlide: {
-        flex: 1,
+        flex: 1
     },
 
     description:{
@@ -310,4 +330,23 @@ const styles = StyleSheet.create({
         marginBottom:'2%',
         borderRadius:10,
     },
+    selectionWrapper:{
+        backgroundColor: 'transparent',
+        flexDirection: 'row', 
+        position: 'absolute', 
+        top: 0, 
+        left: -7, 
+        flex: 1, 
+        justifyContent: 'space-between', 
+        alignItems: 'center'
+    },
+    imageTapSection:{
+        backgroundColor:'black',
+        opacity:0,
+        position:'relative',
+        height:'100%',
+        width:windowWidth*.5,
+        justifyContent:'center',
+    },
+    
   })

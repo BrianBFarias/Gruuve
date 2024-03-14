@@ -28,7 +28,7 @@ export const Profile = ({route}:any) =>{
     const [radius, setRadius] = useState(50) 
     const [genderPreference, setGenderPreference] = useState("");
 
-    const [isDisabled, setIsDisabled] = useState(true);
+    const [isDisabled, setIsDisabled] = useState(false);
     const toggleSwitch = () => setIsDisabled(!isDisabled);
   
 
