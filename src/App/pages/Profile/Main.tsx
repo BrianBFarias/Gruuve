@@ -38,8 +38,8 @@ export default function ProfileMain({userData, disabled, navigation}:any){
 
             const downloadedUrls = await Promise.all(downloadPromises);
             setImage1('https://picsum.photos/200/300')
-            downloadedUrls.shift()
-            console.log(downloadedUrls)
+            // downloadedUrls.shift()
+            // console.log(downloadedUrls)
             setAllImages(['https://picsum.photos/200/300', 'https://picsum.photos/200/300'])
         }
     }
@@ -88,11 +88,11 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                     <View style={{position:'absolute', backgroundColor:'rgba(0,0,0,0.5)', width:'100%', height:'100%', zIndex:10, justifyContent:'center', alignItems:'center'}}>
                         <Text style={{color:'white', fontWeight:'700', textAlign:'center'}}> Account Disabled</Text>
                     </View>}
-                    <Image 
+                    {Image1 && <Image 
                         source={{uri:`${Image1}`}} 
                         style={{height:'100%', width:'100%'}}
                         resizeMode="cover"
-                    />
+                    />}
                 </View>
             </TouchableOpacity>
             <Text style={{textAlign:'center', margin:10, fontSize:18, fontWeight:'600'}}>{userData.First} {userData.Last}</Text>

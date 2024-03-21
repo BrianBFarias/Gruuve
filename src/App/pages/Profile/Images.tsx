@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Image, TouchableOpacity, View } from "react-native"
+import { Image, TouchableOpacity, View, ActivityIndicator } from "react-native"
 import { PERMISSIONS, RESULTS, request } from "react-native-permissions";
 import ImagePicker from 'react-native-image-crop-picker';
 import Icons from "../../../components/icons";
-import Loading from "../../../components/Loading";
 
 export const Images =({allImages, setAllImages}:any) =>{
     const [permissionGranted, setPermissionGranted] = useState(false)
@@ -81,7 +80,7 @@ export const Images =({allImages, setAllImages}:any) =>{
                   borderRadius:5,
                   zIndex:4
                 }} >
-                <Loading />
+                <ActivityIndicator size="small" color="black" />
             </View>
             )
         }

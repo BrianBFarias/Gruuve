@@ -18,7 +18,7 @@ type EventProp ={
 
 const windowWidth = Dimensions.get('window').width;
 
-export const EventsPage = ({navigation, route}:any) =>{
+export const EventsPage = ({navigation, route}:any) =>{  
     const [loading, setLoading] = useState(true)
     const [Events, setEvents] = useState<EventProp[]>()
     const [showPopup, setShowPopup] = useState(false);
@@ -187,13 +187,14 @@ export const EventsPage = ({navigation, route}:any) =>{
           <View style={{height:4, backgroundColor:'black', width:'20%', borderRadius:4, alignSelf:'center', opacity:0.5, marginTop:10}}/>
           <Text style={{textAlign:'center', fontSize:20, fontWeight:'700', paddingHorizontal:10}}>Confirm Event Deletion?</Text>
           <Text style={{textAlign:'center', fontSize:12, fontWeight:'500', opacity:0.6}}>This action is irreversible and you will lose all you're likes for this event.</Text>
-          <View style={{height:2, width:'100%', backgroundColor:'black', opacity:0.3, borderRadius:5}}/>
-          <TouchableOpacity onPress={deleteEvent} style={{justifyContent:'space-between', marginVertical:6}}>
-            <Text style={[styles.confirmationOption, {color:'#ab0c0c'}]}>Yes, Im sure</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={()=>{setShowPopup(false)}} style={{justifyContent:'space-between', marginVertical:6}}>
-            <Text style={styles.confirmationOption}>No, I want more likes!!</Text>
-          </TouchableOpacity>
+          <View style={{flexDirection:'row', justifyContent:'space-around'}}>
+            <TouchableOpacity onPress={deleteEvent} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'#ab0c0c', padding:15, borderRadius:60,}}>
+              <Text style={[styles.confirmationOption, {color:'white',}]}>Yes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=>{setShowPopup(false)}} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'black', padding:15, borderRadius:60}}>
+              <Text style={[styles.confirmationOption,  {color:'white',}]}>No</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </LinearGradient>
