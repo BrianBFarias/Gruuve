@@ -117,10 +117,15 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                     </View>
                 </LinearGradient>
             </TouchableOpacity>}
-            <View style={{backgroundColor:'rgba(255,255,255,0.9)', marginTop:12, minHeight:318, paddingVertical:10}}>
+            <View style={{flex:1, backgroundColor:'rgba(255,255,255,0.9)', marginTop:12, minHeight:317, paddingVertical:10}}>
                 <Pressable style={style.container1}>
                     <Text style={style.text2}>Age</Text>
                     <Text style={style.text1}>{age}</Text>
+                </Pressable>
+                <View style={style.line}/>
+                <Pressable style={style.container1}>
+                    <Text style={style.text2}>Height</Text>
+                    <Text style={style.text1}>5'09</Text>
                 </Pressable>
                 <View style={style.line}/>
                 <Pressable style={style.container1}>
@@ -139,7 +144,6 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                         <Text style={style.hobby}>Reading</Text>
                         <Text style={style.hobby}>Cooking</Text>
                         <Text style={style.hobby}>Gym</Text>
-
                     </View>
                 </Pressable>
                 <View style={style.line}/>

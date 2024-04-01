@@ -87,7 +87,7 @@ export const EventsPage = ({navigation, route}:any) =>{
                 >
                 <Pressable onPress={()=>{navigation.navigate('Event', { eventId: item.id })}}>
                   <LinearGradient 
-                      colors={['whitesmoke', 'whitesmoke']}
+                      colors={['white', 'whitesmoke']}
                       start={{x: 0, y: 0}} end={{x: 1, y: 0}}
                       locations={[0.4,1]}
                       style={{padding: 10, paddingVertical:14}}>
@@ -187,15 +187,16 @@ export const EventsPage = ({navigation, route}:any) =>{
         <View style={{ alignSelf:'center', gap:10, backgroundColor:'white', width:windowWidth, paddingHorizontal:20, paddingBottom:45,  borderRadius:15, justifyContent:'flex-start', position:'absolute', bottom:-20}}>
           <View style={{height:4, backgroundColor:'black', width:'20%', borderRadius:4, alignSelf:'center', opacity:0.5, marginTop:10}}/>
           <Text style={{textAlign:'center', fontSize:20, fontWeight:'700', paddingHorizontal:10}}>Confirm Event Deletion?</Text>
-          <Text style={{textAlign:'center', fontSize:12, fontWeight:'500', opacity:0.6}}>This action is irreversible and you will lose all you're likes for this event.</Text>
           <View style={{flexDirection:'row', justifyContent:'space-around'}}>
-            <TouchableOpacity onPress={deleteEvent} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'green', padding:15, borderRadius:60, width:'25%', shadowColor:'black', shadowOffset:{height:0,width:0}, shadowOpacity:1, shadowRadius:3}}>
+            <TouchableOpacity onPress={deleteEvent} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'green', padding:15, borderRadius:20, width:'25%', shadowColor:'black', shadowOffset:{height:0,width:0}, shadowOpacity:1, shadowRadius:3}}>
               <Text style={[styles.confirmationOption, {color:'white',}]}>Yes</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>{setShowPopup(false)}} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'white', padding:15, borderRadius:60, width:'25%', shadowColor:'black', shadowOffset:{height:0,width:0}, shadowOpacity:1, shadowRadius:3}}>
+            <TouchableOpacity onPress={()=>{setShowPopup(false)}} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'white', padding:15, borderRadius:20, width:'25%', shadowColor:'black', shadowOffset:{height:0,width:0}, shadowOpacity:1, shadowRadius:3}}>
               <Text style={[styles.confirmationOption,  {color:'green'}]}>No</Text>
             </TouchableOpacity>
           </View>
+          <Text style={{textAlign:'center', fontSize:12, fontWeight:'500', opacity:0.6, flexWrap:'wrap'}}>This action is irreversible and you will lose all you're likes for this event.</Text>
+
         </View>
       </Modal>
     </LinearGradient>
