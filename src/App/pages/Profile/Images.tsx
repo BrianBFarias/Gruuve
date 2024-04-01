@@ -3,6 +3,7 @@ import { Image, TouchableOpacity, View, ActivityIndicator } from "react-native"
 import { PERMISSIONS, RESULTS, request } from "react-native-permissions";
 import ImagePicker from 'react-native-image-crop-picker';
 import Icons from "../../../components/icons";
+import { Chase } from 'react-native-animated-spinkit'
 
 export const Images =({allImages, setAllImages}:any) =>{
     const [permissionGranted, setPermissionGranted] = useState(false)
@@ -28,12 +29,17 @@ export const Images =({allImages, setAllImages}:any) =>{
               }
         });
     })
-    function RemoveImage(index:any){
-        allImages.pop()
+    function RemoveImage(index: any) {
+      if (index >= 0) {
+        const updatedImages = [...allImages]; // Create a copy of the original array
+        updatedImages.splice(index, 1); // Remove the element at the specified index
+        setAllImages(updatedImages); // Update state with the modified array
+      }
     }
 
-    const onImageGalleryClick = (imageNum:any) => {
-        ImagePicker.openPicker({
+    const onImageGalleryClick = async (index:any) => {
+        try{
+          ImagePicker.openPicker({
             width: 300,
             height: 320,
             cropping: true,
@@ -42,6 +48,7 @@ export const Images =({allImages, setAllImages}:any) =>{
             forceJpg:true
           }).then(image => {
 
+            // if image selected clear old image and set new one
             if (image && image.sourceURL && image.cropRect) {
                 const saveImage = {
                     uri: image.sourceURL,
@@ -64,8 +71,15 @@ export const Images =({allImages, setAllImages}:any) =>{
                     // Save Image 3
                     break;
                 }
-              }
+            }
+            // no new image selected no changes made
+            else{
+              return;
+            }
         });
+        }catch{
+          return;
+        }
     }
 
     function renderCroppedImage({index}:any) {
@@ -80,22 +94,22 @@ export const Images =({allImages, setAllImages}:any) =>{
                   borderRadius:5,
                   zIndex:4
                 }} >
-                <ActivityIndicator size="small" color="black" />
+                <Chase size={40} color="white" />
             </View>
             )
         }
-        console.log(index)
-        console.log(allImages.length)
+        // console.log(index)
+        // console.log(allImages.length)
 
         if (index < allImages.length){
             return (
                 <View style={{ position: 'relative', width: '100%', height: '100%', overflow: 'visible' }}>
                     <Image
                         source={{ uri: `${allImages[index]}` }} 
-                        style={{ width: '100%', height: '100%', borderRadius:5}}
+                        style={{ width: '100%', height: '100%', borderRadius:5, backgroundColor:'rgba(0,0,0,0.1)'}}
                         resizeMode="cover"
                     />
-                    <TouchableOpacity onPress={()=>{RemoveImage(index+1)}} style={{ position: 'absolute', left: -8, top: -8,padding:2, backgroundColor: '#153808', borderRadius: 20, overflow: 'hidden' }}>
+                    <TouchableOpacity onPress={()=>{RemoveImage(index)}} style={{ position: 'absolute', left: -8, top: -8,padding:2, backgroundColor: '#153808', borderRadius: 20, overflow: 'hidden' }}>
                         <Icons.MaterialIcons color="white" name="close" size={20}/>
                     </TouchableOpacity>
                 </View>
@@ -131,7 +145,7 @@ export const Images =({allImages, setAllImages}:any) =>{
                   borderRadius: 5,
                 }}
                 onPress={() => {
-                  onImageGalleryClick(index + 1); // Add 1 to index to match image number
+                  onImageGalleryClick(index); // Add 1 to index to match image number
                 }}
               >
                 {index === 0 ? (

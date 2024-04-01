@@ -1,4 +1,4 @@
-import { View, Image, Text, Dimensions, ScrollView, SafeAreaView, TouchableOpacity } from "react-native"
+import { View, Image, Text, Dimensions, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet, Pressable } from "react-native"
 import icons from "../../../components/icons";
 import { useEffect, useState } from "react";
 import {Images} from './Images'
@@ -37,10 +37,10 @@ export default function ProfileMain({userData, disabled, navigation}:any){
             });
 
             const downloadedUrls = await Promise.all(downloadPromises);
-            setImage1('https://picsum.photos/200/300')
+            setImage1(downloadedUrls[0])
             // downloadedUrls.shift()
             // console.log(downloadedUrls)
-            setAllImages(['https://picsum.photos/200/300', 'https://picsum.photos/200/300'])
+            setAllImages(downloadedUrls.splice(1,downloadedUrls.length-1))
         }
     }
 
@@ -77,7 +77,7 @@ export default function ProfileMain({userData, disabled, navigation}:any){
     }
 
     return(
-        <ScrollView style={{width:'100%',}} bounces={false}>
+        <ScrollView style={{flex:1, width:'100%'}} bounces={false}>
             <SafeAreaView />
             <TouchableOpacity onPress={setMainImage} style={{height: 100, width:100, shadowColor:'black', shadowOffset:{height:0, width:0}, shadowRadius:4, shadowOpacity:0.5, alignSelf:'center', borderRadius:150, borderColor:'green', borderWidth:4}}>
                 <View style={{position:'absolute', top:0, right:0, height:25, width:25, backgroundColor:'white', zIndex:3, borderRadius:20, justifyContent:'center'}}>
@@ -102,7 +102,7 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                 setAllImages ={setAllImages}
                 refetch = {refetch} />
             </View>
-            <TouchableOpacity style={{marginHorizontal:8, shadowColor:'black', shadowRadius:8, shadowOffset:{height:1, width:0}, shadowOpacity:0.6}} onPress={Subscription}>
+            {userData.premiumMember && <TouchableOpacity style={{marginHorizontal:8, shadowColor:'black', shadowRadius:6, shadowOffset:{height:1, width:0}, shadowOpacity:0.5}} onPress={Subscription}>
                 <LinearGradient
                     colors={['#295d16', '#558843']}
                     start={{x: 0.0, y: 0.25}} end={{x: 0.5, y: 1.0}}
@@ -116,7 +116,84 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                         </View>
                     </View>
                 </LinearGradient>
-            </TouchableOpacity>
+            </TouchableOpacity>}
+            <View style={{backgroundColor:'rgba(255,255,255,0.9)', marginTop:12, minHeight:318, paddingVertical:10}}>
+                <Pressable style={style.container1}>
+                    <Text style={style.text2}>Age</Text>
+                    <Text style={style.text1}>{age}</Text>
+                </Pressable>
+                <View style={style.line}/>
+                <Pressable style={style.container1}>
+                    <Text style={style.text2}>Location</Text>
+                    <Text style={style.text1}>Gainesville, FL</Text>
+                </Pressable>
+                <View style={style.line}/>
+                <Pressable style={style.container1}>
+                    <Text style={style.text2}>Sex</Text>
+                    <Text style={style.text1}>Male</Text>
+                </Pressable>
+                <View style={style.line}/>
+                <Pressable style={style.container2}>
+                    <Text style={style.text2}>Hobbies</Text>
+                    <View style={{flexDirection:'row', flexWrap:'wrap', gap:10}}>
+                        <Text style={style.hobby}>Reading</Text>
+                        <Text style={style.hobby}>Cooking</Text>
+                        <Text style={style.hobby}>Gym</Text>
+
+                    </View>
+                </Pressable>
+                <View style={style.line}/>
+                <Pressable style={style.container1}>
+                    <Text style={style.text2}>Organization</Text>
+                    <Text style={style.text1}>None</Text>
+                </Pressable>
+            </View>
         </ScrollView>
     )
 }
+
+const style = StyleSheet.create({
+    line:{
+        width:'95%', 
+        height:1.5, 
+        backgroundColor:'black', 
+        alignSelf:'center', 
+        borderRadius:10, 
+        opacity:0.3
+    },
+    container1:{
+        width:'100%', 
+        flexDirection:'row',
+        justifyContent:'space-between', 
+        alignSelf:'center', 
+        paddingHorizontal:40,
+        paddingVertical:10
+    },
+    container2:{
+        width:'100%', 
+        flexDirection:'column',
+        justifyContent:'space-between', 
+        alignSelf:'center', 
+        paddingHorizontal:40,
+        paddingVertical:10
+    },
+    text1:{
+        fontSize:16,
+        fontWeight:'400',
+        opacity:0.9
+    },
+    text2:{
+        fontSize:16,
+        fontWeight:'700',
+        opacity:0.8,
+    },
+    hobby:{
+        backgroundColor:'#295d16',
+        color:'rgba(255,255,255,1)',
+        fontWeight:'600',
+        paddingHorizontal:8,
+        padding:5,
+        borderRadius:10,
+        overflow:'hidden'
+    },
+})

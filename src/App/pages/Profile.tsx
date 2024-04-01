@@ -175,7 +175,7 @@ export const Profile = ({route}:any) =>{
     <View style={{flex:1, backgroundColor:'rgb(242,242,242)'}}>
         <View style={{flexDirection:'row',flex:1, zIndex:12,}}>
             <Animated.View style={{width:(move),zIndex:13}}>
-                <Animated.View style={{backgroundColor:menuColorValue, width:move, flex:1, borderTopRightRadius:20, borderBottomRightRadius:20,  shadowColor:'black', shadowOffset:{height:0, width:0}, shadowOpacity:.6, shadowRadius:shadowRadius}}>
+                <Animated.View style={{backgroundColor:menuColorValue, width:move, flex:1, borderTopRightRadius:6, borderBottomRightRadius:6,  shadowColor:'black', shadowOffset:{height:0, width:0}, shadowOpacity:.6, shadowRadius:shadowRadius}}>
                         {/* Setting Info */}
                         <Animated.View style={{margin:10, display:settingsInverse, flexDirection:'column', gap:8, justifyContent:'flex-start', flex:1, overflow:'hidden'}}>
                             <SafeAreaView />

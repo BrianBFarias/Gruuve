@@ -19,6 +19,7 @@ const Tab = createBottomTabNavigator();
 const Main = () =>{
     const [userData, setUserData] = useState<any>(null)
     const [showIntro, setShowIntro] = useState(false)
+    const [hasLikes, setHasLikes] = useState(true)
 
     async function fetchUser(){
         const uid = auth().currentUser?.uid;
@@ -58,7 +59,11 @@ const Main = () =>{
                         return <icons.MaterialCommunityIcons name={'message-processing'} size={size} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
                     }
                     else if(rn === 'Events'){
-                        return <icons.MaterialCommunityIcons name={'reorder-horizontal'} size={size+4} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
+                        return(
+                        <View>
+                            <icons.MaterialCommunityIcons name={'reorder-horizontal'} size={size+4} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
+                            {hasLikes && <View style={{backgroundColor:'green', height:8, width:8, position:'absolute', borderRadius:10, right:0, top:2, shadowColor:'white', shadowRadius:3, shadowOffset:{width:-2, height:2}, shadowOpacity:1}}/>}
+                        </View>)
                     }
                     else if(rn === 'Profile'){
                         return <icons.FontAwesome6 name={'user-large'} size={size} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />

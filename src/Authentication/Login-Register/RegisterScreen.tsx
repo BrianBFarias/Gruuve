@@ -224,7 +224,8 @@ const Register = ({navigation}: any) => {
                 Sex: genderPreference,
                 AgeRange: { min: Number(ageMin), max: Number(ageMax) },
                 Radius: radius,
-              }
+              },
+              premiumMember:false
             };
           firestore().
                 collection('Users')

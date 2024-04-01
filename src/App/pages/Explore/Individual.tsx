@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react"
-import { View, Text, Animated, StyleSheet, TouchableOpacity, Image, Dimensions, Pressable, Easing } from "react-native"
+import { View, Text, Animated, StyleSheet, TouchableOpacity, Image, Dimensions, Pressable, Easing, TouchableWithoutFeedback } from "react-native"
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import Swiper from 'react-native-swiper'
 import icons from "../../../components/icons";
 import { toDate } from "../../../components/ConstantFunctions/Date";
-import Loading from "../../../components/Loading";
+import { Chase } from 'react-native-animated-spinkit'
 import LinearGradient from "react-native-linear-gradient";
 import findAge from "../../../components/ConstantFunctions/Age";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
@@ -28,7 +28,6 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     const [userInfo,setUserInfo] = useState<any>()
     const [age,setAge] = useState<any>()
     const [load, setLoad] = useState(true)
-
     const hideDescription = useRef(true)
 
     const slideUpButtons = slideUp.interpolate({
@@ -74,7 +73,20 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
             case 2: await decline(EventInfo.id, userID);
             case 3: await accept(EventInfo.id, userID);
         }
+
         setNextPost(-1)
+
+        hideDescription.current = true;
+        Animated.timing(
+            rotate,
+            {
+              toValue: 0,
+              easing: Easing.elastic(1.1),
+              delay:200,
+              duration: 10,
+              useNativeDriver: true,
+            }
+          ).start();
       }
 
 
@@ -89,20 +101,20 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
             setEventDate(toDate({date:EventInfo.Date}));
 
             const imageUrls = user._data.ImageURLs
-            // const downloadPromises = imageUrls.map(async (url: string) => {
+            const downloadPromises = imageUrls.map(async (url: string) => {
 
-            //     try {
-            //         return await storage().refFromURL('gs://greekgators-38675.appspot.com/' + url).getDownloadURL();
-            //     } catch (error) {
-            //         console.log(error);
-            //     }
-            // });
+                try {
+                    return await storage().refFromURL('gs://greekgators-38675.appspot.com/' + url).getDownloadURL();
+                } catch (error) {
+                    console.log(error);
+                }
+            });
         
-            // const downloadedUrls = await Promise.all(downloadPromises);
-            // setImages(downloadedUrls)
-            // setLoad(false);
-            setImages(['https://picsum.photos/200/300', 'https://picsum.photos/200/300','https://picsum.photos/200/300'])
+            const downloadedUrls = await Promise.all(downloadPromises);
+            setImages(downloadedUrls)
             setLoad(false);
+            // setImages(['https://picsum.photos/200/300', 'https://picsum.photos/200/300','https://picsum.photos/200/300'])
+            // setLoad(false);
         }
     }
 
@@ -131,139 +143,160 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
           ).start();
     }
 
+    const swiperRef = useRef<any>(null)
 
-    
     return(
-    <Animated.View style={{ flex:1, opacity:fade, alignSelf:'center'}}>
-      <View style={{height:'62%', marginBottom:5, marginTop:5, }}>
-            {images && !load?
-            <View style={styles.slide}>
-                <View style={{flex:1}}>
-                    <Swiper 
-                    showsButtons={true} 
-                    dot={position()} 
-                    activeDot={activePosition()} 
-                    paginationStyle={{position:'absolute', bottom:10}} 
-                    containerStyle={{overflow:'hidden'}} 
-                    loadMinimal={true} 
-                    loadMinimalSize={images.length}
-                    loadMinimalLoader={<Loading />} 
-                    loop={false} 
-                    scrollEnabled={load ? false:true} 
-                    bounces={true}
-                    onIndexChanged={()=>{ReactNativeHapticFeedback.trigger("impactSmall")}}
-                    buttonWrapperStyle={styles.selectionWrapper}
-                    nextButton={<View style={styles.imageTapSection}/>}
-                    prevButton={<View style={styles.imageTapSection}/>}
-                    >
+    <Animated.View style={{ flex:1, opacity:fade, alignSelf:'center', borderRadius:10}}>
+        <LinearGradient 
+        colors={['rgb(235,235,235)', 'rgb(255,255,255)']}
+        start={{x: 0, y: 0}} end={{x: 0, y: 1}}
+        locations={[0,0.5]}
+        style={{flex:1}}>
+        <View style={{height:'62%', marginBottom:5, backgroundColor:'black'}}>
+                {images && !load?
+                <View style={styles.slide}>
+                    <View style={{flex:1}}>
+                        <Swiper 
+                        showsButtons={true} 
+                        dot={position()} 
+                        activeDot={activePosition()} 
+                        paginationStyle={{position:'absolute', bottom:10}} 
+                        containerStyle={{overflow:'hidden'}} 
+                        loadMinimal={true} 
+                        loadMinimalSize={images.length}
+                        loadMinimalLoader={ <Chase size={40} color="white" />} 
+                        loop={false} 
+                        scrollEnabled={load ? false:true} 
+                        bounces={true}
+                        buttonWrapperStyle={styles.selectionWrapper}
+                        nextButton={
+                            <TouchableWithoutFeedback onPress={() => {
+                                if (swiperRef.current) {
+                                    swiperRef.current.scrollBy(1);
+                                    ReactNativeHapticFeedback.trigger("impactSmall");
+                            }}}>
+                                <View style={styles.imageTapSection} />
+                            </TouchableWithoutFeedback>}
+                        prevButton={
+                            <TouchableWithoutFeedback onPress={() => {
+                                if (swiperRef.current) {
+                                    swiperRef.current.scrollBy(-1);
+                                    ReactNativeHapticFeedback.trigger("impactSmall");
+                            }}}>
+                                <View style={styles.imageTapSection} />
+                            </TouchableWithoutFeedback>}
+                        ref={swiperRef} 
+                        >
 
-                    {images.map((url, index)=>{
-                        // Main Image
-                        if(index === 0){
-                            return(<View style={styles.innerSlide} key={index}>
-                                    <View style={[{position:'absolute', bottom:0, width:'100%', zIndex:4}]}>
-                                    <LinearGradient 
-                                        colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.9)']}
-                                        start={{x: 0.0, y: 0}} end={{x: 0, y: 1}}
-                                        locations={[0,0.7]}
-                                        style={[{flex:1, flexDirection:'row', paddingVertical:20, justifyContent:'space-between', paddingHorizontal:15}, load ? {opacity:0}:{opacity:1}]}>
-                                            <Text style={{color:'white', fontSize:30, fontWeight:'700'}}>{userInfo.First}</Text>
-                                            <Text style={{color:'white', fontSize:26, fontWeight:'500'}}>{age}</Text>
-                                    </LinearGradient>
+                        {images.map((url, index)=>{
+                            // Main Image
+                            if(index === 0){
+                                return(<View style={styles.innerSlide} key={index}>
+                                        <View style={[{position:'absolute', bottom:0, width:'100%', zIndex:4}]}>
+                                        <LinearGradient 
+                                            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.9)']}
+                                            start={{x: 0.0, y: 0}} end={{x: 0, y: 1}}
+                                            locations={[0,0.7]}
+                                            style={[{flex:1, flexDirection:'row', paddingVertical:20, justifyContent:'space-between', paddingHorizontal:15}, load ? {opacity:0}:{opacity:1}]}>
+                                                <Text style={{color:'white', fontSize:30, fontWeight:'700'}}>{userInfo.First}</Text>
+                                                <Text style={{color:'white', fontSize:26, fontWeight:'500'}}>{age}</Text>
+                                        </LinearGradient>
+                                        </View>
+                                        <Image source={{uri: url}} style={{objectFit:'cover', height: '100%', width:'100%', zIndex:2}} />
+                                        {load && <View style={{position:'absolute', height:'100%', width:'100%', backgroundColor:'rgba(0,0,0,0.9)'}}>
+                                            <Chase size={40} color="white" />
+                                        </View>}
+                                    </View>)
+                            }
+                            // other Images
+                            else if(index>0){
+                                return(    
+                                <View style={styles.innerSlide} key={index}>
+                                    <View style={{position:'absolute', height:'100%', width:'100%', backgroundColor:'rgba(0,0,0,0.9)'}}>
+                                        <Image source={{uri: url}} style={{objectFit:'cover', height: '100%', width:'100%', zIndex:2}} onLoad={() =>{if(index === images.length-1){setLoad(false)}}}/>
                                     </View>
-                                    <Image source={{uri: url}} style={{objectFit:'cover', height: '100%', width:'100%', zIndex:2}} />
-                                    {load && <View style={{position:'absolute', height:'100%', width:'100%', backgroundColor:'rgba(0,0,0,0.9)'}}>
-                                        <Loading />
-                                    </View>}
-                                </View>)
-                        }
-                        // other Images
-                        else if(index>0){
-                            return(    
-                            <View style={styles.innerSlide} key={index}>
-                                <View style={{position:'absolute', height:'100%', width:'100%', backgroundColor:'rgba(0,0,0,0.9)'}}>
-                                    <Image source={{uri: url}} style={{objectFit:'cover', height: '100%', width:'100%', zIndex:2}} onLoad={() =>{if(index === images.length-1){setLoad(false)}}}/>
-                                </View>
-                            </View>                        
-                            )
-                        }
-                    })}
-                    </Swiper>
+                                </View>                        
+                                )
+                            }
+                        })}
+                        </Swiper>
+                    </View>
                 </View>
+                :
+                <View style={styles.slide}>
+                    <View style={{position:'absolute', height:'100%', width:'100%', backgroundColor:'rgba(0,0,0,0.9)'}}>
+                        <Chase size={40} color="white" style={{alignSelf:'center', justifyContent:'center', top:'45%'}}/>
+                    </View>
+                </View>  }
+        </View>
+        <View style={{height:'15%', margin:10, shadowColor:'white', shadowOpacity:1, shadowRadius:3, shadowOffset:{height:0, width:0}}}>
+            <View style={{overflow:'hidden', flex:1, width:windowWidth-15}}>
+                <Animated.View style={[{backgroundColor:'transparent', flexDirection:'row', width:'200%', transform:[{ translateX: move }]}]}>
+                    <View style={[styles.description]}>
+                        <View style={{flexDirection:'row', width:'100%', justifyContent:'space-between'}}>
+                            <View style={{}}>
+                                <Text style={{fontSize:24, fontWeight:'800'}}>{EventInfo.Title}</Text>
+                                <Text style={{fontSize:18, fontWeight:'700', opacity:0.6}}>in 4 Days</Text>
+                            </View>
+                            <View style={{flexDirection:'row', padding:5}}>
+                                <icons.MaterialIcons name={'location-pin'} size={20} color='green' />
+                                <Text style={{fontSize:18, fontWeight:'500'}}>Gainesville, FL</Text>
+                            </View>
+                        </View>
+                        <View style={{width:'100%', flexDirection:'row', justifyContent:'space-between'}}>
+                            <View style={{alignSelf:'flex-start', flexDirection:'row', gap:10}}>
+                                <Text style={{fontSize:20, fontWeight:'700'}}>Tuesday</Text>
+                                <Text style={{fontSize:20, fontWeight:'600', opacity:0.8}}>8:00 pm</Text>
+                            </View>
+                            {EventInfo.Description && 
+                            <TouchableOpacity style={{alignSelf:'center', backgroundColor:'rgba(0,0,0,0.7)', padding:6, borderRadius:20, shadowColor:'black', shadowOpacity:0.4, shadowRadius:3, shadowOffset:{height:0, width:0}}} onPress={flip}>
+                                <Text style={{color:'white', fontWeight:'600', fontSize:12}}> View Description </Text>
+                            </TouchableOpacity>}
+                        </View>
+                    </View>
+                    <Pressable style={[styles.description2]} onPress={flip}>
+                        <Text style={{fontSize:20, fontWeight:'800'}}>Description</Text>
+                        <Text style={{fontSize:16, textAlign:'center', flexWrap:'wrap'}}>adkfhsdh fsdhf sdhf sdhf shdf sdhfsdfhs dfhsdfhsfd</Text>
+                    </Pressable>
+                </Animated.View>
             </View>
-            :
-            <View style={styles.slide}>
-                <View style={{position:'absolute', height:'100%', width:'100%', backgroundColor:'rgba(0,0,0,0.9)'}}>
-                    <Loading />
-                </View>
-            </View>  }
-      </View>
-      <View style={{height:'15%', margin:10, shadowColor:'white', shadowOpacity:1, shadowRadius:3, shadowOffset:{height:0, width:0}}}>
-        <View style={{overflow:'hidden', flex:1, width:windowWidth-15}}>
-            <Animated.View style={[{backgroundColor:'transparent', flexDirection:'row', width:'200%', transform:[{ translateX: move }]}]}>
-                <View style={[styles.description]}>
-                    <View style={{flexDirection:'row', width:'100%', justifyContent:'space-between'}}>
-                        <View style={{}}>
-                            <Text style={{fontSize:24, fontWeight:'800'}}>{EventInfo.Title}</Text>
-                            <Text style={{fontSize:18, fontWeight:'700', opacity:0.6}}>in 4 Days</Text>
-                        </View>
-                        <View style={{flexDirection:'row', padding:5}}>
-                            <icons.MaterialIcons name={'location-pin'} size={20} color='green' />
-                            <Text style={{fontSize:18, fontWeight:'500'}}>Gainesville, FL</Text>
-                        </View>
-                    </View>
-                    <View style={{width:'100%', flexDirection:'row', justifyContent:'space-between'}}>
-                        <View style={{alignSelf:'flex-start', flexDirection:'row', gap:10}}>
-                            <Text style={{fontSize:20, fontWeight:'700'}}>Tuesday</Text>
-                            <Text style={{fontSize:20, fontWeight:'600', opacity:0.8}}>8:00 pm</Text>
-                        </View>
-                        {EventInfo.Description && 
-                        <TouchableOpacity style={{alignSelf:'center', backgroundColor:'rgba(0,0,0,0.7)', padding:6, borderRadius:20, shadowColor:'black', shadowOpacity:0.4, shadowRadius:3, shadowOffset:{height:0, width:0}}} onPress={flip}>
-                            <Text style={{color:'white', fontWeight:'600', fontSize:12}}> View Description </Text>
-                        </TouchableOpacity>}
-                    </View>
-                </View>
-                <Pressable style={[styles.description2]} onPress={flip}>
-                    <Text style={{fontSize:20, fontWeight:'800'}}>Description</Text>
-                    <Text style={{fontSize:16, textAlign:'center', flexWrap:'wrap'}}>adkfhsdh fsdhf sdhf sdhf shdf sdhfsdfhs dfhsdfhsfd</Text>
+        </View>
+        {/* Buttons */}
+        <Animated.View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', position: 'relative',transform:[{translateY:slideUpButtons}] }}>
+            <Animated.View style={[styles.button13, {transform: [{scale: scale1}]}]}>
+                <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]} 
+                    onPress={() => handleOption({val:1})}
+                    onPressIn={() => onPressIn({ val: 1 })}
+                    onPressOut={() => onPressOut({ val: 1 })}>
+                    <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="close" color={'#8B2929'} size={40} /></Text>
                 </Pressable>
             </Animated.View>
-        </View>
-      </View>
-      <Animated.View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', position: 'relative',transform:[{translateY:slideUpButtons}] }}>
-        <Animated.View style={[styles.button13, {transform: [{scale: scale1}]}]}>
-            <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]} 
-                onPress={() => handleOption({val:1})}
-                onPressIn={() => onPressIn({ val: 1 })}
-                onPressOut={() => onPressOut({ val: 1 })}>
-                <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="close" color={'#8B2929'} size={40} /></Text>
-            </Pressable>
+            <Animated.View style={[styles.button2,{ transform: [{ scale: scaleCenter }]}]}>
+                <Pressable style={[{backgroundColor:'#1c2e1a', justifyContent:'center', borderRadius:10, paddingVertical:5}]}
+                    onPress={() => {handleOption({val:2, hideDescription})}}
+                    onPressIn={() => onPressIn({ val: 2})}
+                    onPressOut={() => onPressOut({ val: 2 })}>
+                    <Text style={styles.buttonText}><icons.Entypo name="infinity" size={40} /></Text>
+                </Pressable>
+            </Animated.View>
+            <Animated.View style={[styles.button13, { transform: [{ scale: scale2 }] }]}>
+                <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]}
+                    onPress={() => handleOption({val:3})}
+                    onPressIn={() => onPressIn({ val: 3 })}
+                    onPressOut={() => onPressOut({ val: 3 })}>
+                <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="send-check" color={'#5F8B58'} size={30}/></Text>
+                </Pressable>
+            </Animated.View>
+            <View style={{ position: 'absolute', width: '100%', height: '90%', borderTopRightRadius: 40, bottom:0, borderTopLeftRadius: 40, overflow: 'hidden', left: 0, right: 0,justifyContent: 'center' }}>
+                <LinearGradient
+                    colors={['#4b8a43', 'transparent']}
+                    start={{ x: 0.0, y: 0 }} end={{ x: 0, y: 1 }}
+                    locations={[0.401, 0.4]}
+                    style={{ flex: 1 }}
+                />
+            </View>
         </Animated.View>
-        <Animated.View style={[styles.button2,{ transform: [{ scale: scaleCenter }]}]}>
-            <Pressable style={[{backgroundColor:'#1c2e1a', justifyContent:'center', borderRadius:10, paddingVertical:5}]}
-                onPress={() => handleOption({val:2})}
-                onPressIn={() => onPressIn({ val: 2 })}
-                onPressOut={() => onPressOut({ val: 2 })}>
-                <Text style={styles.buttonText}><icons.Entypo name="infinity" size={40} /></Text>
-            </Pressable>
-        </Animated.View>
-        <Animated.View style={[styles.button13, { transform: [{ scale: scale2 }] }]}>
-            <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]}
-                onPress={() => handleOption({val:3})}
-                onPressIn={() => onPressIn({ val: 3 })}
-                onPressOut={() => onPressOut({ val: 3 })}>
-            <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="send-check" color={'#5F8B58'} size={30}/></Text>
-            </Pressable>
-        </Animated.View>
-        <View style={{ position: 'absolute', width: '100%', height: '90%', borderTopRightRadius: 40, bottom:0, borderTopLeftRadius: 40, overflow: 'hidden', left: 0, right: 0,justifyContent: 'center' }}>
-            <LinearGradient
-                colors={['#4b8a43', 'transparent']}
-                start={{ x: 0.0, y: 0 }} end={{ x: 0, y: 1 }}
-                locations={[0.401, 0.4]}
-                style={{ flex: 1 }}
-            />
-        </View>
-      </Animated.View>
+      </LinearGradient>
     </Animated.View>
     )
 }
@@ -274,8 +307,9 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignSelf:'center',
       alignItems: 'center',
-      backgroundColor: 'black',
-      borderRadius:6,
+      backgroundColor: 'rgba(255,255,255,0.3)',
+      borderTopLeftRadius:10,
+      borderTopRightRadius:10,
       overflow:'hidden',
       aspectRatio:3/3.2
     },

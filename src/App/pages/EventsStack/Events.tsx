@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, FlatList, Text, TouchableOpacity, Button, Dimensions, Touchable, Pressable, Image, StyleSheet } from "react-native"
+import { View, FlatList, Text, TouchableOpacity, Button, Dimensions, Pressable, Image, StyleSheet } from "react-native"
 import LinearGradient from "react-native-linear-gradient";
 import icons from "../../../components/icons";
 import Loading from "../../../components/Loading";
+import { Chase } from 'react-native-animated-spinkit'
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Modal from "react-native-modal";
@@ -24,7 +25,7 @@ export const EventsPage = ({navigation, route}:any) =>{
     const [showPopup, setShowPopup] = useState(false);
     const [deletionSelection, setDeletionSelection] = useState([{} as EventProp, -1]);
     const [fetching, setFetching] = useState(false)
-
+    
     let prevOpenedRow:any;
     let row: Array<any> = [];
 
@@ -84,7 +85,7 @@ export const EventsPage = ({navigation, route}:any) =>{
                 onSwipeableOpen={() => closeRow(index)}
                 ref={(ref) => (row[index] = ref)}
                 >
-                <Pressable onPress={()=>{console.log('pressed')}}>
+                <Pressable onPress={()=>{navigation.navigate('Event', { eventId: item.id })}}>
                   <LinearGradient 
                       colors={['whitesmoke', 'whitesmoke']}
                       start={{x: 0, y: 0}} end={{x: 1, y: 0}}
@@ -188,11 +189,11 @@ export const EventsPage = ({navigation, route}:any) =>{
           <Text style={{textAlign:'center', fontSize:20, fontWeight:'700', paddingHorizontal:10}}>Confirm Event Deletion?</Text>
           <Text style={{textAlign:'center', fontSize:12, fontWeight:'500', opacity:0.6}}>This action is irreversible and you will lose all you're likes for this event.</Text>
           <View style={{flexDirection:'row', justifyContent:'space-around'}}>
-            <TouchableOpacity onPress={deleteEvent} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'#ab0c0c', padding:15, borderRadius:60,}}>
+            <TouchableOpacity onPress={deleteEvent} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'green', padding:15, borderRadius:60, width:'25%', shadowColor:'black', shadowOffset:{height:0,width:0}, shadowOpacity:1, shadowRadius:3}}>
               <Text style={[styles.confirmationOption, {color:'white',}]}>Yes</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>{setShowPopup(false)}} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'black', padding:15, borderRadius:60}}>
-              <Text style={[styles.confirmationOption,  {color:'white',}]}>No</Text>
+            <TouchableOpacity onPress={()=>{setShowPopup(false)}} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'white', padding:15, borderRadius:60, width:'25%', shadowColor:'black', shadowOffset:{height:0,width:0}, shadowOpacity:1, shadowRadius:3}}>
+              <Text style={[styles.confirmationOption,  {color:'green'}]}>No</Text>
             </TouchableOpacity>
           </View>
         </View>

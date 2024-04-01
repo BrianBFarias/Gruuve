@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {SafeAreaView, StyleSheet, Text, View, Animated, Easing} from "react-native"
+import {SafeAreaView, StyleSheet, Text, View, Animated, StatusBar} from "react-native"
 import LinearGradient from 'react-native-linear-gradient';
 import { Switch } from 'react-native-switch';
 import Loading from "../../components/Loading";
@@ -158,48 +158,54 @@ export const Explore = ({route}:any) =>{
 
     const empty = ({ text }: { text: string }) =>{
         return(
-        <View style={{marginTop:'50%', alignItems: 'center'}}>
-            <Text style={{fontWeight:'800', opacity:0.7, fontSize:24}}>{text}</Text>
-            <Text style={{fontWeight:'600', opacity:0.5, fontSize:16}}>Try increasing your search radius in Profile</Text>
+        <View style={{flex:1, width:'100%', borderTopLeftRadius:10, borderTopRightRadius:10, overflow:'hidden'}}>
+        <LinearGradient 
+        colors={['rgb(225,225,225)', 'rgb(255,255,255)']}
+        start={{x: 0, y: 1}} end={{x: 0, y: 0}}
+        locations={[0,0.5]}
+        style={{flex:1, width:'100%', justifyContent:'center', alignItems: 'center'}}>
+            <Text style={{fontWeight:'800', opacity:0.7, fontSize:24, color:'black'}}>{text}</Text>
+            <Text style={{fontWeight:'600', opacity:0.5, fontSize:16, color:'black'}}>Try increasing your search radius in Profile</Text>
+            </LinearGradient>
         </View>)
     }
 
     return(
-    <LinearGradient 
-        colors={['rgb(255,255,255)', 'rgb(215,215,215)']}
-        start={{x: 0.0, y: 0}} end={{x: 0, y: 1}}
-        locations={[0.4,1]}
-        style={{flex:1}}>
+    <View 
+        style={{backgroundColor:'black', flex:1, width:'100%'}}>
         {/* <PopUp /> */}
-        <SafeAreaView />
-        <View style={{alignSelf:'center', alignItems:'center', flex:1}}>
-                <Switch
-                value={!selection}
-                onValueChange={() => {switchScreen()}}
-                disabled={false}
-                activeText={'Individual'}
-                circleSize={40}
-                barHeight={30}
-                circleBorderWidth={0}
-                activeTextStyle={Style.toggle}
-                inactiveTextStyle={Style.toggle}
-                inActiveText={'Group'}
-                renderInsideCircle={() => <Text style={Style.toggleButton}>{selection ? 'Individual':'Group'}</Text>}
-                backgroundInactive={'rgba(0,0,0,0.15)'}
-                backgroundActive={'rgba(0,0,0,0.15)'}
-                circleActiveColor={'green'}
-                circleInActiveColor={'green'}
-                innerCircleStyle={{ alignItems: "center", justifyContent: "center", height:25, alignSelf:'center', width:'auto', paddingHorizontal:12, }}
-                outerCircleStyle={{alignSelf:'center', flex:1, gap:15}} 
-                switchWidthMultiplier={5}
-                />
+        <StatusBar  barStyle="light-content" translucent={true} />
+        <View style={{alignSelf:'center', alignItems:'center', flex:1, width:'100%'}}>
+                <View style={{backgroundColor:'black', width:'100%', alignItems:'center', paddingBottom:8}}>
+                    <SafeAreaView />
+                    <Switch
+                    value={!selection}
+                    onValueChange={() => {switchScreen()}}
+                    disabled={false}
+                    activeText={'Individual'}
+                    circleSize={40}
+                    barHeight={30}
+                    circleBorderWidth={0}
+                    activeTextStyle={Style.toggle}
+                    inactiveTextStyle={Style.toggle}
+                    inActiveText={'Group'}
+                    renderInsideCircle={() => <Text style={Style.toggleButton}>{selection ? 'Individual':'Group'}</Text>}
+                    backgroundInactive={'rgba(255,255,255,0.1)'}
+                    backgroundActive={'rgba(255,255,255,0.1)'}
+                    circleActiveColor={'green'}
+                    circleInActiveColor={'green'}
+                    innerCircleStyle={{ alignItems: "center", justifyContent: "center", height:25, alignSelf:'center', width:'auto', paddingHorizontal:12, }}
+                    outerCircleStyle={{alignSelf:'center', flex:1, gap:15}} 
+                    switchWidthMultiplier={5}
+                    />
+                </View>
                 <Animated.View style={{position:"absolute", height:'100%', width:'100%', alignItems:'center', justifyContent:'center', zIndex:10, pointerEvents:'none', opacity:nextAnimation, transform:[{scale:transitionIconPop}, {rotate:transitionIconRotate}]}}>
-                    <Icons.MaterialCommunityIcons name={transitionIconName.current} color={transitionIconName.current === 'close' ? 'red': transitionIconName.current === 'infinity'? 'black':'green'} size={80}/>
+                    <Icons.MaterialCommunityIcons name={transitionIconName.current} color={transitionIconName.current === 'close' ? 'red': transitionIconName.current === 'infinity'? 'white':'green'} size={80}/>
                 </Animated.View>
-            <Animated.View style={{opacity:eventCard, flex:1}}>
+            <Animated.View style={{opacity:eventCard, flex:1, width:'100%'}}>
                 {toggle ?
                 (!EventInfo || loading ? 
-                    (<View><Loading /></View>):
+                    (<View style={{flex:1}}><Loading /></View>):
                     (EventInfoEmpty?
                         empty({text:'No Individual Events'}): 
                         <Indiivudal 
@@ -230,13 +236,13 @@ export const Explore = ({route}:any) =>{
                 }
             </Animated.View>
         </View>
-    </LinearGradient>
+    </View>
     )
 }
 
 const Style = StyleSheet.create({
     toggle:{
-        color:'black', fontWeight:'700',textAlign:'center'
+        color:'white', fontWeight:'700',textAlign:'center'
     },
     toggleButton:{
         color:'white', fontWeight:'700'
