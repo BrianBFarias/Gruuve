@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { View, SafeAreaView, Text, Button, Pressable, Animated, Dimensions, Easing, TouchableOpacity, StyleSheet, Switch } from "react-native"
+import { View, SafeAreaView, Text, Pressable, Animated, Dimensions, Easing, TouchableOpacity, StyleSheet, Switch } from "react-native"
 import auth from '@react-native-firebase/auth';
 import icons from "../../components/icons";
 import { SignInContext } from '../../Authentication/authTriggers/authContext';

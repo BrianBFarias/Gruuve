@@ -106,7 +106,7 @@ export const Images =({allImages, setAllImages}:any) =>{
             return (
                 <View style={{ position: 'relative', width: '100%', height: '100%', overflow: 'visible' }}>
                     <FastImage
-                        source={{ uri: `${allImages[index]}`, cache: FastImage.cacheControl.cacheOnly}} 
+                        source={{ uri: `${allImages[index]}`, cache: FastImage.cacheControl.immutable}} 
                         style={{ width: '100%', height: '100%', borderRadius:5, backgroundColor:'rgba(0,0,0,0.1)'}}
                         resizeMode="cover"
                     />

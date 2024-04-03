@@ -1,4 +1,4 @@
-import { View, Image, Text, Dimensions, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet, Pressable, FlatList, LogBox } from "react-native"
+import { View, Image, Text, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet, Pressable, LogBox, Alert } from "react-native"
 import icons from "../../../components/icons";
 import { useEffect, useState } from "react";
 import {Images} from './Images'
@@ -9,8 +9,9 @@ import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import findAge from "../../../components/ConstantFunctions/Age";
 import { toDate } from "../../../components/ConstantFunctions/Date";
-
+import FastImage from "react-native-fast-image";
 import { HobbySelection } from "./HobbySelection";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export default function ProfileMain({userData, disabled, navigation}:any){
     LogBox.ignoreAllLogs();
@@ -20,6 +21,7 @@ export default function ProfileMain({userData, disabled, navigation}:any){
     const [age,setAge] = useState<any>()
     const [hobbiesPage, setHobbiesPage] = useState(false);
     const [hobbies, setHobbies] = useState(userData.Hobbies)
+    const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
 
     useEffect(()=>{
         fetchImages();
@@ -53,6 +55,20 @@ export default function ProfileMain({userData, disabled, navigation}:any){
     function Subscription(){
         // Show Subscription Page
     }
+
+// Confirm Age
+  const AgeConfirmation = (date:any) => {
+    const ageNum = findAge(date)
+    if(ageNum<18){
+      Alert.alert('Age Warning', 'You Must be at least 18 to register with Gruuve')
+      return;
+    }
+    setAge(ageNum)
+
+    // 
+    
+    setDatePickerVisibility(false);
+  };
 
     function setMainImage(){
         ImagePicker.openPicker({
@@ -102,9 +118,10 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                     <View style={{position:'absolute', backgroundColor:'rgba(0,0,0,0.5)', width:'100%', height:'100%', zIndex:10, justifyContent:'center', alignItems:'center'}}>
                         <Text style={{color:'white', fontWeight:'700', textAlign:'center'}}> Account Disabled</Text>
                     </View>}
-                    {Image1 && <Image 
-                        source={{uri:`${Image1}`}} 
-                        style={{height:'100%', width:'100%'}}
+                    {Image1 && 
+                        <FastImage
+                        source={{ uri: `${Image1}`, cache: FastImage.cacheControl.immutable}} 
+                        style={{ width: '100%', height: '100%', borderRadius:5, backgroundColor:'rgba(0,0,0,0.1)'}}
                         resizeMode="cover"
                     />}
                 </View>
@@ -141,7 +158,7 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                     <Text style={style.text3}>{userData.Last}</Text>
                 </Pressable>
                 <View style={style.line}/>
-                <Pressable style={style.container1}>
+                <Pressable style={style.container1} onPress={()=> setDatePickerVisibility(true)}>
                     <Text style={style.text2}>Age</Text>
                     <Text style={style.text1}>{age}</Text>
                 </Pressable>
@@ -180,11 +197,18 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                     <Text style={userData.School.length === 0 ? style.empty:style.text1}>{userData.School.length === 0 ? 'None': userData.School}</Text>
                 </Pressable>
             </View>
+            {/* Pop Ups */}
             <HobbySelection 
             isVisible={hobbiesPage}
             setIsVisible={setHobbiesPage}
             hobbies={hobbies}
             setHobbies={setHobbies}
+            />
+            <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={AgeConfirmation}
+                onCancel={()=>{ setDatePickerVisibility(false);}}
             />
         </ScrollView>
         </>

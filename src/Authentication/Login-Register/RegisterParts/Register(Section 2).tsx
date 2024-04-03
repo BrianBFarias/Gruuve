@@ -104,6 +104,7 @@ export default function Section2({location, setLocation, organization, setOrgani
     const ageNum = findAge(date)
     if(ageNum<18){
       Alert.alert('Age Warning', 'You Must be at least 18 to register with Gruuve')
+      return;
     }
     setAge(ageNum)
     setBirthDate(date)
