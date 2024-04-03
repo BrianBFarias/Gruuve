@@ -3,20 +3,53 @@ import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Modal from "react-native-modal";
 import icons from '../../../components/icons';
 import Icons from '../../../components/icons';
+import { LocationName } from '../../../components/ConstantFunctions/LocName';
+import { useEffect, useRef, useState } from 'react';
 
-export function LocationSelection(this: any, {isVisible, setIsVisible, Location, currentLocation}:any){
+interface coordinate {
+    latitude: number | undefined;
+    longitude: number | undefined;
+}
+
+export function LocationSelection({isVisible, setIsVisible, currentLocation}:any){
+    const [tempLocation, setTempLocation] = useState<coordinate>(currentLocation)
+    const [accessable, setAccessable] = useState(false)
+    const [locationName, setLocationName] = useState('');
+
+    const mapViewRef = useRef<MapView>(null);
 
     function confirmation(){
+        // Save Location
         
     }
+
+    function updateLocation(Region:coordinate){
+        if(accessable){
+            setTempLocation(Region)
+        }
+    }
+
+    async function updateLocationName(){
+        const tempName = await LocationName(tempLocation)
+        if(tempName){
+            setLocationName(tempName);
+        }
+    }
+    
+
+    useEffect(()=>{
+        updateLocationName()
+    }, [tempLocation])
 
     return(
         <Modal
         isVisible={isVisible} 
+        onModalShow = {()=>setAccessable(true)}
+        onModalHide={()=>setAccessable(false)}
         animationOut={'slideOutDown'} 
         animationIn={'slideInUp'}
         useNativeDriver={true} 
-        hideModalContentWhileAnimating={true} 
+        hideModalContentWhileAnimating={false} 
         backdropOpacity={0}
         style={{flex: 1, margin: 0}}>
             <View style={{flex:1, backgroundColor:'white', width:'100%', height:'100%', position:'absolute'}}>
@@ -29,14 +62,15 @@ export function LocationSelection(this: any, {isVisible, setIsVisible, Location,
                             <Text style={style.button}>Save</Text>
                         </Pressable>
                     </View>
-                    <View style={{flex:1, backgroundColor:'white', justifyContent:'center', margin:10, borderRadius:10, overflow:'hidden'}}>
+                    <View style={{flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:4, overflow:'hidden'}}>
                         <MapView
-                            provider={null}
-                            showsUserLocation={false}
+                            ref={mapViewRef}
                             rotateEnabled={false}
                             loadingEnabled={true}
                             showsPointsOfInterest={true}
+                            showsIndoorLevelPicker={true}
                             followsUserLocation={true}
+                            onRegionChangeComplete={(Region) => updateLocation(Region)}
                             userLocationCalloutEnabled={true}
                             loadingBackgroundColor='white'
                             onRegionChange={()=>{}}
@@ -44,13 +78,16 @@ export function LocationSelection(this: any, {isVisible, setIsVisible, Location,
                             initialRegion={{
                                 latitude: currentLocation.Latitude,
                                 longitude: currentLocation.Longitude,
-                                latitudeDelta: 0.06,
-                                longitudeDelta: 0.06,
+                                latitudeDelta: 0.09,
+                                longitudeDelta: 0.09,
                             }}>
                         <Icons.MaterialIcons name="location-on" style={{alignSelf:'center', justifyContent:'center'}} size={50} color='#295d16'/>
                     </MapView>
+                    {accessable && <View style={{bottom:'10%', position:'absolute', width:'100%', alignItems:'center'}}>
+                        <Text style={{fontSize:25, fontWeight:'800', shadowColor:'white', shadowOffset:{height:0, width:0}, shadowOpacity:0.8, shadowRadius:3, color:'#295d16'}}>{locationName}</Text>
+                        <SafeAreaView />
+                    </View>}
                 </View>
-                <SafeAreaView />
             </View>
         </Modal>
     )

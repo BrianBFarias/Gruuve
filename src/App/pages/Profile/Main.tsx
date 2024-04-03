@@ -7,8 +7,11 @@ import ImagePicker from 'react-native-image-crop-picker';
 
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
+
 import findAge from "../../../components/ConstantFunctions/Age";
 import { toDate } from "../../../components/ConstantFunctions/Date";
+import { LocationName } from '../../../components/ConstantFunctions/LocName';
+
 import FastImage from "react-native-fast-image";
 import { HobbySelection } from "./HobbySelection";
 import { LocationSelection } from "./LocationSelection";
@@ -19,8 +22,9 @@ export default function ProfileMain({userData, disabled, navigation}:any){
 
     const [Image1, setImage1] = useState<any>();
     const [allImages, setAllImages]  = useState<any>();
-    const [age,setAge] = useState<any>()
+    const [age,setAge] = useState<any>();
     const [hobbiesPage, setHobbiesPage] = useState(false);
+    const [location, setLocation] = useState('Gainesville, FL')
 
     // popUps to edit Profile (Not preferences)
     const [hobbies, setHobbies] = useState(userData.Hobbies)
@@ -180,7 +184,7 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                 <View style={style.line}/>
                 <Pressable style={style.container1} onPress={() => editOption(3)}>
                     <Text style={style.text2}>Location</Text>
-                    <Text style={style.text1}>Gainesville, FL</Text>
+                    <Text style={style.text1}>{location}</Text>
                 </Pressable>
                 <View style={style.line}/>
                 <Pressable style={style.container1}>

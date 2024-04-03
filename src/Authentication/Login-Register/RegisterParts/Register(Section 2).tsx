@@ -10,6 +10,8 @@ import GetLocation from 'react-native-get-location'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
+import { LocationName } from '../../../components/ConstantFunctions/LocName';
+
 import findAge from '../../../components/ConstantFunctions/Age';
 import { GreekOptions, Genders, Height } from '../../ProfileOptions';
 
@@ -53,18 +55,14 @@ export default function Section2({location, setLocation, organization, setOrgani
       enableHighAccuracy: false,
       timeout: 60000,
     })
-    .then(location => {
+    .then(async location => {
       const longitude = location.longitude;
       const latitude = location.latitude;
 
-      fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyBTOio8IArwobWjnwXjukT9PtTNlS3981g')
-        .then((response) => response.json())
-        .then((responseJson) => {
-      const locationText = responseJson.results[0].address_components[2].long_name + ', ' + responseJson.results[0].address_components[3].long_name;
+      const locationText = await LocationName({latitude, longitude});
       
       setLocation({Location:locationText, Coordinates:{Longitude:longitude, Latitude:latitude}})
       ref.current?.setAddressText(locationText);
-  })
   })
   .catch(error => {
       const { code, message } = error;
