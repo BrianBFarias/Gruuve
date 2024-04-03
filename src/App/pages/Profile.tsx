@@ -165,7 +165,7 @@ export const Profile = ({route}:any) =>{
             </View>
             <View style={{flex:1}}/>
             <TouchableOpacity onPress={signOut} style={{alignSelf:'center', paddingVertical:10}}>
-                <icons.MaterialCommunityIcons name='logout' size={30}/>
+                <Text style={{fontSize:18}}>Sign Out</Text>
             </TouchableOpacity>
             <View style={{flex:0.1}}/>
         </View>)
@@ -173,8 +173,8 @@ export const Profile = ({route}:any) =>{
 
     return(
     <View style={{flex:1, backgroundColor:'rgb(242,242,242)'}}>
-        <View style={{flexDirection:'row',flex:1, zIndex:12,}}>
-            <Animated.View style={{width:(move),zIndex:13}}>
+        <View style={{flexDirection:'row',flex:1, zIndex:15,}}>
+            <Animated.View style={{width:(move),zIndex:16}}>
                 <Animated.View style={{backgroundColor:menuColorValue, width:move, flex:1, borderTopRightRadius:6, borderBottomRightRadius:6,  shadowColor:'black', shadowOffset:{height:0, width:0}, shadowOpacity:.6, shadowRadius:shadowRadius}}>
                         {/* Setting Info */}
                         <Animated.View style={{margin:10, display:settingsInverse, flexDirection:'column', gap:8, justifyContent:'flex-start', flex:1, overflow:'hidden'}}>
@@ -191,8 +191,8 @@ export const Profile = ({route}:any) =>{
                 </Animated.View>
             </Animated.View>
 
-            <Animated.View style={{flex:1, minWidth:windowWidth, zIndex:10}}>
-                <AnimatedPress style={{flex:1, backgroundColor:'black', display:(settingsInverse), left:-20, opacity:bgFade, position:'absolute', width:'100%', height:'100%', zIndex:5}} onPress={settingsToggle}/>
+            <Animated.View style={{flex:1, minWidth:windowWidth, zIndex:14}}>
+                <AnimatedPress style={{flex:1, backgroundColor:'black', display:(settingsInverse), left:-20, opacity:bgFade, position:'absolute', width:'100%', height:'100%', zIndex:13}} onPress={settingsToggle}/>
                 <ProfileMain userData={userData} disabled={isDisabled}/>
             </Animated.View>
         </View>

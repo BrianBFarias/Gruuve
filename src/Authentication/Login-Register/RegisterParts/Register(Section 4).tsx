@@ -1,182 +1,139 @@
-import { Text, View, Image, TouchableOpacity } from "react-native";
+import React, { useCallback, useState } from 'react';
+import { StyleSheet, Text, TextInput, View, TouchableOpacity, Button, Alert, Animated, Dimensions} from "react-native";
 import {AuthForm} from '../../AuthenticationStyling'
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Icon2 from 'react-native-vector-icons/MaterialIcons';
+import Button1 from '../../../components/Button';
+import {SliderRange, Slider} from '../../../components/slider/SliderRange';
+import { Dropdown } from 'react-native-element-dropdown';
 
-import {request, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import { useEffect, useState } from "react";
-import ImagePicker from 'react-native-image-crop-picker';
-import Button1 from "../../../components/Button";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon3 from 'react-native-vector-icons/FontAwesome6'
+import { GenderPreferences } from '../../ProfileOptions';
 
+const windowWidth = Dimensions.get('window').width;
 
-export default function Section4({setImage1,setImage2, setImage3, setImage4, Image1, Image2, Image3, Image4, onRegister}:any){
-    const [permissionGranted, setPermissionGranted] = useState(false)
+export default function Section3({nextSection, currMin, currMax, setCurrMin, setCurrMax, genderPreference, setGenderPreference, radius, setRadius}:any){
+  const [isFocus0, setIsFocus0] = useState(false);
 
-    useEffect(()=>{
-        request(PERMISSIONS.IOS.PHOTO_LIBRARY).then((result:any) => {
-            switch (result) {
-                case RESULTS.UNAVAILABLE:
-                    setPermissionGranted(false)
-                  break;
-                case RESULTS.DENIED:
-                    setPermissionGranted(false)
-                  break;
-                case RESULTS.LIMITED:
-                  console.log('The permission is limited: some actions are possible');
-                  break;
-                case RESULTS.GRANTED:
-                    setPermissionGranted(true)
-                  break;
-                case RESULTS.BLOCKED:
-                    setPermissionGranted(false)
-                  break;
-              }
-        });
-    })
+  function next(){
+    console.log(currMin, currMax)
+    nextSection()
+  }
 
-    function RemoveImage(index:any){
-        switch(index){
-            case 0: setImage1(undefined)
-            break;
-            case 1: setImage2(undefined)
-            break;
-            case 2: setImage3(undefined)
-            break;
-            case 3: setImage4(undefined)
-            break;
-        }
-    }
-
-    const onImageGalleryClick = (imageNum:any) => {
-        ImagePicker.openPicker({
-            width: 300,
-            height: 320,
-            cropping: true,
-            mediaType:'photo',
-            includeBase64:true,
-            forceJpg:true
-          }).then(image => {
-            if (image && image.sourceURL && image.cropRect) {
-                const saveImage = {
-                    uri: image.sourceURL,
-                    data: image.data,
-                    mime: image.mime,
-                    height: 320,
-                    width: 300,
-                    x: image.cropRect.x,
-                    y: image.cropRect.y,
-                }
-                console.log(saveImage.data)
-
-                switch (imageNum) {
-                  case 1:
-                    setImage1(saveImage);
-                    break;
-                  case 2:
-                    setImage2(saveImage);
-                    break;
-                  case 3:
-                    setImage3(saveImage);
-                    break;
-                  case 4:
-                    setImage4(saveImage);
-                    break;
-                }
-              }
-        });
-    }
-
-    function validate(){
-      if(!Image1){
-        return
-      }
-      else{
-        onRegister()
-      }
-    }
-
-
-    function renderCroppedImage({imageData, index}:any) {
-        if (!imageData) return(
-            <View
-                style={{
-                  flex: 1,
-                  backgroundColor: "rgba(0,0,0,0.3)",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderColor:'rgba(0,0,0,0.6)',
-                  borderWidth:3,
-                  borderRadius:5,
-                  borderStyle:'dashed',
-                  zIndex:4
-                }} >
-                <Icon style={{}} color="whitesmoke" name="picture-o" size={20} />
-                {index === 0?
-                 <Icon2 style={{position:'absolute', left:-8, top:-8, backgroundColor:'green', borderRadius:15, overflow:'hidden', padding:3, color:'whitesmoke'}} name="star" size={20} />:
-                <Icon2 style={{position:'absolute', left:-8, top:-8}} color="#3b3b3b" name="add-circle" size={25} />}
-            </View>
-        );
-
-        return (
-            <View style={{ position: 'relative', width: '100%', height: '100%', overflow: 'visible' }}>
-                <Image
-                    source={{ uri: `data:${imageData.mime};base64,${imageData.data}` }} 
-                    style={{ width: '100%', height: '100%', borderRadius:5}}
-                    resizeMode="cover"
-                />
-                <TouchableOpacity onPress={()=>{RemoveImage(index)}} style={{ position: 'absolute', left: -8, top: -8,padding:2, backgroundColor: '#153808', borderRadius: 20, overflow: 'hidden' }}>
-                    <Icon2 color="white" name="close" size={20} />
-                </TouchableOpacity>
-            </View>
-        );
-    }
-    
-    return (
-        <View style={{display:'flex', justifyContent:'space-between', height:'100%'}}>
-            <View >
-                <Text style={AuthForm.header3}>Show em your shine</Text>
-                <Text style={[AuthForm.sub, {paddingHorizontal:10}]}>Add pictures of Yourself! You need at least a Main Picture to continue.</Text>
-            </View>
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              paddingHorizontal:20
-            }}
-          >
-            {[...Array(4)].map((_, index) => (
-              <TouchableOpacity
-                key={index}
-                style={{
-                  width: "45%",
-                  aspectRatio: 3 / 3.2,
-                  margin: "2%",
-                  borderRadius: 5,
-                }}
-                onPress={() => {
-                  onImageGalleryClick(index + 1); // Add 1 to index to match image number
-                }}
-              >
-                {index === 0  ? (
-                    renderCroppedImage({ imageData: Image1, index:index })
-
-                ) : index === 1 ? (
-                    renderCroppedImage({ imageData: Image2, index:index  })
-
-                ) : index === 2 ? (
-                    renderCroppedImage({ imageData: Image3, index:index  })
-
-                ) : index === 3 ? (
-                    renderCroppedImage({ imageData: Image4, index:index  })
-
-                ) : (null)}
-              </TouchableOpacity>
-            ))}
+    return(
+      <View style={{display:'flex', justifyContent:'space-between', height:'100%'}}>
+        <Text style={AuthForm.header3}>Preferences</Text>
+        <View style={{backgroundColor:'transparent', marginHorizontal:10, padding:10, paddingVertical:20, borderRadius:10, overflow:'hidden', flex:1, gap:30}}>
+          <View style={styles.option}>
+            <Dropdown
+              style={[styles.dropdown, isFocus0 && { borderColor: 'transparent'}]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              iconStyle={styles.iconStyle}
+              containerStyle={styles.list}
+              data={GenderPreferences}
+              activeColor={'rgba(10, 110, 10, .15)'}
+              search={false}
+              onFocus={() => setIsFocus0(true)}
+              onBlur={() => setIsFocus0(false)}
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder="Gender Preference"
+              searchPlaceholder="Search..."
+              value={genderPreference}
+              onChange={item => {
+                setGenderPreference(item.value);
+                setIsFocus0(false);
+              }}
+        renderLeftIcon={() => (
+          <Icon3 style={styles.icon} name="person" size={20} />
+        )}
+        renderRightIcon={() => (
+          isFocus0 ? 
+          <Icon style={styles.icon}  name="chevron-up" size={30} />:
+          <Icon style={styles.icon} name="chevron-down" size={30} />
+        )} />
           </View>
-          <TouchableOpacity style={{alignSelf:'center'}} onPress={()=>{validate()}} >
-            <Button1 text={'Finalize'}/>
-        </TouchableOpacity>
+          <View style={styles.option}>
+            <SliderRange min={18} max={70} currMin={currMin} currMax={currMax} onValueChange={(range: any) =>{setCurrMax(range.max); setCurrMin(range.min)}} title={'Desired Age Range'} WIDTH={windowWidth*.8}/>
+          </View>
+          <View>
+            <Slider min={10} max={100} onValueChange={(range: any) =>{setRadius(range.radius)}} radius={radius} title={'Search Radius'} unit={'miles'} WIDTH={windowWidth*.8}/>
+          </View>
         </View>
-      );
+      <TouchableOpacity style={{alignSelf:'center'}} onPress={next}>
+        <Button1 text={'Continue'}/>
+      </TouchableOpacity>
+      </View>
+    )
 }
+
+const styles = StyleSheet.create({
+  title:{
+    color:'white',
+    alignSelf:'center',
+    marginBottom:10,
+    fontSize:17,
+    fontFamily:'ArialHebrew-Light',
+    fontWeight:'500'
+  },
+  dropdown: {
+    margin: 10,
+    marginVertical:12,
+    height: 50,
+    backgroundColor: 'transparent',
+    borderBottomWidth:3,
+    borderRadius:5,
+    borderColor:'#397844',
+    padding: 12,
+    shadowColor: 'white',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  icon: {
+    marginRight: 10,
+    color:'#397844'
+  },
+  item: {
+    padding: 17,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  textItem: {
+    flex: 1,
+    fontSize: 16,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color:'rgba(25, 71, 21,0.6)'
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color:'rgba(25, 71, 21,0.9)',
+    fontWeight:'600',
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+    backgroundColor:'black'
+  },
+  list:{
+    borderRadius:6,
+    shadowColor:'black',
+    shadowOffset:{width:0, height:5},
+    shadowRadius:4,
+    shadowOpacity:0.5
+  },
+  option:{
+  }
+})

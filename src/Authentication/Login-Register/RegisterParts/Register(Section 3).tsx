@@ -1,139 +1,88 @@
-import React, { useCallback, useState } from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, Button, Alert, Animated, Dimensions} from "react-native";
-import {AuthForm} from '../../AuthenticationStyling'
-import Button1 from '../../../components/Button';
-import {SliderRange, Slider} from '../../../components/slider/SliderRange';
-import { Dropdown } from 'react-native-element-dropdown';
+import { Text, TouchableOpacity, View, FlatList, Pressable, StyleSheet, LogBox } from "react-native";
+import Button1 from "../../../components/Button";
+import { Hobbies } from '../../ProfileOptions';
+import { AuthForm } from "../../AuthenticationStyling";
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon3 from 'react-native-vector-icons/FontAwesome6'
-import { GenderPreferences } from '../../ProfileOptions';
+export default function Section3({ hobbies, setHobbies, nextSection }: any) {
+    LogBox.ignoreAllLogs();
 
-const windowWidth = Dimensions.get('window').width;
+    function next() {
+        if(hobbies.length < 2){
+            return;
+        }
+        nextSection();
+    }
 
-export default function Section3({nextSection, currMin, currMax, setCurrMin, setCurrMax, genderPreference, setGenderPreference, radius, setRadius}:any){
-  const [isFocus0, setIsFocus0] = useState(false);
+    const toggleSelection = (item: string) => {
+        if (hobbies.length < 4 && !hobbies.includes(item)) {
+            // Create a new array by spreading the existing hobbies array
+            const newHobbies = [...hobbies, item];
+            // Update state with the new array
+            setHobbies(newHobbies);
+        }else if(hobbies.includes(item)){
+            const newHobbies = hobbies.filter((e: string) => e !== item)
+            // Update state with the new array
+            setHobbies(newHobbies);
+        }
+    };
 
-  function next(){
-    console.log(currMin, currMax)
-    nextSection()
-  }
+    const renderItem = ({ item }: any) => {
+        if (hobbies && hobbies.includes(item)) {
+            return (
+                <Pressable
+                    key={item}
+                    style={style.selectedHobby} 
+                    onPress={() => toggleSelection(item)}>
+                    <Text style={style.text1}>{item}</Text>
+                </Pressable>
+            );
+        } else {
+            return (
+                <Pressable
+                    key={item}
+                    style={style.hobby} 
+                    onPress={() => toggleSelection(item)}>
+                    <Text style={style.text2}>{item}</Text>
+                </Pressable>
+            );
+        }
+    };
 
-    return(
-      <View style={{display:'flex', justifyContent:'space-between', height:'100%'}}>
-        <Text style={AuthForm.header3}>Preferences</Text>
-        <View style={{backgroundColor:'transparent', marginHorizontal:10, padding:10, paddingVertical:20, borderRadius:10, overflow:'hidden', flex:1, gap:30}}>
-          <View style={styles.option}>
-            <Dropdown
-              style={[styles.dropdown, isFocus0 && { borderColor: 'transparent'}]}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              iconStyle={styles.iconStyle}
-              containerStyle={styles.list}
-              data={GenderPreferences}
-              activeColor={'rgba(10, 110, 10, .15)'}
-              search={false}
-              onFocus={() => setIsFocus0(true)}
-              onBlur={() => setIsFocus0(false)}
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder="Gender Preference"
-              searchPlaceholder="Search..."
-              value={genderPreference}
-              onChange={item => {
-                setGenderPreference(item.value);
-                setIsFocus0(false);
-              }}
-        renderLeftIcon={() => (
-          <Icon3 style={styles.icon} name="person" size={20} />
-        )}
-        renderRightIcon={() => (
-          isFocus0 ? 
-          <Icon style={styles.icon}  name="chevron-up" size={30} />:
-          <Icon style={styles.icon} name="chevron-down" size={30} />
-        )} />
-          </View>
-          <View style={styles.option}>
-            <SliderRange min={18} max={70} currMin={currMin} currMax={currMax} onValueChange={(range: any) =>{setCurrMax(range.max); setCurrMin(range.min)}} title={'Desired Age Range'} WIDTH={windowWidth*.8}/>
-          </View>
-          <View>
-            <Slider min={10} max={100} onValueChange={(range: any) =>{setRadius(range.radius)}} radius={radius} title={'Search Radius'} unit={'miles'} WIDTH={windowWidth*.8}/>
-          </View>
+    return (
+        <View style={{ flex: 1, justifyContent: 'space-between'}}>
+            <Text style={AuthForm.header3}>Select Hobbies ({4-hobbies.length})</Text>
+            <FlatList
+                contentContainerStyle={{overflow:'scroll', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', paddingVertical: 5, paddingHorizontal: 5, gap:10, columnGap:14}}
+                data={Hobbies}
+                renderItem={renderItem}
+                keyExtractor={(item) => item}
+            />
+            <TouchableOpacity style={{ alignSelf: 'center', marginTop:5 }} onPress={next}>
+                <Button1 text={'Continue'} />
+            </TouchableOpacity>
         </View>
-      <TouchableOpacity style={{alignSelf:'center'}} onPress={next}>
-        <Button1 text={'Continue'}/>
-      </TouchableOpacity>
-      </View>
     )
 }
 
-const styles = StyleSheet.create({
-  title:{
-    color:'white',
-    alignSelf:'center',
-    marginBottom:10,
-    fontSize:17,
-    fontFamily:'ArialHebrew-Light',
-    fontWeight:'500'
-  },
-  dropdown: {
-    margin: 10,
-    marginVertical:12,
-    height: 50,
-    backgroundColor: 'transparent',
-    borderBottomWidth:3,
-    borderRadius:5,
-    borderColor:'#397844',
-    padding: 12,
-    shadowColor: 'white',
-    shadowOffset: {
-      width: 0,
-      height: 1,
+const style= StyleSheet.create({
+    hobby:{ 
+        padding: 8,
+        backgroundColor: 'rgb(215,215,215)', 
+        borderRadius: 10 
     },
-    shadowOpacity: 0.6,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  icon: {
-    marginRight: 10,
-    color:'#397844'
-  },
-  item: {
-    padding: 17,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  textItem: {
-    flex: 1,
-    fontSize: 16,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-    color:'rgba(25, 71, 21,0.6)'
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-    color:'rgba(25, 71, 21,0.9)',
-    fontWeight:'600',
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
-  },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
-    backgroundColor:'black'
-  },
-  list:{
-    borderRadius:6,
-    shadowColor:'black',
-    shadowOffset:{width:0, height:5},
-    shadowRadius:4,
-    shadowOpacity:0.5
-  },
-  option:{
-  }
+    selectedHobby:{
+        padding: 8,
+        backgroundColor: '#39782c', 
+        borderRadius: 10,
+        color:'white'
+    },
+    text1:{
+        fontWeight:'500',
+        color:'white'
+    },
+    text2:{
+        fontWeight:'500',
+        color:'black',
+        opacity:0.8
+    },
 })

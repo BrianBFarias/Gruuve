@@ -1,3 +1,3 @@
 # npx react-native start
-npm run ios -- --simulator="iPhone 15" 
+npm run ios -- --simulator="Default"
 # --reset-cache

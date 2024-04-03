@@ -7562,6 +7562,11 @@ react-native-elements@^3.4.3:
     react-native-ratings "8.0.4"
     react-native-size-matters "^0.3.1"
 
+react-native-fast-image@^8.6.3:
+  version "8.6.3"
+  resolved "https://registry.npmjs.org/react-native-fast-image/-/react-native-fast-image-8.6.3.tgz"
+  integrity sha512-Sdw4ESidXCXOmQ9EcYguNY2swyoWmx53kym2zRsvi+VeFCHEdkO+WG1DK+6W81juot40bbfLNhkc63QnWtesNg==
+
 react-native-firebase@^5.6.0:
   version "5.6.0"
   resolved "https://registry.npmjs.org/react-native-firebase/-/react-native-firebase-5.6.0.tgz"

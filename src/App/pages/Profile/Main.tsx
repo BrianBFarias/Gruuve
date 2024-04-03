@@ -1,4 +1,4 @@
-import { View, Image, Text, Dimensions, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet, Pressable } from "react-native"
+import { View, Image, Text, Dimensions, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet, Pressable, FlatList, LogBox } from "react-native"
 import icons from "../../../components/icons";
 import { useEffect, useState } from "react";
 import {Images} from './Images'
@@ -10,10 +10,16 @@ import firestore from '@react-native-firebase/firestore';
 import findAge from "../../../components/ConstantFunctions/Age";
 import { toDate } from "../../../components/ConstantFunctions/Date";
 
+import { HobbySelection } from "./HobbySelection";
+
 export default function ProfileMain({userData, disabled, navigation}:any){
+    LogBox.ignoreAllLogs();
+
     const [Image1, setImage1] = useState<any>();
     const [allImages, setAllImages]  = useState<any>();
     const [age,setAge] = useState<any>()
+    const [hobbiesPage, setHobbiesPage] = useState(false);
+    const [hobbies, setHobbies] = useState(userData.Hobbies)
 
     useEffect(()=>{
         fetchImages();
@@ -76,9 +82,17 @@ export default function ProfileMain({userData, disabled, navigation}:any){
         // refetch all userData
     }
 
+    function editOption(num:number){
+        switch(num){
+            case 4: setHobbiesPage(true) 
+                break; 
+        }
+    }
+
     return(
-        <ScrollView style={{flex:1, width:'100%'}} bounces={false}>
-            <SafeAreaView />
+        <>            
+        <SafeAreaView style={{backgroundColor:'rgb(240,240,240)', marginBottom:6,zIndex:12}} />
+        <ScrollView style={{flex:1, width:'100%', overflow:'visible', zIndex:10}} bounces={false}>
             <TouchableOpacity onPress={setMainImage} style={{height: 100, width:100, shadowColor:'black', shadowOffset:{height:0, width:0}, shadowRadius:4, shadowOpacity:0.5, alignSelf:'center', borderRadius:150, borderColor:'green', borderWidth:4}}>
                 <View style={{position:'absolute', top:0, right:0, height:25, width:25, backgroundColor:'white', zIndex:3, borderRadius:20, justifyContent:'center'}}>
                     <View style={{alignSelf:'center'}}><icons.MaterialIcons name='edit' size={16} color='black'/></View>
@@ -95,7 +109,6 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                     />}
                 </View>
             </TouchableOpacity>
-            <Text style={{textAlign:'center', margin:10, fontSize:18, fontWeight:'600'}}>{userData.First} {userData.Last}</Text>
             <View style={{width:'100%', backgroundColor:'rgba(0,0,0,0)', paddingVertical:20}}>
                 <Images 
                 allImages={allImages}
@@ -119,13 +132,23 @@ export default function ProfileMain({userData, disabled, navigation}:any){
             </TouchableOpacity>}
             <View style={{flex:1, backgroundColor:'rgba(255,255,255,0.9)', marginTop:12, minHeight:317, paddingVertical:10}}>
                 <Pressable style={style.container1}>
+                    <Text style={style.text2}>First Name</Text>
+                    <Text style={style.text3}>{userData.First}</Text>
+                </Pressable>
+                <View style={style.line}/>
+                <Pressable style={style.container1}>
+                    <Text style={style.text2}>Last Name</Text>
+                    <Text style={style.text3}>{userData.Last}</Text>
+                </Pressable>
+                <View style={style.line}/>
+                <Pressable style={style.container1}>
                     <Text style={style.text2}>Age</Text>
                     <Text style={style.text1}>{age}</Text>
                 </Pressable>
                 <View style={style.line}/>
                 <Pressable style={style.container1}>
                     <Text style={style.text2}>Height</Text>
-                    <Text style={style.text1}>5'09</Text>
+                    <Text style={style.text1}>{userData.Height}</Text>
                 </Pressable>
                 <View style={style.line}/>
                 <Pressable style={style.container1}>
@@ -135,24 +158,36 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                 <View style={style.line}/>
                 <Pressable style={style.container1}>
                     <Text style={style.text2}>Sex</Text>
-                    <Text style={style.text1}>Male</Text>
+                    <Text style={style.text1}>{userData.Sex}</Text>
                 </Pressable>
                 <View style={style.line}/>
-                <Pressable style={style.container2}>
+                <Pressable style={style.container2} onPress={() => editOption(4)}>
                     <Text style={style.text2}>Hobbies</Text>
-                    <View style={{flexDirection:'row', flexWrap:'wrap', gap:10}}>
-                        <Text style={style.hobby}>Reading</Text>
-                        <Text style={style.hobby}>Cooking</Text>
-                        <Text style={style.hobby}>Gym</Text>
+                    <View style={{flexDirection:'row', flexWrap:'wrap', gap:10, marginTop:3}}>
+                        {userData.Hobbies.map((element:String) => (
+                            <Text style={style.hobby}>{element}</Text>
+                        ))}
                     </View>
                 </Pressable>
                 <View style={style.line}/>
                 <Pressable style={style.container1}>
                     <Text style={style.text2}>Organization</Text>
-                    <Text style={style.text1}>None</Text>
+                    <Text style={userData.Organization.length === 0 ? style.empty:style.text1}>{userData.Organization.length === 0 ? 'None': userData.Organization}</Text>
+                </Pressable>
+                <View style={style.line}/>
+                <Pressable style={style.container1}>
+                    <Text style={style.text2}>School</Text>
+                    <Text style={userData.School.length === 0 ? style.empty:style.text1}>{userData.School.length === 0 ? 'None': userData.School}</Text>
                 </Pressable>
             </View>
+            <HobbySelection 
+            isVisible={hobbiesPage}
+            setIsVisible={setHobbiesPage}
+            hobbies={hobbies}
+            setHobbies={setHobbies}
+            />
         </ScrollView>
+        </>
     )
 }
 
@@ -183,21 +218,31 @@ const style = StyleSheet.create({
     },
     text1:{
         fontSize:16,
-        fontWeight:'400',
-        opacity:0.9
+        fontWeight:'600',
+        opacity:0.9,
     },
     text2:{
         fontSize:16,
+        fontWeight:'400',
+        opacity:0.7
+    },
+    text3:{
+        fontSize:16,
         fontWeight:'700',
-        opacity:0.8,
+        opacity:0.7,
     },
     hobby:{
-        backgroundColor:'#295d16',
+        backgroundColor:'#448843',
         color:'rgba(255,255,255,1)',
         fontWeight:'600',
         paddingHorizontal:8,
         padding:5,
         borderRadius:10,
         overflow:'hidden'
+    },
+    empty:{
+        fontSize:16,
+        fontWeight:'400',
+        opacity:0.5
     },
 })

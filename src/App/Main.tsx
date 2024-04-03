@@ -62,7 +62,7 @@ const Main = () =>{
                         return(
                         <View>
                             <icons.MaterialCommunityIcons name={'reorder-horizontal'} size={size+4} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
-                            {hasLikes && <View style={{backgroundColor:'green', height:8, width:8, position:'absolute', borderRadius:10, right:0, top:2, shadowColor:'white', shadowRadius:3, shadowOffset:{width:-2, height:2}, shadowOpacity:1}}/>}
+                            {hasLikes && <View style={{backgroundColor:'green', height:9, width:9, position:'absolute', borderRadius:10, right:0, top:2, shadowColor:'white', shadowRadius:3, shadowOffset:{width:-2, height:2}, shadowOpacity:1}}/>}
                         </View>)
                     }
                     else if(rn === 'Profile'){

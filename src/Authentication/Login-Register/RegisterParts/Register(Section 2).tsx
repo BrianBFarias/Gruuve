@@ -3,8 +3,8 @@ import { StyleSheet, Text, View, TouchableOpacity, Alert, ScrollView} from "reac
 import {AuthForm} from '../../AuthenticationStyling'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon3 from 'react-native-vector-icons/FontAwesome6'
-import { Dropdown, MultiSelect } from 'react-native-element-dropdown';
-import { GreekOptions, Genders, Hobbies } from '../../ProfileOptions';
+import { Dropdown } from 'react-native-element-dropdown';
+import { GreekOptions, Genders, Height } from '../../ProfileOptions';
 import Button1 from '../../../components/Button';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import GetLocation from 'react-native-get-location'
@@ -13,7 +13,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import findAge from '../../../components/ConstantFunctions/Age';
 
-export default function Section2({location, setLocation, organization, setOrganization, age, setAge, setGender, gender, hobbies, setHobbies, showPreferencePage, setBirthDate}:any){
+export default function Section2({location, setLocation, organization, setOrganization, age, setAge, setGender, gender, nextSection, setBirthDate, height, setHeight}:any){
   const [isFocus0, setIsFocus0] = useState(false);
   const [isFocus2, setIsFocus2] = useState(false);
   const [isFocus4, setIsFocus4] = useState(false);
@@ -82,7 +82,7 @@ export default function Section2({location, setLocation, organization, setOrgani
     // else if(location.Coordinates.longitude === 0 || location.Coordinates.latitude === 0){
     //   return;
     // }
-    showPreferencePage()
+    nextSection()
   }
   
   function LocationSelected(data:any){
@@ -230,7 +230,7 @@ export default function Section2({location, setLocation, organization, setOrgani
           <Icon style={styles.icon} color="#3f8644" name="chevron-down" size={30} />
         )}/>
       <TouchableOpacity style={styles.dropdown} onPress={()=>{setDatePickerVisibility(true);}}>
-        <Text style={[age==0?{opacity:0.6, fontWeight:'500'}:{opacity:1, fontWeight:'600'}, {color:'#194715', fontSize:16}]}>{age === 0 ? 'Select Birthday': age}</Text>
+        <Text style={[age==0?{opacity:0.6, fontWeight:'500'}:{opacity:1, fontWeight:'600'}, {color:'#194715', fontSize:16}]}>{age === 0 ? 'Birthday': age}</Text>
       </TouchableOpacity>
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
@@ -238,48 +238,35 @@ export default function Section2({location, setLocation, organization, setOrgani
         onConfirm={AgeConfirmation}
         onCancel={()=>{ setDatePickerVisibility(false);}}
         />
-        <ScrollView style={{overflow:'visible'}} alwaysBounceVertical={false}>
-          <MultiSelect
-            style={styles.dropdown}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
-            containerStyle={styles.list}
-            search
-            activeColor={'rgba(10, 110, 10, .15)'}
-            onFocus={() => setIsFocus4(true)}
-            onBlur={() => setIsFocus4(false)}
-            dropdownPosition='top'
-            data={Hobbies}
-            alwaysRenderSelectedItem={true}
-            labelField="label"
-            valueField="value"
-            placeholder="Select at least 1 Hobby"
-            searchPlaceholder="Search..."
-            value={hobbies}
-            maxSelect={3}
-            renderItem={renderItem}
-            renderRightIcon={() => (
-              isFocus4 ? 
-              <Icon style={styles.icon} name="chevron-up" size={30} />:
-              <Icon style={styles.icon} name="chevron-down" size={30} />
-            )}
-            onChange={item => {
-              setHobbies(item);
-            }}
-            renderLeftIcon={() => (
-              <Icon
-                style={styles.icon}
-                color="black"
-                name="star-shooting"
-                size={20}
-              />
-            )}
-            selectedStyle={styles.selectedStyle}
-            renderSelectedItem={(item, unSelect) => (renderSelectedItem(item, unSelect))}
-          />
-        </ScrollView>
+        <Dropdown
+        style={[styles.dropdown, isFocus4 && { borderColor: 'tnsparent'}]}
+        placeholderStyle={styles.placeholderStyle}
+        containerStyle={styles.list}
+        selectedTextStyle={styles.selectedTextStyle}
+        inputSearchStyle={styles.inputSearchStyle}
+        iconStyle={styles.iconStyle}
+        data={Height}
+        activeColor={'rgba(10, 110, 10, .15)'}
+        onFocus={() => setIsFocus4(true)}
+        onBlur={() => setIsFocus4(false)}
+        maxHeight={300}
+        labelField="label"
+        valueField="value"
+        placeholder="Height"
+        searchPlaceholder="Search..."
+        value={height}
+        onChange={item => {
+          setHeight(item);
+          setIsFocus4(false);
+        }}
+        renderLeftIcon={() => (
+          <Icon3 style={styles.icon} color="#3f8644" name="ruler-vertical" size={20} />
+        )}
+        renderRightIcon={() => (
+          isFocus4 ? 
+          <Icon style={styles.icon} color="#3f8644" name="chevron-up" size={30} />:
+          <Icon style={styles.icon} color="#3f8644" name="chevron-down" size={30} />
+        )}/>
       </View>
       <TouchableOpacity style={{alignSelf:'center'}} onPress={next}>
         <Button1 text={'Continue'}/>

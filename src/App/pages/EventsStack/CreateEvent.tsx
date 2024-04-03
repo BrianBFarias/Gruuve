@@ -116,7 +116,7 @@ export const NewEvent = ({navigation, route}:any) =>{
 
     return(
     <LinearGradient 
-        colors={['rgb(235,235,235)', 'rgb(205,205,205)']}
+        colors={['rgb(245,245,245)', 'rgb(245,245,245)']}
         start={{x: 0.0, y: 0}} end={{x: 0, y: 1}}
         locations={[0.4,1]}
         style={{flex:1}}>

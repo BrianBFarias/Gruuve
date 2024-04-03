@@ -6,8 +6,9 @@ import Logo from '../../../assets/images/logo.png'
 
 import Section1 from './RegisterParts/Register(Section 1)';
 import Section2 from './RegisterParts/Register(Section 2)'
-import Section3 from './RegisterParts/Register(Section 3)';
+import Section3 from './RegisterParts/Register(Section 3)'
 import Section4 from './RegisterParts/Register(Section 4)';
+import Section5 from './RegisterParts/Register(Section 5)';
 
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
@@ -42,7 +43,7 @@ const Register = ({navigation}: any) => {
   const [age, setAge] = useState(0);
   const [birthDate, setBirthDate] = useState(null);
   const [gender, setGender] = useState("");
-  const [hobbies, setHobbies] = useState<string[]>([]);
+  const [height, setHeight] = useState<string[]>([]);
   const [location, setLocation] = useState({
     Location: '',
     Coordinates: {
@@ -52,24 +53,27 @@ const Register = ({navigation}: any) => {
    });
 
   // Third Section
+  const [hobbies, setHobbies] = useState<string[]>([]);
+
+  // Fourth Section
   const [genderPreference, setGenderPreference] = useState("");
   const [ageMin, setAgeMin] = useState(18)
   const [ageMax, setAgeMax] = useState(70)
   const [radius, setRadius] = useState(50) 
 
-  // Fourth Section
+  // Fifth Section
   const [Image1, setImage1] = useState<ImageRetrieveData | undefined>();
   const [Image2, setImage2] = useState<ImageRetrieveData | undefined>();
   const [Image3, setImage3] = useState<ImageRetrieveData | undefined>();
   const [Image4, setImage4] = useState<ImageRetrieveData | undefined>();
   
-
 // Animations amongst sections
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const section0 = new Animated.Value(1);
   const section1 = new Animated.Value(0);
   const section2 = new Animated.Value(0);
   const section3 = new Animated.Value(0);
+  const section4 = new Animated.Value(0);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -86,7 +90,7 @@ const Register = ({navigation}: any) => {
       duration: 600, 
       useNativeDriver: false,
     }).start();
-    Animated.timing(section2, {
+    Animated.timing(section3, {
       toValue: 1,
       duration: 600, 
       useNativeDriver: false,
@@ -94,12 +98,12 @@ const Register = ({navigation}: any) => {
   },[section])
 
   useEffect(()=>{
-    Animated.timing(section2, {
+    Animated.timing(section3, {
       toValue: 1,
       duration: 600, 
       useNativeDriver: false,
     }).start();
-    Animated.timing(section3, {
+    Animated.timing(section4, {
       toValue: 1,
       duration: 600, 
       useNativeDriver: false,
@@ -118,7 +122,22 @@ const Register = ({navigation}: any) => {
     }, 600)  
   }
 
-  function showPreferencePage(){
+
+  function showPage3(){
+    // re-establish that section1 is visible (it was set to 0 before)
+    section2.setValue(1)
+
+    Animated.timing(section2, {
+      toValue: 0,
+      duration: 600, 
+      useNativeDriver: false,
+    }).start();
+    setTimeout(function(){
+      setSection(section+1);
+    }, 600)  
+  }
+
+  function showPage2(){
     // re-establish that section1 is visible (it was set to 0 before)
     section1.setValue(1)
 
@@ -133,9 +152,9 @@ const Register = ({navigation}: any) => {
   }
 
   function showImageUpload(){
-    section2.setValue(1)
+    section3.setValue(1)
 
-    Animated.timing(section2, {
+    Animated.timing(section3, {
       toValue: 0,
       duration: 600, 
       useNativeDriver: false,
@@ -225,7 +244,9 @@ const Register = ({navigation}: any) => {
                 AgeRange: { min: Number(ageMin), max: Number(ageMax) },
                 Radius: radius,
               },
-              premiumMember:false
+              premiumMember:false,
+              Height:height,
+              School:""
             };
           firestore().
                 collection('Users')
@@ -271,23 +292,64 @@ const Register = ({navigation}: any) => {
               <View  style={AuthForm.infoBox}>
               {section === 0 &&
                   <Animated.View style={[{opacity: section0,  height:'75%'}]}>
-                    <Section1 setFirst={setFirst} first={first} setLast={setLast} last={last} setEmail={setEmail} email={email} setPassword={setPassword} password={password} setPasswordConfirmation={setPasswordConfirmation} passwordConfrimation={passwordConfrimation} showAddInfo={showAddInfo} navigation={navigation}/>
+                    <Section1 
+                    setFirst={setFirst} 
+                    first={first} 
+                    setLast={setLast} 
+                    last={last} 
+                    setEmail={setEmail} 
+                    email={email} 
+                    setPassword={setPassword} 
+                    password={password} 
+                    setPasswordConfirmation={setPasswordConfirmation} 
+                    passwordConfrimation={passwordConfrimation} 
+                    showAddInfo={showAddInfo} 
+                    navigation={navigation}/>
                   </Animated.View>}
     
               {section === 1 &&
                 <Animated.View style={{opacity: section1, height:'75%' }}>
-                  <Section2 location={location} setLocation={setLocation} organization={organization} setOrganization={setOrganization} age={age} setAge={setAge} setBirthDate={setBirthDate} gender={gender} setGender={setGender} hobbies={hobbies} setHobbies={setHobbies} showPreferencePage={showPreferencePage}/>
+                  <Section2 
+                  location={location} 
+                  setLocation={setLocation} 
+                  organization={organization} 
+                  setOrganization={setOrganization} 
+                  age={age} 
+                  setAge={setAge} 
+                  setBirthDate={setBirthDate} 
+                  gender={gender} 
+                  setGender={setGender} 
+                  height={height}
+                  setHeight={setHeight}
+                  nextSection={showPage2}/>
                 </Animated.View>}
 
-              {section === 2 &&
-                <Animated.View style={{opacity: section2, height:'75%' }}>
-                  <Section3 nextSection={showImageUpload} setGenderPreference={setGenderPreference} genderPreference={genderPreference} currMin={ageMin} currMax={ageMax} setCurrMin={setAgeMin} setCurrMax={setAgeMax} radius={radius} setRadius={setRadius} />
+              {section === 2 && 
+                <Animated.View style={{opacity: section3, height:'75%' }}>
+                  <Section3 
+                  nextSection={showImageUpload} 
+                  hobbies={hobbies} 
+                  setHobbies={setHobbies}/>
+              </Animated.View>
+              }
+
+              {section === 3 &&
+                <Animated.View style={{opacity: section3, height:'75%' }}>
+                  <Section4 
+                  nextSection={showImageUpload} 
+                  setGenderPreference={setGenderPreference} 
+                  genderPreference={genderPreference} 
+                  currMin={ageMin} currMax={ageMax} 
+                  setCurrMin={setAgeMin} 
+                  setCurrMax={setAgeMax} 
+                  radius={radius} 
+                  setRadius={setRadius} />
                 </Animated.View>}
     
     
-              {section === 3 &&
-                <Animated.View style={{opacity: section3, height:'75%'}}>
-                  <Section4 
+              {section === 4 &&
+                <Animated.View style={{opacity: section4, height:'75%'}}>
+                  <Section5 
                   setImage1={setImage1} 
                   setImage2={setImage2} 
                   setImage3={setImage3} 

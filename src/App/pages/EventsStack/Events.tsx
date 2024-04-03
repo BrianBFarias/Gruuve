@@ -183,7 +183,16 @@ export const EventsPage = ({navigation, route}:any) =>{
               <icons.Ionicons name={'add'} size={40} color={'white'} />
           </TouchableOpacity>
         </GestureHandlerRootView>}
-      <Modal isVisible={showPopup} animationOut={'slideOutDown'} onSwipeCancel={cancelDeletion} onBackdropPress={cancelDeletion} swipeDirection={'down'} useNativeDriver={true} hideModalContentWhileAnimating={true} style={{flex:1}} animationIn={'slideInUp'}>
+      <Modal 
+      isVisible={showPopup} 
+      animationOut={'slideOutDown'} 
+      onSwipeCancel={cancelDeletion} 
+      onBackdropPress={cancelDeletion} 
+      swipeDirection={'down'} 
+      useNativeDriver={true} 
+      hideModalContentWhileAnimating={true} 
+      style={{flex:1}} 
+      animationIn={'slideInUp'}>
         <View style={{ alignSelf:'center', gap:10, backgroundColor:'white', width:windowWidth, paddingHorizontal:20, paddingBottom:45,  borderRadius:15, justifyContent:'flex-start', position:'absolute', bottom:-20}}>
           <View style={{height:4, backgroundColor:'black', width:'20%', borderRadius:4, alignSelf:'center', opacity:0.5, marginTop:10}}/>
           <Text style={{textAlign:'center', fontSize:20, fontWeight:'700', paddingHorizontal:10}}>Confirm Event Deletion?</Text>

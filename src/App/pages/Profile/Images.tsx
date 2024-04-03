@@ -4,6 +4,7 @@ import { PERMISSIONS, RESULTS, request } from "react-native-permissions";
 import ImagePicker from 'react-native-image-crop-picker';
 import Icons from "../../../components/icons";
 import { Chase } from 'react-native-animated-spinkit'
+import FastImage from 'react-native-fast-image';
 
 export const Images =({allImages, setAllImages}:any) =>{
     const [permissionGranted, setPermissionGranted] = useState(false)
@@ -104,8 +105,8 @@ export const Images =({allImages, setAllImages}:any) =>{
         if (index < allImages.length){
             return (
                 <View style={{ position: 'relative', width: '100%', height: '100%', overflow: 'visible' }}>
-                    <Image
-                        source={{ uri: `${allImages[index]}` }} 
+                    <FastImage
+                        source={{ uri: `${allImages[index]}`, cache: FastImage.cacheControl.cacheOnly}} 
                         style={{ width: '100%', height: '100%', borderRadius:5, backgroundColor:'rgba(0,0,0,0.1)'}}
                         resizeMode="cover"
                     />
