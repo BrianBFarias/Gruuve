@@ -247,5 +247,6 @@ export const Height = [
     'Juggling',
     'Magic tricks',
     'Puppetry',
+    'Beach',
     'Beatboxing'
 ];

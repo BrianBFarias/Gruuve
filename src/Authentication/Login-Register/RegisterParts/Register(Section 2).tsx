@@ -4,7 +4,6 @@ import {AuthForm} from '../../AuthenticationStyling'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon3 from 'react-native-vector-icons/FontAwesome6'
 import { Dropdown } from 'react-native-element-dropdown';
-import { GreekOptions, Genders, Height } from '../../ProfileOptions';
 import Button1 from '../../../components/Button';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import GetLocation from 'react-native-get-location'
@@ -12,6 +11,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import findAge from '../../../components/ConstantFunctions/Age';
+import { GreekOptions, Genders, Height } from '../../ProfileOptions';
 
 export default function Section2({location, setLocation, organization, setOrganization, age, setAge, setGender, gender, nextSection, setBirthDate, height, setHeight}:any){
   const [isFocus0, setIsFocus0] = useState(false);

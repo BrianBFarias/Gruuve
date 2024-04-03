@@ -2,6 +2,7 @@
 #import <Firebase.h>
 
 #import <React/RCTBundleURLProvider.h>
+#import <GoogleMaps/GoogleMaps.h>
 
 @implementation AppDelegate
 
@@ -10,6 +11,7 @@
   [FIRApp configure];
   self.moduleName = @"Gruuve";
   // You can add your custom initial props in the dictionary below.
+  [GMSServices provideAPIKey:@"AIzaSyAi8JGNc7LPkqg2oACT-lVSR4GBZyLnx9M"]; // api key obtained from Google Console
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
 

@@ -11,6 +11,7 @@ import findAge from "../../../components/ConstantFunctions/Age";
 import { toDate } from "../../../components/ConstantFunctions/Date";
 import FastImage from "react-native-fast-image";
 import { HobbySelection } from "./HobbySelection";
+import { LocationSelection } from "./LocationSelection";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export default function ProfileMain({userData, disabled, navigation}:any){
@@ -20,8 +21,11 @@ export default function ProfileMain({userData, disabled, navigation}:any){
     const [allImages, setAllImages]  = useState<any>();
     const [age,setAge] = useState<any>()
     const [hobbiesPage, setHobbiesPage] = useState(false);
+
+    // popUps to edit Profile (Not preferences)
     const [hobbies, setHobbies] = useState(userData.Hobbies)
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
+    const [locationSelector, setLocationSelector] = useState(false)
 
     useEffect(()=>{
         fetchImages();
@@ -102,6 +106,12 @@ export default function ProfileMain({userData, disabled, navigation}:any){
         switch(num){
             case 4: setHobbiesPage(true) 
                 break; 
+            case 3:
+                setLocationSelector(true)
+                break
+            case 2:
+                setDatePickerVisibility(true)
+                break;
         }
     }
 
@@ -158,7 +168,7 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                     <Text style={style.text3}>{userData.Last}</Text>
                 </Pressable>
                 <View style={style.line}/>
-                <Pressable style={style.container1} onPress={()=> setDatePickerVisibility(true)}>
+                <Pressable style={style.container1} onPress={() => editOption(2)}>
                     <Text style={style.text2}>Age</Text>
                     <Text style={style.text1}>{age}</Text>
                 </Pressable>
@@ -168,7 +178,7 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                     <Text style={style.text1}>{userData.Height}</Text>
                 </Pressable>
                 <View style={style.line}/>
-                <Pressable style={style.container1}>
+                <Pressable style={style.container1} onPress={() => editOption(3)}>
                     <Text style={style.text2}>Location</Text>
                     <Text style={style.text1}>Gainesville, FL</Text>
                 </Pressable>
@@ -203,6 +213,11 @@ export default function ProfileMain({userData, disabled, navigation}:any){
             setIsVisible={setHobbiesPage}
             hobbies={hobbies}
             setHobbies={setHobbies}
+            />
+            <LocationSelection 
+            isVisible={locationSelector}
+            setIsVisible={setLocationSelector}
+            currentLocation={userData.Location}
             />
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
