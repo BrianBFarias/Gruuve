@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { View, Text, Animated, StyleSheet, TouchableOpacity, Image, Dimensions, Pressable, Easing, TouchableWithoutFeedback } from "react-native"
+import { View, Text, Animated, StyleSheet, TouchableOpacity, Image, Dimensions, Pressable, Easing, TouchableWithoutFeedback, ScrollView } from "react-native"
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import Swiper from 'react-native-swiper'
@@ -23,12 +23,14 @@ const scale1 = button1.interpolate({inputRange, outputRange});
 const scale2 = button2.interpolate({inputRange, outputRange});
 const scaleCenter = centerButton.interpolate({inputRange, outputRange});
 
-export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline, userID, setNextPost, slideUp}:any) =>{
+export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline, user, setNextPost, slideUp}:any) =>{
     const [images, setImages] = useState<string[]>();
     const [userInfo,setUserInfo] = useState<any>()
     const [age,setAge] = useState<any>()
     const [load, setLoad] = useState(true)
-    const hideDescription = useRef(true)
+    const hideDescription = useRef(true);
+
+    const tabSize = (100/user.ImageURLs.length);
 
     const slideUpButtons = slideUp.interpolate({
         inputRange: [0, 1],
@@ -69,9 +71,9 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
         setNextPost(val)
 
         switch(val){
-            case 1: await reject(EventInfo.Host, userID);
-            case 2: await decline(EventInfo.id, userID);
-            case 3: await accept(EventInfo.id, userID);
+            case 1: await reject(EventInfo.Host, user.id);
+            case 2: await decline(EventInfo.id, user.id);
+            case 3: await accept(EventInfo.id, user.id);
         }
 
         setNextPost(-1)
@@ -124,10 +126,10 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     },[])
 
     const position = ()=>{
-        return(<View style={{backgroundColor:'rgba(255,255,255,.3)', width:'20%', height: 5,borderRadius: 4, marginLeft: 3, marginRight: 3}} />)
+        return(<View style={{backgroundColor:'rgba(255,255,255,.3)', width:`${tabSize}%`, height: 5,borderRadius: 4, marginLeft: 3, marginRight: 3}} />)
     }
     const activePosition = ()=>{
-        return(<View style={{backgroundColor:'rgba(255,255,255,.8)', width:'20%', height: 5,borderRadius: 4, marginLeft: 3, marginRight: 3}} />)
+        return(<View style={{backgroundColor:'rgba(255,255,255,.8)', width:`${tabSize}%`, height: 5,borderRadius: 4, marginLeft: 3, marginRight: 3}} />)
     }
 
     async function flip(){
@@ -152,7 +154,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
         start={{x: 0, y: 0}} end={{x: 0, y: 1}}
         locations={[0,0.5]}
         style={{flex:1}}>
-        <View style={{height:'62%', marginBottom:5, backgroundColor:'black'}}>
+        <View style={{height:'62%', marginBottom:0, backgroundColor:'black'}}>
                 {images && !load?
                 <View style={styles.slide}>
                     <View style={{flex:1}}>
@@ -185,9 +187,8 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
                             }}}>
                                 <View style={styles.imageTapSection} />
                             </TouchableWithoutFeedback>}
-                        ref={swiperRef} 
-                        >
-
+                        ref={swiperRef} >
+                        
                         {images.map((url, index)=>{
                             // Main Image
                             if(index === 0){
@@ -229,7 +230,30 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
                     </View>
                 </View>  }
         </View>
-        <View style={{height:'15%', margin:10, shadowColor:'white', shadowOpacity:1, shadowRadius:3, shadowOffset:{height:0, width:0}}}>
+        {/* More user Info */}
+        <ScrollView style={{backgroundColor:'rgb(240,240,240)', padding:8, flexDirection:'row',  alignSelf:'center', maxHeight:40}} horizontal>
+            <View style={styles.info}>
+                <icons.FontAwesome6 name="ruler-vertical" color='black' style={{alignSelf:'center'}} size={18} />
+                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{user.Height}</Text>
+            </View>
+            {user.School !==0 && 
+            <View style={styles.info}>
+                <icons.Ionicons name="school" color='black' style={{alignSelf:'center'}} size={18} />
+                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{user.School}</Text>
+            </View>}
+            <View style={styles.info}>
+                <icons.FontAwesome6 name="building-columns" color='black' style={{alignSelf:'center'}} size={18} />
+                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{user.Organization}</Text>
+            </View>
+            <View style={styles.info}>
+                <icons.FontAwesome6 name="person-running" color='black' style={{alignSelf:'center'}} size={18} />
+                {user.Hobbies.map((hobby:string, index:number) => (
+                    <Text key={index} style={{color: 'white', alignSelf:'center', fontSize:12, backgroundColor:'black', padding:4, borderRadius:5, overflow:'hidden', fontWeight:'500'}}>{hobby}</Text>
+                ))}
+            </View>
+        </ScrollView>
+        {/* Card */}
+        <View style={{flex:1, margin:10, shadowColor:'transparent', shadowOpacity:1, shadowRadius:3, shadowOffset:{height:0, width:0}}}>
             <View style={{overflow:'hidden', flex:1, width:windowWidth-15}}>
                 <Animated.View style={[{backgroundColor:'transparent', flexDirection:'row', width:'200%', transform:[{ translateX: move }]}]}>
                     <View style={[styles.description]}>
@@ -382,5 +406,10 @@ const styles = StyleSheet.create({
         width:windowWidth*.5,
         justifyContent:'center',
     },
-    
+    info:{
+        justifyContent:'center', 
+        flexDirection:'row',
+        marginHorizontal:10,
+        gap:6,
+    }
   })

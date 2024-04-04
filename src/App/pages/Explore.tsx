@@ -23,7 +23,7 @@ export const Explore = ({route}:any) =>{
     const [GroupEventInfo, setGroupEventInfo] = useState<any>(null);
     const [GroupEventInfoEmpty, setGroupEventInfoEmpty] = useState(false)
     const [loading, setLoading] = useState(false);
-    const [userID, setUserID] = useState(null)
+    const [user, setUser] = useState(null)
     const [nextPost, setNextPost] = useState(0)
 
     const transitionIconName = useRef('');
@@ -107,7 +107,7 @@ export const Explore = ({route}:any) =>{
 
     useEffect(()=>{
         const {userData} = route.params
-        setUserID(userData.id)
+        setUser(userData)
 
         if((!EventInfo || EventInfo.length===0 )|| (!GroupEventInfo || GroupEventInfo.length===0)){
             const fetchData = async () => {
@@ -302,7 +302,7 @@ export const Explore = ({route}:any) =>{
                         reject={reject} 
                         decline={decline} 
                         accept={accept} 
-                        userID={userID}
+                        user={user}
                         setNextPost={setNextPost}
                         />)):
                 (!GroupEventInfo || loading ? 

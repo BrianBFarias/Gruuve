@@ -71,15 +71,12 @@ export default function Section2({location, setLocation, organization, setOrgani
   }
 
   function next(){
-    // if(age.value === 0 || organization === "" || location.Location === "" || age === 0 ){
-    //   return;
-    // }
-    // else if(hobbies.length === 0){
-    //   return;
-    // }
-    // else if(location.Coordinates.longitude === 0 || location.Coordinates.latitude === 0){
-    //   return;
-    // }
+    if(age.value === 0 || organization === "" || location.Location === "" || age === 0 ){
+      return;
+    }
+    else if(location.Coordinates.longitude === 0 || location.Coordinates.latitude === 0){
+      return;
+    }
     nextSection()
   }
   
@@ -108,29 +105,6 @@ export default function Section2({location, setLocation, organization, setOrgani
     setBirthDate(date)
     
     setDatePickerVisibility(false);
-  };
-
-
-  const renderItem = (item: { label: any}) => {
-    return (
-      <View style={styles.item}>
-        <Text style={{color:'black'}}>{item.label}</Text>
-        <Icon color="white" name="check-circle" size={20} />
-      </View>
-    );
-  };
-
-  const renderSelectedItem =  (item: any, unSelect:any) => {
-    return (
-      <TouchableOpacity onPress={() => unSelect && unSelect(item)}>
-        <View style={{shadowColor: 'black', shadowRadius:3,shadowOpacity:0.5, shadowOffset: {width: 0,height: 1,},}}>
-          <View style={styles.selectedStyle}>
-            <Text style={{color:'white', marginHorizontal:12}}>{item.label}</Text>
-            <Icon color="white" name="close" size={17} style={{backgroundColor:'rgba(0,0,0,0.2)', paddingVertical:8, paddingHorizontal:4}} />
-          </View>
-        </View>
-    </TouchableOpacity>
-    );
   };
 
     return(
