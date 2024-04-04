@@ -152,8 +152,8 @@ export const NewEvent = ({navigation, route}:any) =>{
                 >
                 <Icons.MaterialIcons name="location-on" style={{alignSelf:'center'}} size={50} color='#539953'/>
             </MapView>
-            <View style={{position:'relative', zIndex:21, top:-10}}>
-                <KeyboardAwareScrollView contentContainerStyle={{position:'relative', display:'flex', zIndex:20, justifyContent:'flex-start', gap:10, borderTopLeftRadius:12, borderTopRightRadius:12, backgroundColor:'whitesmoke', overflow:'hidden'}} bounces={false}>
+            <View style={{position:'relative', zIndex:21, top:-6}}>
+                <KeyboardAwareScrollView contentContainerStyle={{position:'relative', display:'flex', justifyContent:'flex-start', gap:10, borderTopLeftRadius:12, borderTopRightRadius:12, backgroundColor:'whitesmoke'}} bounces={false}>
                     <View style={{alignSelf:'center'}}>
                         <View style={{backgroundColor:'white', flexDirection:'row', justifyContent:'space-between', gap:20, padding:5, paddingHorizontal:20, borderBottomLeftRadius:12, borderBottomRightRadius:12}}>
                             <TouchableOpacity onPress={()=>setIndividual(true)}>
