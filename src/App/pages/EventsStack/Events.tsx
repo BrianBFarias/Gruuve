@@ -25,7 +25,6 @@ export const EventsPage = ({navigation, route}:any) =>{
     const [showPopup, setShowPopup] = useState(false);
     const [deletionSelection, setDeletionSelection] = useState([{} as EventProp, -1]);
     const [fetching, setFetching] = useState(false)
-    
     let prevOpenedRow:any;
     let row: Array<any> = [];
 
@@ -139,7 +138,7 @@ export const EventsPage = ({navigation, route}:any) =>{
 
       function onRefresh() {
         setFetching(true)
-        // fetchEvents();
+        fetchEvents();
         setTimeout(()=>{
           setFetching(false)
         }, 600)
@@ -184,15 +183,15 @@ export const EventsPage = ({navigation, route}:any) =>{
           </TouchableOpacity>
         </GestureHandlerRootView>}
       <Modal 
-      isVisible={showPopup} 
-      animationOut={'slideOutDown'} 
-      onSwipeCancel={cancelDeletion} 
-      onBackdropPress={cancelDeletion} 
-      swipeDirection={'down'} 
-      useNativeDriver={true} 
-      hideModalContentWhileAnimating={true} 
-      style={{flex:1}} 
-      animationIn={'slideInUp'}>
+        isVisible={showPopup} 
+        animationOut={'slideOutDown'} 
+        onSwipeCancel={cancelDeletion} 
+        onBackdropPress={cancelDeletion} 
+        swipeDirection={'down'} 
+        useNativeDriver={true} 
+        hideModalContentWhileAnimating={true} 
+        style={{flex:1}} 
+        animationIn={'slideInUp'}>
         <View style={{ alignSelf:'center', gap:10, backgroundColor:'white', width:windowWidth, paddingHorizontal:20, paddingBottom:45,  borderRadius:15, justifyContent:'flex-start', position:'absolute', bottom:-20}}>
           <View style={{height:4, backgroundColor:'black', width:'20%', borderRadius:4, alignSelf:'center', opacity:0.5, marginTop:10}}/>
           <Text style={{textAlign:'center', fontSize:20, fontWeight:'700', paddingHorizontal:10}}>Confirm Event Deletion?</Text>

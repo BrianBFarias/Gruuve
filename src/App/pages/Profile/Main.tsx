@@ -16,8 +16,9 @@ import FastImage from "react-native-fast-image";
 import { HobbySelection } from "./HobbySelection";
 import { LocationSelection } from "./LocationSelection";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import {CircleFade} from 'react-native-animated-spinkit'
 
-export default function ProfileMain({userData, disabled, navigation}:any){
+export default function ProfileMain({userData, disabled, navigation, settingsToggle}:any){
     LogBox.ignoreAllLogs();
 
     const [Image1, setImage1] = useState<any>();
@@ -25,6 +26,7 @@ export default function ProfileMain({userData, disabled, navigation}:any){
     const [age,setAge] = useState<any>();
     const [hobbiesPage, setHobbiesPage] = useState(false);
     const [location, setLocation] = useState('Gainesville, FL')
+    const [saving, setSaving] = useState(false);
 
     // popUps to edit Profile (Not preferences)
     const [hobbies, setHobbies] = useState(userData.Hobbies)
@@ -56,7 +58,7 @@ export default function ProfileMain({userData, disabled, navigation}:any){
             setImage1(downloadedUrls[0])
             // downloadedUrls.shift()
             // console.log(downloadedUrls)
-            setAllImages(downloadedUrls.splice(1,downloadedUrls.length-1))
+            setAllImages(downloadedUrls)
         }
     }
 
@@ -123,7 +125,8 @@ export default function ProfileMain({userData, disabled, navigation}:any){
         <>            
         <SafeAreaView style={{backgroundColor:'rgb(240,240,240)', marginBottom:6,zIndex:12}} />
         <ScrollView style={{flex:1, width:'100%', overflow:'visible', zIndex:10}} bounces={false}>
-            <TouchableOpacity onPress={setMainImage} style={{height: 100, width:100, shadowColor:'black', shadowOffset:{height:0, width:0}, shadowRadius:4, shadowOpacity:0.5, alignSelf:'center', borderRadius:150, borderColor:'green', borderWidth:4}}>
+            {/* Profile Pic tbd if removed */}
+            {/* <TouchableOpacity onPress={setMainImage} style={{height: 100, width:100, shadowColor:'black', shadowOffset:{height:0, width:0}, shadowRadius:4, shadowOpacity:0.5, alignSelf:'center', borderRadius:150, borderColor:'green', borderWidth:4}}>
                 <View style={{position:'absolute', top:0, right:0, height:25, width:25, backgroundColor:'white', zIndex:3, borderRadius:20, justifyContent:'center'}}>
                     <View style={{alignSelf:'center'}}><icons.MaterialIcons name='edit' size={16} color='black'/></View>
                 </View>
@@ -139,14 +142,21 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                         resizeMode="cover"
                     />}
                 </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <View style={{width:'90%', flexDirection:'row', alignContent:'center', alignSelf:'center', justifyContent:'space-between'}}>
+                <TouchableOpacity onPress={settingsToggle} style={{marginTop:10}}>
+                    <icons.FontAwesome6 name='sliders' size={25} color='black' opacity={0.7}/>
+                </TouchableOpacity>
+                <Text style={{textAlign:'right', alignSelf:'center', fontSize:30, fontWeight:'800', opacity:0.8}}>Your Profile</Text>
+            </View>
             <View style={{width:'100%', backgroundColor:'rgba(0,0,0,0)', paddingVertical:20}}>
                 <Images 
-                allImages={allImages}
-                setAllImages ={setAllImages}
-                refetch = {refetch} />
+                    allImages={allImages}
+                    setAllImages ={setAllImages}
+                    // refetch = {refetch}
+                    setSaving={setSaving} />
             </View>
-            {userData.premiumMember && <TouchableOpacity style={{marginHorizontal:8, shadowColor:'black', shadowRadius:6, shadowOffset:{height:1, width:0}, shadowOpacity:0.5}} onPress={Subscription}>
+            {!userData.premiumMember && <TouchableOpacity style={{marginHorizontal:8, shadowColor:'black', shadowRadius:6, shadowOffset:{height:1, width:0}, shadowOpacity:0.5}} onPress={Subscription}>
                 <LinearGradient
                     colors={['#295d16', '#558843']}
                     start={{x: 0.0, y: 0.25}} end={{x: 0.5, y: 1.0}}
@@ -213,15 +223,15 @@ export default function ProfileMain({userData, disabled, navigation}:any){
             </View>
             {/* Pop Ups */}
             <HobbySelection 
-            isVisible={hobbiesPage}
-            setIsVisible={setHobbiesPage}
-            hobbies={hobbies}
-            setHobbies={setHobbies}
+                isVisible={hobbiesPage}
+                setIsVisible={setHobbiesPage}
+                hobbies={hobbies}
+                setHobbies={setHobbies}
             />
             <LocationSelection 
-            isVisible={locationSelector}
-            setIsVisible={setLocationSelector}
-            currentLocation={userData.Location}
+                isVisible={locationSelector}
+                setIsVisible={setLocationSelector}
+                currentLocation={userData.Location}
             />
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
@@ -230,6 +240,10 @@ export default function ProfileMain({userData, disabled, navigation}:any){
                 onCancel={()=>{ setDatePickerVisibility(false);}}
             />
         </ScrollView>
+        {saving && 
+            <View style={{width:'100%', height:'100%', left:0, top:0, backgroundColor:'rgba(0,0,0,0.6)', zIndex:200, position:'absolute', justifyContent:'center'}}>
+                <CircleFade style={{alignSelf:'center'}} color="white"/>
+            </View>}
         </>
     )
 }

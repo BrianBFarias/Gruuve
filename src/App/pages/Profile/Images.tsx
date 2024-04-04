@@ -6,7 +6,12 @@ import Icons from "../../../components/icons";
 import { Chase } from 'react-native-animated-spinkit'
 import FastImage from 'react-native-fast-image';
 
-export const Images =({allImages, setAllImages}:any) =>{
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+
+
+export const Images =({allImages, setAllImages, setSaving}:any) =>{
     const [permissionGranted, setPermissionGranted] = useState(false)
 
     useEffect(()=>{
@@ -38,7 +43,12 @@ export const Images =({allImages, setAllImages}:any) =>{
       }
     }
 
+    function saveImage(){
+
+    }
+
     const onImageGalleryClick = async (index:any) => {
+      const uid = auth().currentUser?.uid;
         try{
           ImagePicker.openPicker({
             width: 300,
@@ -46,11 +56,11 @@ export const Images =({allImages, setAllImages}:any) =>{
             cropping: true,
             mediaType:'photo',
             includeBase64:true,
-            forceJpg:true
-          }).then(image => {
+            forceJpg:true,
+          }).then(async image => {
 
             // if image selected clear old image and set new one
-            if (image && image.sourceURL && image.cropRect) {
+            if (image && image.sourceURL && image.cropRect && image.data) {
                 const saveImage = {
                     uri: image.sourceURL,
                     data: image.data,
@@ -60,25 +70,116 @@ export const Images =({allImages, setAllImages}:any) =>{
                     x: image.cropRect.x,
                     y: image.cropRect.y,
                 }
+                setSaving(true)
+                // Adding image to end
+                if(index+1 > allImages.length){
 
-                switch (allImages.length) {
-                  case 1:
-                    // Save Image 1
-                    break;
-                  case 2:
-                    // Save Image 2
-                    break;
-                  case 3:
-                    // Save Image 3
-                    break;
+                  let path = `${uid}/`;
+                  let fileName =path + saveImage.uri.substring(saveImage.uri.lastIndexOf('/') + 1);
+
+                  try{
+                    await storage().ref(fileName).putString(saveImage.data, "base64", {contentType: 'image/jpg'});
+                  }
+                  catch(e){
+                    console.log(e)
+                    return;
+                  }
+
+                  const url = await storage().refFromURL('gs://greekgators-38675.appspot.com/' + fileName).getDownloadURL();
+
+                  setAllImages((allImages: any) => [...allImages, url]);
+
+                  firestore()
+                  .collection('Users')
+                  .doc(uid)
+                  .get()
+                  .then(doc => {
+                    if (doc.exists) {
+                        const currentImageURLs = doc.data()?.ImageURLs || []; // Get the current array or initialize to empty array
+                        const updatedImageURLs = [...currentImageURLs, fileName]; // Append the new image URL
+                        
+                        // Update Firestore with the modified array
+                        return firestore()
+                            .collection('Users')
+                            .doc(uid)
+                            .update({
+                                ImageURLs: updatedImageURLs
+                            }).then(()=>{
+                              setSaving(false)
+                            })
+                    } else {
+                        console.log('Document does not exist');
+                    }
+                })
+                .then(() => {
+                    console.log('Image URLs updated in Firestore');
+                })
+                .catch(error => {
+                    console.error('Error updating document: ', error);
+                });
                 }
+
+                // Replcaing existing image
+                else{
+                  const selectedImageRef = storage().refFromURL(allImages[index]);
+
+                  let path = `${uid}/`;
+                  let fileName =path + saveImage.uri.substring(saveImage.uri.lastIndexOf('/') + 1);
+
+                  try{
+                    await storage().ref(fileName).putString(saveImage.data, "base64", {contentType: 'image/jpg'});
+                    await selectedImageRef.delete();
+                  }
+                  catch(e){
+                    console.log(e)
+                    return;
+                  }
+
+                  const url = await storage().refFromURL('gs://greekgators-38675.appspot.com/' + fileName).getDownloadURL();
+
+                  let temp = allImages;
+                  temp[index] = url;
+                  setAllImages(temp);
+
+                  firestore()
+                  .collection('Users')
+                  .doc(uid)
+                  .get()
+                  .then(doc => {
+                    if (doc.exists) {
+                        const imageURLs = doc.data()?.ImageURLs || []; // Get the current array or initialize to empty array
+                        imageURLs[index] = fileName // Append the new image URL
+                        
+                        // Update Firestore with the modified array
+                        return firestore()
+                            .collection('Users')
+                            .doc(uid)
+                            .update({
+                                ImageURLs: imageURLs
+                            }).then(()=>{
+                              setSaving(false)
+                            })
+                    } else {
+                        console.log('Document does not exist');
+                    }
+                })
+                .then(() => {
+                    console.log('Image URLs updated in Firestore');
+                })
+                .catch(error => {
+                    console.error('Error updating document: ', error);
+                });
+
+                }
+
             }
             // no new image selected no changes made
             else{
               return;
             }
         });
-        }catch{
+        }catch(error){
+          console.warn(error)
           return;
         }
     }
@@ -104,18 +205,21 @@ export const Images =({allImages, setAllImages}:any) =>{
 
         if (index < allImages.length){
             return (
-                <View style={{ position: 'relative', width: '100%', height: '100%', overflow: 'visible' }}>
+                <View style={[{ position: 'relative', width: '100%', height: '100%', overflow: 'visible', borderRadius:5 }, index == 0?{zIndex:19, borderColor:'green', borderWidth:3, borderRadius:10}:null]}>
                     <FastImage
                         source={{ uri: `${allImages[index]}`, cache: FastImage.cacheControl.immutable}} 
-                        style={{ width: '100%', height: '100%', borderRadius:5, backgroundColor:'rgba(0,0,0,0.1)'}}
+                        style={{ width: '100%', height: '100%', backgroundColor:'rgba(0,0,0,0.1)', borderRadius:5}}
                         resizeMode="cover"
                     />
-                    <TouchableOpacity onPress={()=>{RemoveImage(index)}} style={{ position: 'absolute', left: -8, top: -8,padding:2, backgroundColor: '#153808', borderRadius: 20, overflow: 'hidden' }}>
-                        <Icons.MaterialIcons color="white" name="close" size={20}/>
+                    <TouchableOpacity 
+                    onPress={()=>{if(index !=0){RemoveImage(index)}}} 
+                    style={[{ position: 'absolute', left: -8, top: -8,padding:2, backgroundColor: '#153808', borderRadius: 20, overflow: 'hidden', zIndex:40}]} disabled={index==0?true:false}>
+                        <Icons.MaterialIcons color="white" name={index == 0 ?"star":"close"} size={20}/>
                     </TouchableOpacity>
                 </View>
             );
-        }else{
+        }
+        else if(index == allImages.length){
             return(
                 <View
                     style={{
@@ -132,43 +236,49 @@ export const Images =({allImages, setAllImages}:any) =>{
                 </View>
             );
         } 
+        else{
+          return(
+            <View
+          style={{
+            flex: 1,
+            backgroundColor: "black",
+            opacity:0.2,
+            justifyContent: "center",
+            alignItems: "center",
+            borderWidth:2,
+            borderRadius:5,
+            zIndex:4,
+          }} />
+          )
+        }
     }
 
     return(<>
         {allImages ? <View
-        style={{flexDirection: "row", flexWrap: "wrap", paddingHorizontal:0, justifyContent:'space-evenly'}}>
-            {[...Array(3)].map((_, index) => (
+        style={{flexDirection: "row", flexWrap: "wrap", paddingHorizontal:0, justifyContent:'center', gap:10}}>
+            {[...Array(4)].map((_, index) => (
               <TouchableOpacity
                 key={index}
                 style={{
-                  width: "30%",
+                  width: "45%",
                   aspectRatio: 3 / 3.2,
                   borderRadius: 5,
                 }}
                 onPress={() => {
-                  onImageGalleryClick(index); // Add 1 to index to match image number
+                  if(index <= allImages.length){onImageGalleryClick(index)}; // Add 1 to index to match image number
                 }}
               >
-                {index === 0 ? (
-                    renderCroppedImage({ index:index  })
-
-                ) : index === 1 ? (
-                    renderCroppedImage({ index:index  })
-
-                ) : index === 2 ? (
-                    renderCroppedImage({ index:index  })
-
-                ) : (null)}
+                {renderCroppedImage({ index:index  })}
               </TouchableOpacity>
             ))}
         </View>:
         <View
-        style={{flexDirection: "row", flexWrap: "wrap", paddingHorizontal:0, justifyContent:'space-evenly'}}>
-            {[...Array(3)].map((_, index) => (
+        style={{flexDirection: "row", flexWrap: "wrap", paddingHorizontal:0, justifyContent:'center', gap:10}}>
+            {[...Array(4)].map((_, index) => (
               <View
                 key={index}
                 style={{
-                  width: "30%",
+                  width: "45%",
                   aspectRatio: 3 / 3.2,
                   borderRadius: 5,
                 }}

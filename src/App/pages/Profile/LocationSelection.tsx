@@ -5,22 +5,45 @@ import icons from '../../../components/icons';
 import Icons from '../../../components/icons';
 import { LocationName } from '../../../components/ConstantFunctions/LocName';
 import { useEffect, useRef, useState } from 'react';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 interface coordinate {
     latitude: number | undefined;
     longitude: number | undefined;
 }
 
-export function LocationSelection({isVisible, setIsVisible, currentLocation}:any){
+export function LocationSelection({isVisible, setIsVisible, currentLocation,}:any){
     const [tempLocation, setTempLocation] = useState<coordinate>(currentLocation)
     const [accessable, setAccessable] = useState(false)
     const [locationName, setLocationName] = useState('');
 
     const mapViewRef = useRef<MapView>(null);
 
-    function confirmation(){
-        // Save Location
-        
+    async function confirmation() {
+        const currentUser = auth().currentUser;
+        if (currentUser) {
+
+            // Perform the Firestore update with the user ID
+            await firestore()
+                .collection('Users')
+                .doc(currentUser.uid)
+                .update({
+                    Location: {
+                        Latitude: tempLocation.latitude,
+                        Longitude: tempLocation.longitude
+                    },
+                })
+                .then(() => {
+                    setIsVisible(false);
+                })
+                .catch(error => {
+                    console.error("Error updating document: ", error);
+                });
+        } else {
+            // No user is signed in
+            console.error("No user signed in.");
+        }
     }
 
     function updateLocation(Region:coordinate){
@@ -35,7 +58,6 @@ export function LocationSelection({isVisible, setIsVisible, currentLocation}:any
             setLocationName(tempName);
         }
     }
-    
 
     useEffect(()=>{
         updateLocationName()
@@ -81,10 +103,10 @@ export function LocationSelection({isVisible, setIsVisible, currentLocation}:any
                                 latitudeDelta: 0.09,
                                 longitudeDelta: 0.09,
                             }}>
-                        <Icons.MaterialIcons name="location-on" style={{alignSelf:'center', justifyContent:'center'}} size={50} color='#295d16'/>
+                        <Icons.MaterialIcons name="location-on" style={{alignSelf:'center'}} size={50} color='#539953'/>
                     </MapView>
                     {accessable && <View style={{bottom:'10%', position:'absolute', width:'100%', alignItems:'center'}}>
-                        <Text style={{fontSize:25, fontWeight:'800', shadowColor:'white', shadowOffset:{height:0, width:0}, shadowOpacity:0.8, shadowRadius:3, color:'#295d16'}}>{locationName}</Text>
+                        <Text style={{fontSize:26, fontWeight:'800', shadowColor:'white', shadowOffset:{height:0, width:0}, shadowOpacity:0.1, shadowRadius:3, color:'#052605'}}>{locationName}</Text>
                         <SafeAreaView />
                     </View>}
                 </View>

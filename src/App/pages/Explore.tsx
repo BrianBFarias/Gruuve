@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {SafeAreaView, StyleSheet, Text, View, Animated, StatusBar} from "react-native"
+import {SafeAreaView, StyleSheet, Text, View, Animated, StatusBar, Easing} from "react-native"
 import LinearGradient from 'react-native-linear-gradient';
 import { Switch } from 'react-native-switch';
 import Loading from "../../components/Loading";
@@ -18,9 +18,9 @@ const nextAnimation = new Animated.Value(0);
 export const Explore = ({route}:any) =>{
     const [toggle, setToggle] = useState(true);
     const [selection, setSelection] = useState(toggle)
-    const [EventInfo, setEventInfo] = useState<any>();
+    const [EventInfo, setEventInfo] = useState<any>(null);
     const [EventInfoEmpty, setEventInfoEmpty] = useState(false)
-    const [GroupEventInfo, setGroupEventInfo] = useState<any>();
+    const [GroupEventInfo, setGroupEventInfo] = useState<any>(null);
     const [GroupEventInfoEmpty, setGroupEventInfoEmpty] = useState(false)
     const [loading, setLoading] = useState(false);
     const [userID, setUserID] = useState(null)
@@ -29,19 +29,15 @@ export const Explore = ({route}:any) =>{
     const transitionIconName = useRef('');
 
     const transitionIconPop = nextAnimation.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0.6, 1.2],
-      }); 
-    const transitionIconRotate = nextAnimation.interpolate({
-        inputRange: [0, 0.5, 1],
-        outputRange: ['0deg', '15deg', '0deg'],
+        inputRange: [0, 2],
+        outputRange: [0.6, 1.4],
       }); 
 
     const TransitionIcon = () =>{
         Animated.timing(nextAnimation, {
-            toValue: 1,
-            duration: 200,
-            delay:100,
+            toValue: 2,
+            duration: 300,
+            delay:50,
             useNativeDriver: true,
           }).start();
 
@@ -88,20 +84,22 @@ export const Explore = ({route}:any) =>{
    },[])
 
     const fetchEvent = async ({userData}:any) =>{
-        console.log('Getting more events')
         // Indivudal
-        if(toggle && (!EventInfo || EventInfo.length===0)){
+        if(toggle && (EventInfo == null || EventInfo.length===0 && !EventInfoEmpty)){
             setLoading(true)
             const results = await fetchIndividualEvents({userData})
-            if(results?.length !== 0){
-                setEventInfoEmpty(false)
+            if(results && results.length === 0){
+                setEventInfoEmpty(true)
             }
             setEventInfo(results)
         }
         // Group
-        else if(!GroupEventInfo){
+        else if((GroupEventInfo == null || GroupEventInfo.length===0 && !GroupEventInfoEmpty)){
             setLoading(true)
             const results = await fetchGroupEvents({userData});
+            if(results && results.length === 0){
+                setGroupEventInfoEmpty(true)
+            }
             setGroupEventInfo(results)
         }
         setLoading(false)
@@ -110,9 +108,8 @@ export const Explore = ({route}:any) =>{
     useEffect(()=>{
         const {userData} = route.params
         setUserID(userData.id)
-        console.log(EventInfo?.length)
 
-        if(EventInfo?.length === 0 || GroupEventInfo?.length === 0 || !EventInfo || !GroupEventInfo){
+        if((!EventInfo || EventInfo.length===0 )|| (!GroupEventInfo || GroupEventInfo.length===0)){
             const fetchData = async () => {
                 fetchEvent({userData});
             };
@@ -170,6 +167,88 @@ export const Explore = ({route}:any) =>{
         </View>)
     }
 
+    const fetchGroupEvents = async ({userData}:any) =>{
+        const radius = userData.Preference.Radius;
+        const lat = userData.Location.Latitude;
+        const lng = userData.Location.Longitude;
+        const minAge = userData.Preference.AgeRange.min;
+        const maxAge = userData.Preference.AgeRange.max;
+    
+        const firestoreRef = firebase.firestore();
+    
+        // @ts-ignore
+        const GeoFirestore = geofirestore.initializeApp(firestoreRef);
+    
+        try{
+            const geocollection = GeoFirestore.collection('Events');
+    
+            const query = geocollection.near({ center: new firebase.firestore.GeoPoint(lat, lng), radius: radius }).native;
+    
+            const AgeFiltered = query
+            .where('AgeMin', '>=', minAge)
+            .where('AgeMax', '<=', maxAge)
+            .where('Individual', '==', false)
+            .orderBy('Age')
+            .orderBy('Date', 'desc')
+            .get();
+            
+            const results  = (await AgeFiltered).docs;
+
+            if(results.length == 0){
+                setGroupEventInfoEmpty(true)
+            }
+            return results;
+    
+        }catch(error){
+            console.log(error)
+            return [];
+        }
+    
+    }
+    
+    const fetchIndividualEvents = async ({userData}:any) =>{
+        const radius = userData.Preference.Radius;
+        const lat = userData.Location.Latitude;
+        const lng = userData.Location.Longitude;
+        const minAge = userData.Preference.AgeRange.min;
+        const maxAge = userData.Preference.AgeRange.max;
+        const desiredSex = userData.Preference.Sex;
+        const uid = userData.uid;
+    
+        const firestoreRef = firebase.firestore();
+    
+        // @ts-ignore
+        const GeoFirestore = geofirestore.initializeApp(firestoreRef);
+    
+        try{
+            const geocollection = GeoFirestore.collection('Events');
+    
+            const query = geocollection.near({ center: new firebase.firestore.GeoPoint(lat, lng), radius: radius }).native;
+    
+            const AgeFiltered = query
+            .where('Age', '>=', minAge)
+            .where('Age', '<=', maxAge)
+            .where('Sex', '==', `${desiredSex}`)
+            .where('Individual', '==', true)
+            .orderBy('Age')
+            .orderBy('Date', 'desc')
+            .limit(6)
+            .get();
+            
+            const results  = (await AgeFiltered).docs;
+
+            if(results.length == 0){
+                setEventInfoEmpty(true)
+            }
+
+            return results;
+    
+        }catch(error){
+            console.log(error)
+            return null;
+        }
+    }
+
     return(
     <View 
         style={{backgroundColor:'black', flex:1, width:'100%'}}>
@@ -199,12 +278,18 @@ export const Explore = ({route}:any) =>{
                     switchWidthMultiplier={5}
                     />
                 </View>
-                <Animated.View style={{position:"absolute", height:'100%', width:'100%', alignItems:'center', justifyContent:'center', zIndex:10, pointerEvents:'none', opacity:nextAnimation, transform:[{scale:transitionIconPop}, {rotate:transitionIconRotate}]}}>
-                    <Icons.MaterialCommunityIcons name={transitionIconName.current} color={transitionIconName.current === 'close' ? 'red': transitionIconName.current === 'infinity'? 'white':'green'} size={80}/>
+                <Animated.View style={{position:'absolute', width:'100%', height: '100%', top:0, backgroundColor:'#4b8a43', opacity:nextAnimation, pointerEvents:'none', zIndex:101}}>
+                    <Animated.View style={{position:"absolute", height:'100%', width:'100%', alignItems:'center', justifyContent:'center', zIndex:10, pointerEvents:'none', transform:[{scale:transitionIconPop}]}}>
+                        <Icons.MaterialCommunityIcons 
+                        name={transitionIconName.current} 
+                        color={transitionIconName.current === 'close' ? '#8f0600': transitionIconName.current === 'infinity'? 'white':'black'} 
+                        opacity={transitionIconName.current === 'send-check' || transitionIconName.current === 'close'?0.6:0.8}
+                        size={80}/>
+                    </Animated.View>
                 </Animated.View>
-            <Animated.View style={{opacity:eventCard, flex:1, width:'100%'}}>
+            <Animated.View style={{opacity:eventCard, flex:1, width:'100%', backgroundColor:'whitesmoke', borderTopLeftRadius:10, borderTopRightRadius:10}}>
                 {toggle ?
-                (!EventInfo || loading ? 
+                (!EventInfo|| loading ? 
                     (<View style={{flex:1}}><Loading /></View>):
                     (EventInfoEmpty?
                         empty({text:'No Individual Events'}): 
@@ -220,15 +305,15 @@ export const Explore = ({route}:any) =>{
                         userID={userID}
                         setNextPost={setNextPost}
                         />)):
-                (GroupEventInfoEmpty ? 
+                (!GroupEventInfo || loading ? 
                     (<View style={{flex:1}}><Loading /></View>):
-                    (GroupEventInfo.length === 0 ?
+                    (GroupEventInfoEmpty ?
                         empty({text:'No Group Events'}): 
                         <Group 
                         setGroupEventInfo={setGroupEventInfo} 
                         fade={fade} 
                         startFadeIn={startFadeIn} 
-                        GroupEventInfo = {GroupEventInfo[0]._data} 
+                        GroupEventInfo = {!GroupEventInfoEmpty ? GroupEventInfo[0]._data:null} 
                         reject={reject} 
                         decline={decline} 
                         accept={accept} 
@@ -248,78 +333,3 @@ const Style = StyleSheet.create({
         color:'white', fontWeight:'700'
     }
 })
-
-const fetchGroupEvents = async ({userData}:any) =>{
-    const radius = userData.Preference.Radius;
-    const lat = userData.Location.Latitude;
-    const lng = userData.Location.Longitude;
-    const minAge = userData.Preference.AgeRange.min;
-    const maxAge = userData.Preference.AgeRange.max;
-    const uid = userData.uid;
-
-    const firestoreRef = firebase.firestore();
-
-    // @ts-ignore
-    const GeoFirestore = geofirestore.initializeApp(firestoreRef);
-
-    try{
-        const geocollection = GeoFirestore.collection('Events');
-
-        const query = geocollection.near({ center: new firebase.firestore.GeoPoint(lat, lng), radius: radius }).native;
-
-        const AgeFiltered = query
-        .where('AgeMin', '>=', minAge)
-        .where('AgeMax', '<=', maxAge)
-        .where('Individual', '==', false)
-        .orderBy('Age')
-        .orderBy('Date', 'desc')
-        .get();
-        
-        const results  = (await AgeFiltered).docs;
-        return results;
-
-    }catch(error){
-        console.log(error)
-        return [];
-    }
-
-}
-
-const fetchIndividualEvents = async ({userData}:any) =>{
-    const radius = userData.Preference.Radius;
-    const lat = userData.Location.Latitude;
-    const lng = userData.Location.Longitude;
-    const minAge = userData.Preference.AgeRange.min;
-    const maxAge = userData.Preference.AgeRange.max;
-    const desiredSex = userData.Preference.Sex;
-    const uid = userData.uid;
-
-    const firestoreRef = firebase.firestore();
-
-    // @ts-ignore
-    const GeoFirestore = geofirestore.initializeApp(firestoreRef);
-
-    try{
-        const geocollection = GeoFirestore.collection('Events');
-
-        const query = geocollection.near({ center: new firebase.firestore.GeoPoint(lat, lng), radius: radius }).native;
-
-        const AgeFiltered = query
-        .where('Age', '>=', minAge)
-        .where('Age', '<=', maxAge)
-        .where('Sex', '==', `${desiredSex}`)
-        .where('Individual', '==', true)
-        .orderBy('Age')
-        .orderBy('Date', 'desc')
-        .limit(6)
-        .get();
-        
-        const results  = (await AgeFiltered).docs;
-        console.log(results.length)
-        return results;
-
-    }catch(error){
-        console.log(error)
-        return null;
-    }
-}

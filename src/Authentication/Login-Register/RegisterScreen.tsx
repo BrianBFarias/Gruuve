@@ -10,10 +10,11 @@ import Section3 from './RegisterParts/Register(Section 3)'
 import Section4 from './RegisterParts/Register(Section 4)';
 import Section5 from './RegisterParts/Register(Section 5)';
 
-import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
 import Loading from '../../components/Loading';
+
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
 interface ImageRetrieveData {
   uri: string | undefined;
@@ -43,7 +44,7 @@ const Register = ({navigation}: any) => {
   const [age, setAge] = useState(0);
   const [birthDate, setBirthDate] = useState(null);
   const [gender, setGender] = useState("");
-  const [height, setHeight] = useState<string[]>([]);
+  const [height, setHeight] = useState<string>();
   const [location, setLocation] = useState({
     Location: '',
     Coordinates: {
@@ -166,6 +167,7 @@ const Register = ({navigation}: any) => {
 
   const SaveImages = async (uid: any) => {
     // path to existing file on filesystem
+
     if(Image1 && Image1.uri && Image1.data){
       let path = `${uid}/`;
       let fileName = path + Image1.uri.substring(Image1.uri.lastIndexOf('/') + 1);
@@ -182,13 +184,13 @@ const Register = ({navigation}: any) => {
     const imagesArray = [Image2, Image3, Image4];
 
     imagesArray.forEach(async (image, index) => {
-      if (image?.uri) {
+      if (image?.uri && image.data) {
         let path = `${uid}/`;
         let fileName =path + image.uri.substring(image.uri.lastIndexOf('/') + 1);
         ImageURLs.set(index+2, fileName)
 
         try{
-          await storage().ref(fileName).putFile(image.uri);
+          await storage().ref(fileName).putString(image.data, "base64", {contentType: 'image/jpg'});
         }
         catch(e){
           console.log(e)

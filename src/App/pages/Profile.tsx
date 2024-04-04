@@ -184,16 +184,17 @@ export const Profile = ({route}:any) =>{
                         {/* Gear Icon */}
                         <Animated.View style={{position:'absolute', marginHorizontal:inlineToggleMargin, marginTop:22, display:settingIcon}}>
                             <SafeAreaView />
-                            <TouchableOpacity onPress={settingsToggle} style={{marginTop:10}}>
-                                <icons.FontAwesome6 name='sliders' size={25} color='black'/>
-                            </TouchableOpacity>
+
                         </Animated.View>
                 </Animated.View>
             </Animated.View>
 
             <Animated.View style={{flex:1, minWidth:windowWidth, zIndex:14}}>
                 <AnimatedPress style={{flex:1, backgroundColor:'black', display:(settingsInverse), left:-20, opacity:bgFade, position:'absolute', width:'100%', height:'100%', zIndex:13}} onPress={settingsToggle}/>
-                <ProfileMain userData={userData} disabled={isDisabled}/>
+                <ProfileMain 
+                userData={userData}
+                disabled={isDisabled}
+                settingsToggle={settingsToggle}/>
             </Animated.View>
         </View>
     </View>

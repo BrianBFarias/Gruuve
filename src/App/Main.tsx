@@ -5,6 +5,7 @@ import icons from "../components/icons";
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Loading from "../components/Loading";
+
 // Screens
 import {Profile} from "./pages/Profile";
 import { Explore } from "./pages/Explore";
@@ -17,9 +18,9 @@ import { PopUp } from "../components/popUpIntro";
 const Tab = createBottomTabNavigator();
 
 const Main = () =>{
-    const [userData, setUserData] = useState<any>(null)
-    const [showIntro, setShowIntro] = useState(false)
-    const [hasLikes, setHasLikes] = useState(true)
+    const [userData, setUserData] = useState<any>(null);
+    const [showIntro, setShowIntro] = useState(false);
+    const [hasLikes, setHasLikes] = useState(true);
 
     async function fetchUser(){
         const uid = auth().currentUser?.uid;
@@ -54,23 +55,23 @@ const Main = () =>{
                     let rn = route.name
                     
                     if(rn === 'Explore'){
-                        return <Image style={focused ? {objectFit:'contain', height:50, tintColor:'rgba(25, 94, 43,1)'}:{objectFit:'contain', height:50, tintColor:'black', opacity:0.5}} source={Logo}/>
+                        return <Image style={focused ? {objectFit:'contain', height:50, tintColor:'rgba(25, 94, 43,1)'}:{objectFit:'contain', height:50, tintColor:'white', opacity:0.65}} source={Logo}/>
                     }else if(rn === 'Messages'){
-                        return <icons.MaterialCommunityIcons name={'message-processing'} size={size} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
+                        return <icons.MaterialCommunityIcons name={'message-processing'} size={size} color={focused? 'white':'white'} opacity={focused? 1:0.65} />
                     }
                     else if(rn === 'Events'){
                         return(
                         <View>
-                            <icons.MaterialCommunityIcons name={'reorder-horizontal'} size={size+4} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
-                            {hasLikes && <View style={{backgroundColor:'green', height:9, width:9, position:'absolute', borderRadius:10, right:0, top:2, shadowColor:'white', shadowRadius:3, shadowOffset:{width:-2, height:2}, shadowOpacity:1}}/>}
+                            <icons.MaterialCommunityIcons name={'reorder-horizontal'} size={size+4} color={focused? 'white':'white'} opacity={focused? 1:0.65} />
+                            {hasLikes && <View style={{backgroundColor:'green', height:9, width:9, position:'absolute', borderRadius:10, right:0, top:2, shadowColor:'white', shadowRadius:3, shadowOffset:{width:-2, height:2}, shadowOpacity:0}}/>}
                         </View>)
                     }
                     else if(rn === 'Profile'){
-                        return <icons.FontAwesome6 name={'user-large'} size={size} color={focused? '#29612F':'black'} opacity={focused? 1:0.5} />
+                        return <icons.FontAwesome6 name={'user-large'} size={size} color={focused? 'white':'white'} opacity={focused? 1:0.65} />
                     }
 
                 },
-                headerShown:false, title:route.name, unmountOnBlur:true, tabBarShowLabel:false
+                headerShown:false, title:route.name, unmountOnBlur:true, tabBarShowLabel:false, tabBarStyle:{zIndex:100, backgroundColor:'#0a1708', borderTopWidth:0}
             })}>
                 {/* userData !== null  */}
                 {userData === null ? 
