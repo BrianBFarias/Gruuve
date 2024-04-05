@@ -3,7 +3,7 @@ import { View, Text, Animated, StyleSheet, TouchableOpacity, Image, Dimensions, 
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import Swiper from 'react-native-swiper'
-import icons from "../../../components/icons";
+import Icon from "../../../components/icons";
 import { toDate } from "../../../components/ConstantFunctions/Date";
 import { Chase } from 'react-native-animated-spinkit'
 import LinearGradient from "react-native-linear-gradient";
@@ -28,9 +28,10 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     const [userInfo,setUserInfo] = useState<any>()
     const [age,setAge] = useState<any>()
     const [load, setLoad] = useState(true)
-    const hideDescription = useRef(true);
+    const [tabSize, setTabSize] = useState(0)
 
-    const tabSize = (100/user.ImageURLs.length);
+    const hideDescription = useRef(true);
+    const swiperRef = useRef<any>(null)
 
     const slideUpButtons = slideUp.interpolate({
         inputRange: [0, 1],
@@ -46,7 +47,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     
 
     // [0] = Days till, [1] = weekday, [2] = timestamp
-    const [eventDate, setEventDate] = useState<any[]>();
+    const [eventDate, setEventDate] = useState<String[]>();
 
     const move = rotate.interpolate({
         inputRange: [0, 1],
@@ -77,7 +78,9 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
         }
 
         setNextPost(-1)
-
+        setTimeout(()=>{
+            swiperRef.current.scrollTo(0)
+        }, 200)
         hideDescription.current = true;
         Animated.timing(
             rotate,
@@ -89,20 +92,23 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
               useNativeDriver: true,
             }
           ).start();
+
       }
 
 
-    const fetchImages = async() =>{
-        const user = await firestore().collection('Users').doc(EventInfo.Host).get()
-        if(user._data && user._data.ImageURLs){
-            setUserInfo(user._data)
-            const BirthDateTimeStamp = new Date(user._data.BirthDate.seconds * 1000)
+    const fetchImages = async(uid:String) =>{
+        const user = (await firestore().collection('Users').doc(EventInfo.Host).get())._data
+        setUserInfo(user)
+
+        if(user && user.ImageURLs){
+            setTabSize(90/user.ImageURLs.length)
+
+            const BirthDateTimeStamp = new Date(user.BirthDate.seconds * 1000)
 
             setAge(findAge(BirthDateTimeStamp))
-
             setEventDate(toDate({date:EventInfo.Date}));
 
-            const imageUrls = user._data.ImageURLs
+            const imageUrls = user.ImageURLs
             const downloadPromises = imageUrls.map(async (url: string) => {
 
                 try {
@@ -122,8 +128,8 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
 
     useEffect(()=>{
         startFadeIn()
-        fetchImages()
-    },[])
+        fetchImages(EventInfo.Host)
+    },[EventInfo])
 
     const position = ()=>{
         return(<View style={{backgroundColor:'rgba(255,255,255,.3)', width:`${tabSize}%`, height: 5,borderRadius: 4, marginLeft: 3, marginRight: 3}} />)
@@ -145,20 +151,19 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
           ).start();
     }
 
-    const swiperRef = useRef<any>(null)
-
     return(
     <Animated.View style={{ flex:1, opacity:fade, alignSelf:'center', borderRadius:10}}>
         <LinearGradient 
-        colors={['rgb(235,235,235)', 'rgb(255,255,255)']}
-        start={{x: 0, y: 0}} end={{x: 0, y: 1}}
-        locations={[0,0.5]}
+        colors={['rgb(215,215,215)', 'white']}
+        start={{x: 0, y: 0.6}} end={{x: 0, y: 0.8}}
+        locations={[0,1]}
         style={{flex:1}}>
-        <View style={{height:'62%', marginBottom:0, backgroundColor:'black'}}>
+        <View style={{backgroundColor:'black'}}>
                 {images && !load?
                 <View style={styles.slide}>
                     <View style={{flex:1}}>
                         <Swiper 
+                        index={0}
                         showsButtons={true} 
                         dot={position()} 
                         activeDot={activePosition()} 
@@ -231,46 +236,46 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
                 </View>  }
         </View>
         {/* More user Info */}
-        <ScrollView style={{backgroundColor:'rgb(240,240,240)', padding:8, flexDirection:'row',  alignSelf:'center', maxHeight:40}} horizontal>
+        {userInfo&&<ScrollView style={{backgroundColor:'white', padding:8, flexDirection:'row',  alignSelf:'center', maxHeight:40, margin:8, borderRadius:10}} horizontal={true} showsHorizontalScrollIndicator={false}>
             <View style={styles.info}>
-                <icons.FontAwesome6 name="ruler-vertical" color='black' style={{alignSelf:'center'}} size={18} />
-                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{user.Height}</Text>
+                <Icon.FontAwesome6 name="ruler-vertical" color='#0a1708' style={{alignSelf:'center'}} size={18} />
+                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{userInfo.Height}</Text>
             </View>
-            {user.School !==0 && 
+            {userInfo.School !==0 && 
             <View style={styles.info}>
-                <icons.Ionicons name="school" color='black' style={{alignSelf:'center'}} size={18} />
-                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{user.School}</Text>
+                <Icon.Ionicons name="school" color='#0a1708' style={{alignSelf:'center'}} size={18} />
+                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{userInfo.School}</Text>
             </View>}
             <View style={styles.info}>
-                <icons.FontAwesome6 name="building-columns" color='black' style={{alignSelf:'center'}} size={18} />
-                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{user.Organization}</Text>
+                <Icon.FontAwesome6 name="building-columns" color='#0a1708' style={{alignSelf:'center'}} size={18} />
+                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{userInfo.Organization}</Text>
             </View>
-            <View style={styles.info}>
-                <icons.FontAwesome6 name="person-running" color='black' style={{alignSelf:'center'}} size={18} />
-                {user.Hobbies.map((hobby:string, index:number) => (
-                    <Text key={index} style={{color: 'white', alignSelf:'center', fontSize:12, backgroundColor:'black', padding:4, borderRadius:5, overflow:'hidden', fontWeight:'500'}}>{hobby}</Text>
+            <View style={[styles.info, {marginRight:20}]}>
+                <Icon.FontAwesome6 name="person-running" color='#0a1708' style={{alignSelf:'center'}} size={18} />
+                {userInfo.Hobbies.map((hobby:string, index:number) => (
+                    <Text key={index} style={{color: 'white', alignSelf:'center', fontSize:12, backgroundColor:'rgb(30,30,30)', padding:4, borderRadius:5, overflow:'hidden', fontWeight:'500'}}>{hobby}</Text>
                 ))}
             </View>
-        </ScrollView>
+        </ScrollView>}
         {/* Card */}
-        <View style={{flex:1, margin:10, shadowColor:'transparent', shadowOpacity:1, shadowRadius:3, shadowOffset:{height:0, width:0}}}>
-            <View style={{overflow:'hidden', flex:1, width:windowWidth-15}}>
+        <View style={{marginHorizontal:10, backgroundColor:'transparent'}}>
+            <View style={{overflow:'visible', width:'100%'}}>
                 <Animated.View style={[{backgroundColor:'transparent', flexDirection:'row', width:'200%', transform:[{ translateX: move }]}]}>
                     <View style={[styles.description]}>
                         <View style={{flexDirection:'row', width:'100%', justifyContent:'space-between'}}>
                             <View style={{}}>
                                 <Text style={{fontSize:24, fontWeight:'800'}}>{EventInfo.Title}</Text>
-                                <Text style={{fontSize:18, fontWeight:'700', opacity:0.6}}>in 4 Days</Text>
+                                <Text style={{fontSize:18, fontWeight:'700', opacity:0.6}}>in {eventDate && eventDate[0]} Days</Text>
                             </View>
                             <View style={{flexDirection:'row', padding:5}}>
-                                <icons.MaterialIcons name={'location-pin'} size={20} color='green' />
+                                <Icon.MaterialIcons name={'location-pin'} size={20} color='green' />
                                 <Text style={{fontSize:18, fontWeight:'500'}}>Gainesville, FL</Text>
                             </View>
                         </View>
                         <View style={{width:'100%', flexDirection:'row', justifyContent:'space-between'}}>
                             <View style={{alignSelf:'flex-start', flexDirection:'row', gap:10}}>
-                                <Text style={{fontSize:20, fontWeight:'700'}}>Tuesday</Text>
-                                <Text style={{fontSize:20, fontWeight:'600', opacity:0.8}}>8:00 pm</Text>
+                                <Text style={{fontSize:20, fontWeight:'700'}}>{eventDate && eventDate[1]}</Text>
+                                <Text style={{fontSize:20, fontWeight:'600', opacity:0.8}}>{eventDate && eventDate[2]}</Text>
                             </View>
                             {EventInfo.Description && 
                             <TouchableOpacity style={{alignSelf:'center', backgroundColor:'rgba(0,0,0,0.7)', padding:6, borderRadius:20, shadowColor:'black', shadowOpacity:0.4, shadowRadius:3, shadowOffset:{height:0, width:0}}} onPress={flip}>
@@ -280,27 +285,27 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
                     </View>
                     <Pressable style={[styles.description2]} onPress={flip}>
                         <Text style={{fontSize:20, fontWeight:'800'}}>Description</Text>
-                        <Text style={{fontSize:16, textAlign:'center', flexWrap:'wrap'}}>adkfhsdh fsdhf sdhf sdhf shdf sdhfsdfhs dfhsdfhsfd</Text>
+                        <Text style={{fontSize:16, textAlign:'center', flexWrap:'wrap'}}>{EventInfo.Description}</Text>
                     </Pressable>
                 </Animated.View>
             </View>
         </View>
         {/* Buttons */}
-        <Animated.View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', position: 'relative',transform:[{translateY:slideUpButtons}] }}>
+        <Animated.View style={{flex:1,flexDirection: 'row', justifyContent: 'space-around', position: 'relative',transform:[{translateY:slideUpButtons}], backgroundColor:'transparent', alignItems:'center'}}>
             <Animated.View style={[styles.button13, {transform: [{scale: scale1}]}]}>
                 <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]} 
                     onPress={() => handleOption({val:1})}
                     onPressIn={() => onPressIn({ val: 1 })}
                     onPressOut={() => onPressOut({ val: 1 })}>
-                    <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="close" color={'#8B2929'} size={40} /></Text>
+                    <Text style={styles.buttonText}><Icon.MaterialCommunityIcons name="close" color={'#8B2929'} size={40} /></Text>
                 </Pressable>
             </Animated.View>
             <Animated.View style={[styles.button2,{ transform: [{ scale: scaleCenter }]}]}>
-                <Pressable style={[{backgroundColor:'#1c2e1a', justifyContent:'center', borderRadius:10, paddingVertical:5}]}
+                <Pressable style={[{backgroundColor:'#0a1708', justifyContent:'center', borderRadius:10, paddingVertical:5}]}
                     onPress={() => {handleOption({val:2, hideDescription})}}
                     onPressIn={() => onPressIn({ val: 2})}
                     onPressOut={() => onPressOut({ val: 2 })}>
-                    <Text style={styles.buttonText}><icons.Entypo name="infinity" size={40} /></Text>
+                    <Text style={styles.buttonText}><Icon.Entypo name="infinity" size={40} color={'white'} /></Text>
                 </Pressable>
             </Animated.View>
             <Animated.View style={[styles.button13, { transform: [{ scale: scale2 }] }]}>
@@ -308,10 +313,10 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
                     onPress={() => handleOption({val:3})}
                     onPressIn={() => onPressIn({ val: 3 })}
                     onPressOut={() => onPressOut({ val: 3 })}>
-                <Text style={styles.buttonText}><icons.MaterialCommunityIcons name="send-check" color={'#5F8B58'} size={30}/></Text>
+                <Text style={styles.buttonText}><Icon.MaterialCommunityIcons name="send-check" color={'#5F8B58'} size={30}/></Text>
                 </Pressable>
             </Animated.View>
-            <View style={{ position: 'absolute', width: '100%', height: '90%', borderTopRightRadius: 40, bottom:0, borderTopLeftRadius: 40, overflow: 'hidden', left: 0, right: 0,justifyContent: 'center' }}>
+            <View style={{ position: 'absolute', width: '100%', height: '100%', borderTopRightRadius: 40, bottom:0, borderTopLeftRadius: 40, left: 0, justifyContent: 'center' }}>
                 <LinearGradient
                     colors={['#4b8a43', 'transparent']}
                     start={{ x: 0.0, y: 0 }} end={{ x: 0, y: 1 }}
@@ -352,7 +357,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        gap:10,
         padding:10,
         width:'100%'
     },
@@ -372,11 +376,10 @@ const styles = StyleSheet.create({
         width:95,
         height:80,
         borderRadius:40,
-        padding:12,
+        padding:10,
         zIndex:10,
         justifyContent:'center',
         backgroundColor:'#4b8a43',
-        marginTop:'4%',
     },
     button2:{
         alignSelf:'center',
@@ -385,7 +388,7 @@ const styles = StyleSheet.create({
         height:'100%',
         zIndex:10,
         justifyContent:'center',
-        marginBottom:'2%',
+        marginBottom:'4%',
         borderRadius:10,
     },
     selectionWrapper:{

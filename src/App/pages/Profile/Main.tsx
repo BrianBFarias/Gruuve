@@ -147,7 +147,7 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                 <TouchableOpacity onPress={settingsToggle} style={{marginTop:10}}>
                     <icons.FontAwesome6 name='sliders' size={25} color='black' opacity={0.7}/>
                 </TouchableOpacity>
-                <Text style={{textAlign:'right', alignSelf:'center', fontSize:30, fontWeight:'800', opacity:0.8}}>Your Profile</Text>
+                <Text style={{textAlign:'right', alignSelf:'center', fontSize:30, fontWeight:'800', opacity:0.8}}>Profile</Text>
             </View>
             <View style={{width:'100%', backgroundColor:'rgba(0,0,0,0)', paddingVertical:20}}>
                 <Images 

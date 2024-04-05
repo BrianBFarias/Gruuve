@@ -23,14 +23,13 @@ export const Profile = ({route}:any) =>{
     const {dispatchSignedIn} = useContext(SignInContext);
     const openToggle = useRef(false);
 
-    const [currMin, setCurrMin] = useState(18);
-    const [currMax, setCurrMax] = useState(70);
-    const [radius, setRadius] = useState(50) 
-    const [genderPreference, setGenderPreference] = useState("");
+    const [currMin, setCurrMin] = useState(userData.Preference.AgeRange.min);
+    const [currMax, setCurrMax] = useState(userData.Preference.AgeRange.max);
+    const [radius, setRadius] = useState(userData.Preference.Radius) 
+    const [genderPreference, setGenderPreference] = useState(userData.Preference.Sex);
 
-    const [isDisabled, setIsDisabled] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(userData);
     const toggleSwitch = () => setIsDisabled(!isDisabled);
-  
 
     const [isFocus0, setIsFocus0] = useState(false);
 
@@ -75,14 +74,14 @@ export const Profile = ({route}:any) =>{
         }else{
             setTimeout(()=>{
                 settingIcon.setValue(0)
-              }, 200)
+              }, 120)
         }
         Animated.timing(
             settingsTab,
             {
               toValue: openToggle.current ? 1:0,
               easing: Easing.ease,
-              duration: 200,
+              duration: 120,
               useNativeDriver: false,
             }
           ).start();

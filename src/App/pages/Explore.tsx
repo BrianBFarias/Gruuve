@@ -1,14 +1,15 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useId, useRef, useState} from "react";
 import {SafeAreaView, StyleSheet, Text, View, Animated, StatusBar, Easing} from "react-native"
 import LinearGradient from 'react-native-linear-gradient';
 import { Switch } from 'react-native-switch';
 import Loading from "../../components/Loading";
 import { Indiivudal } from "./Explore/Individual";
 import { Group } from "./Explore/Group";
-import firestore, { firebase } from '@react-native-firebase/firestore';
 import * as geofirestore from 'geofirestore';
 import { reject, accept, decline } from "./Explore/Option";
 import Icons from "../../components/icons";
+import auth from '@react-native-firebase/auth';
+import firestore, { firebase } from '@react-native-firebase/firestore';
 
 const fade = new Animated.Value(0);
 const eventCard = new Animated.Value(1);
@@ -16,12 +17,13 @@ const slideUp = new Animated.Value(0);
 const nextAnimation = new Animated.Value(0);
 
 export const Explore = ({route}:any) =>{
+
     const [toggle, setToggle] = useState(true);
     const [selection, setSelection] = useState(toggle)
-    const [EventInfo, setEventInfo] = useState<any>(null);
-    const [EventInfoEmpty, setEventInfoEmpty] = useState(false)
-    const [GroupEventInfo, setGroupEventInfo] = useState<any>(null);
-    const [GroupEventInfoEmpty, setGroupEventInfoEmpty] = useState(false)
+    const [EventInfo, setEventInfo] = useState<any>(route.params.EventInfo);
+    const [EventInfoEmpty, setEventInfoEmpty] = useState(route.params.EventInfoEmpty)
+    const [GroupEventInfo, setGroupEventInfo] = useState<any>(route.params.GroupEventInfo);
+    const [GroupEventInfoEmpty, setGroupEventInfoEmpty] = useState(route.params.GroupEventInfoEmpty)
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState(null)
     const [nextPost, setNextPost] = useState(0)
@@ -31,6 +33,16 @@ export const Explore = ({route}:any) =>{
     const transitionIconPop = nextAnimation.interpolate({
         inputRange: [0, 2],
         outputRange: [0.6, 1.4],
+      }); 
+
+    const shiftVertifcal = nextAnimation.interpolate({
+        inputRange: [0, 2],
+        outputRange: [110, 0],
+      }); 
+
+    const iconOpacity = nextAnimation.interpolate({
+        inputRange: [0.8, 2],
+        outputRange: [0, 1],
       }); 
 
     const TransitionIcon = () =>{
@@ -109,6 +121,8 @@ export const Explore = ({route}:any) =>{
         const {userData} = route.params
         setUser(userData)
 
+        console.log(GroupEventInfo)
+
         if((!EventInfo || EventInfo.length===0 )|| (!GroupEventInfo || GroupEventInfo.length===0)){
             const fetchData = async () => {
                 fetchEvent({userData});
@@ -126,32 +140,44 @@ export const Explore = ({route}:any) =>{
     // 1 - Reject/fetching new Post
     // 2 - Decline/fetching new Post
     // 3 - Like/fetching new Post
-    useEffect(()=>{
-        if(nextPost >= 1 && nextPost <= 3){
-            switch(nextPost){
-                case 1: transitionIconName.current = 'close';
+    useEffect(() => {
+        if (nextPost >= 1 && nextPost <= 3) {
+            switch (nextPost) {
+                case 1:
+                    transitionIconName.current = 'close';
                     break;
-                case 2: transitionIconName.current = 'infinity';
-                    break; 
-                case 3: transitionIconName.current = 'send-check';
+                case 2:
+                    transitionIconName.current = 'infinity';
+                    break;
+                case 3:
+                    transitionIconName.current = 'send-check';
                     break;
             }
             fadeOutCard();
-            TransitionIcon()
-            setTimeout(()=>{
-                const newArray = [...EventInfo.slice(1)];
-                if(newArray.length === 0){
-                    setEventInfoEmpty(true)
-                    setEventInfo(newArray);
-                }
-            },300)
-        }else if(nextPost === -1){
-            setNextPost(0)
-            setTimeout(()=>{
+            TransitionIcon();
+            setTimeout(() => {
+                // Update EventInfo using functional form of state setter
+                setEventInfo((prevEventInfo: any) => {
+                    const updatedEventInfo = [...prevEventInfo];
+                    updatedEventInfo.shift();
+    
+                    const uid = auth().currentUser?.uid;
+    
+                    if (updatedEventInfo.length === 0) {
+                        setEventInfoEmpty(true);
+                    }
+    
+                    return updatedEventInfo;
+                });
+
+            }, 300);
+        } else if (nextPost === -1) {
+            setNextPost(0);
+            setTimeout(() => {
                 fadeInCard();
-            }, 800)
+            }, 800);
         }
-    },[nextPost])
+    }, [nextPost]);
 
     const empty = ({ text }: { text: string }) =>{
         return(
@@ -183,13 +209,12 @@ export const Explore = ({route}:any) =>{
             const geocollection = GeoFirestore.collection('Events');
     
             const query = geocollection.near({ center: new firebase.firestore.GeoPoint(lat, lng), radius: radius }).native;
-    
+            
+            // gathering events Switching to Function
             const AgeFiltered = query
-            .where('AgeMin', '>=', minAge)
-            .where('AgeMax', '<=', maxAge)
             .where('Individual', '==', false)
-            .orderBy('Age')
             .orderBy('Date', 'desc')
+            .limit(6)
             .get();
             
             const results  = (await AgeFiltered).docs;
@@ -200,8 +225,9 @@ export const Explore = ({route}:any) =>{
             return results;
     
         }catch(error){
-            console.log(error)
-            return [];
+            console.error('Failed Fetching Group Events');
+            console.warn(error)
+            return null;
         }
     
     }
@@ -213,7 +239,7 @@ export const Explore = ({route}:any) =>{
         const minAge = userData.Preference.AgeRange.min;
         const maxAge = userData.Preference.AgeRange.max;
         const desiredSex = userData.Preference.Sex;
-        const uid = userData.uid;
+        console.log('askdfh4wh5b245h')
     
         const firestoreRef = firebase.firestore();
     
@@ -225,6 +251,7 @@ export const Explore = ({route}:any) =>{
     
             const query = geocollection.near({ center: new firebase.firestore.GeoPoint(lat, lng), radius: radius }).native;
     
+            // gathering events Switching to Function
             const AgeFiltered = query
             .where('Age', '>=', minAge)
             .where('Age', '<=', maxAge)
@@ -244,7 +271,8 @@ export const Explore = ({route}:any) =>{
             return results;
     
         }catch(error){
-            console.log(error)
+            console.error('Failed Fetching Individual Events')
+            console.warn(error)
             return null;
         }
     }
@@ -278,10 +306,11 @@ export const Explore = ({route}:any) =>{
                     switchWidthMultiplier={5}
                     />
                 </View>
+                {/* Transition Screen */}
                 <Animated.View style={{position:'absolute', width:'100%', height: '100%', top:0, backgroundColor:'#4b8a43', opacity:nextAnimation, pointerEvents:'none', zIndex:101}}>
-                    <Animated.View style={{position:"absolute", height:'100%', width:'100%', alignItems:'center', justifyContent:'center', zIndex:10, pointerEvents:'none', transform:[{scale:transitionIconPop}]}}>
+                    <Animated.View style={{position:"absolute", height:'100%', width:'100%', alignItems:'center', justifyContent:'center', zIndex:10, pointerEvents:'none', transform:[{scale:transitionIconPop}, {translateY:shiftVertifcal}], opacity:iconOpacity}}>
                         <Icons.MaterialCommunityIcons 
-                        name={transitionIconName.current} 
+                        name={transitionIconName.current.length>0 ? transitionIconName.current: null} 
                         color={transitionIconName.current === 'close' ? '#8f0600': transitionIconName.current === 'infinity'? 'white':'black'} 
                         opacity={transitionIconName.current === 'send-check' || transitionIconName.current === 'close'?0.6:0.8}
                         size={80}/>

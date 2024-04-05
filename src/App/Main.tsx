@@ -2,8 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View} from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import icons from "../components/icons";
-import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import firestore, { firebase } from '@react-native-firebase/firestore';
+import * as geofirestore from 'geofirestore';
+
 import Loading from "../components/Loading";
 
 // Screens
@@ -14,6 +16,7 @@ import { Messages } from "./pages/Messages";
 
 import Logo from '../../assets/images/logo.png'
 import { PopUp } from "../components/popUpIntro";
+
 
 const Tab = createBottomTabNavigator();
 
@@ -26,18 +29,20 @@ const Main = () =>{
         const uid = auth().currentUser?.uid;
         const userInfo = await firestore().collection('Users').doc(uid).get();
         if(userInfo?._data){
-            setUserData(userInfo?._data)
+            return (userInfo?._data)
         }
     }
 
-    useEffect(()=>{
-        const fetch = async () =>{
-            await fetchUser()
-            const SI =  userData?.newAccount
-            setShowIntro(SI)
-        }
-        fetch();
-    },[userData])
+    useEffect(() => {
+        const fetchData = async () => {
+            const user = await fetchUser();
+            setUserData(user);
+            const SI = user?.newAccount;
+            setShowIntro(SI);
+        };
+
+        fetchData();
+    }, []);
 
     async function closeIntro(){
         const uid = auth().currentUser?.uid;
@@ -75,7 +80,7 @@ const Main = () =>{
             })}>
                 {/* userData !== null  */}
                 {userData === null ? 
-                    <Tab.Screen name={"Loading"} component={Loading} initialParams={{userData}} />
+                    <Tab.Screen name={"Loading"} component={Loading}/>
                 :
                 (<>
                     <Tab.Screen name={"Explore"} component={Explore} initialParams={{userData}} />

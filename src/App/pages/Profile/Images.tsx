@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Image, TouchableOpacity, View, ActivityIndicator } from "react-native"
+import { useEffect, useRef, useState } from "react";
+import { Image, TouchableOpacity, View, PanResponder, Animated } from "react-native"
 import { PERMISSIONS, RESULTS, request } from "react-native-permissions";
 import ImagePicker from 'react-native-image-crop-picker';
 import Icons from "../../../components/icons";
@@ -12,7 +12,7 @@ import auth from '@react-native-firebase/auth';
 
 
 export const Images =({allImages, setAllImages, setSaving}:any) =>{
-    const [permissionGranted, setPermissionGranted] = useState(false)
+    const [permissionGranted, setPermissionGranted] = useState(false);
 
     useEffect(()=>{
         request(PERMISSIONS.IOS.PHOTO_LIBRARY).then((result:any) => {
@@ -35,20 +35,51 @@ export const Images =({allImages, setAllImages, setSaving}:any) =>{
               }
         });
     })
-    function RemoveImage(index: any) {
+    async function RemoveImage(index: any) {
+      
       if (index >= 0) {
+        setSaving(true)
+        const selectedImageRef = storage().refFromURL(allImages[index]);
+        const uid = auth().currentUser?.uid;
+
+        selectedImageRef.delete();
+
         const updatedImages = [...allImages]; // Create a copy of the original array
         updatedImages.splice(index, 1); // Remove the element at the specified index
         setAllImages(updatedImages); // Update state with the modified array
+
+        firestore()
+        .collection('Users')
+        .doc(uid)
+        .get()
+        .then(doc => {
+          if (doc.exists) {              
+              // Update Firestore with the modified array
+              const imageURLs = doc.data()?.ImageURLs || []; // Get the current array or initialize to empty array
+              const updatedImages = [...imageURLs]; // Create a copy of the original array
+              updatedImages.splice(index, 1); // Remove the element at the specified index
+
+              return firestore()
+                  .collection('Users')
+                  .doc(uid)
+                  .update({
+                      ImageURLs: updatedImages
+                  }).then(()=>{
+                    setSaving(false)
+                  })
+          } else {
+              console.log('Document does not exist');
+          }
+      })
+      .then(() => {
+          console.log('Image URLs updated in Firestore');
+      })
       }
-    }
-
-    function saveImage(){
-
     }
 
     const onImageGalleryClick = async (index:any) => {
       const uid = auth().currentUser?.uid;
+
         try{
           ImagePicker.openPicker({
             width: 300,
@@ -127,8 +158,8 @@ export const Images =({allImages, setAllImages, setSaving}:any) =>{
                   let fileName =path + saveImage.uri.substring(saveImage.uri.lastIndexOf('/') + 1);
 
                   try{
-                    await storage().ref(fileName).putString(saveImage.data, "base64", {contentType: 'image/jpg'});
                     await selectedImageRef.delete();
+                    await storage().ref(fileName).putString(saveImage.data, "base64", {contentType: 'image/jpg'});
                   }
                   catch(e){
                     console.log(e)
@@ -169,7 +200,6 @@ export const Images =({allImages, setAllImages, setSaving}:any) =>{
                 .catch(error => {
                     console.error('Error updating document: ', error);
                 });
-
                 }
 
             }
@@ -205,7 +235,7 @@ export const Images =({allImages, setAllImages, setSaving}:any) =>{
 
         if (index < allImages.length){
             return (
-                <View style={[{ position: 'relative', width: '100%', height: '100%', overflow: 'visible', borderRadius:5 }, index == 0?{zIndex:19, borderColor:'green', borderWidth:3, borderRadius:10}:null]}>
+                <View style={[{ position: 'relative', width: '100%', height: '100%', overflow: 'visible', borderRadius:6 }, index == 0?{zIndex:19, borderColor:'green', borderWidth:3, borderRadius:8}:null]}>
                     <FastImage
                         source={{ uri: `${allImages[index]}`, cache: FastImage.cacheControl.immutable}} 
                         style={{ width: '100%', height: '100%', backgroundColor:'rgba(0,0,0,0.1)', borderRadius:5}}
@@ -253,7 +283,8 @@ export const Images =({allImages, setAllImages, setSaving}:any) =>{
         }
     }
 
-    return(<>
+    return(
+      <>
         {allImages ? <View
         style={{flexDirection: "row", flexWrap: "wrap", paddingHorizontal:0, justifyContent:'center', gap:10}}>
             {[...Array(4)].map((_, index) => (
@@ -287,7 +318,7 @@ export const Images =({allImages, setAllImages, setSaving}:any) =>{
               </View>
             ))}
         </View>}
-        </>
+        </> 
     )
 
 }

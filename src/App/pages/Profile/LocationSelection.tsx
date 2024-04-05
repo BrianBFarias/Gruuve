@@ -23,7 +23,7 @@ export function LocationSelection({isVisible, setIsVisible, currentLocation,}:an
     async function confirmation() {
         const currentUser = auth().currentUser;
         if (currentUser) {
-
+            updateLocationName();
             // Perform the Firestore update with the user ID
             await firestore()
                 .collection('Users')
@@ -58,10 +58,6 @@ export function LocationSelection({isVisible, setIsVisible, currentLocation,}:an
             setLocationName(tempName);
         }
     }
-
-    useEffect(()=>{
-        updateLocationName()
-    }, [tempLocation])
 
     return(
         <Modal
