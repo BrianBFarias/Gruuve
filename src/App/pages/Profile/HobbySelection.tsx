@@ -3,6 +3,9 @@ import Modal from "react-native-modal";
 import { Hobbies } from "../../../Authentication/ProfileOptions";
 import { useState } from "react";
 
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+
 export function HobbySelection({isVisible, setIsVisible, hobbies, setHobbies}:any){
     const [tempHobbies, setTempHobbies] = useState(hobbies);
 
@@ -42,8 +45,12 @@ export function HobbySelection({isVisible, setIsVisible, hobbies, setHobbies}:an
         }
     };
 
-    function confirmation(){
-        
+    async function confirmation(){
+        const uid = auth().currentUser?.uid;
+        setHobbies(tempHobbies)
+
+        await firestore().collection("Users").doc(uid).update({Hobbies:tempHobbies});
+        setIsVisible(false)
     }
 
     return(
