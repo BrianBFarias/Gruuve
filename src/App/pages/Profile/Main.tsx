@@ -15,6 +15,7 @@ import { LocationName } from '../../../components/ConstantFunctions/LocName';
 import FastImage from "react-native-fast-image";
 import { HobbySelection } from "./HobbySelection";
 import { LocationSelection } from "./LocationSelection";
+import {HeightSelection} from"./heightSelection";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {CircleFade} from 'react-native-animated-spinkit'
 
@@ -24,12 +25,16 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
     const [Image1, setImage1] = useState<any>();
     const [allImages, setAllImages]  = useState<any>();
     const [age,setAge] = useState<any>();
-    const [hobbiesPage, setHobbiesPage] = useState(false);
     const [location, setLocation] = useState('Gainesville, FL')
     const [saving, setSaving] = useState(false);
 
     // popUps to edit Profile (Not preferences)
-    const [hobbies, setHobbies] = useState(userData.Hobbies)
+    const [hobbiesPage, setHobbiesPage] = useState(false);
+    const [hobbies, setHobbies] = useState(userData.Hobbies);
+    
+    const [heightPage, setHeightPage] = useState(false);
+    const [height, setHeight] = useState(userData.Height);
+    
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
     const [locationSelector, setLocationSelector] = useState(false)
 
@@ -110,6 +115,8 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
 
     function editOption(num:number){
         switch(num){
+            case 5:setHeightPage(true) 
+                break; 
             case 4: setHobbiesPage(true) 
                 break; 
             case 3:
@@ -125,24 +132,6 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
         <>            
         <SafeAreaView style={{backgroundColor:'rgb(240,240,240)', marginBottom:6,zIndex:12}} />
         <ScrollView style={{flex:1, width:'100%', overflow:'visible', zIndex:10}} bounces={false}>
-            {/* Profile Pic tbd if removed */}
-            {/* <TouchableOpacity onPress={setMainImage} style={{height: 100, width:100, shadowColor:'black', shadowOffset:{height:0, width:0}, shadowRadius:4, shadowOpacity:0.5, alignSelf:'center', borderRadius:150, borderColor:'green', borderWidth:4}}>
-                <View style={{position:'absolute', top:0, right:0, height:25, width:25, backgroundColor:'white', zIndex:3, borderRadius:20, justifyContent:'center'}}>
-                    <View style={{alignSelf:'center'}}><icons.MaterialIcons name='edit' size={16} color='black'/></View>
-                </View>
-                <View style={{position:'relative', height: '100%', width:'100%', overflow:'hidden', borderRadius:150, borderColor:'rgb(215,215,215)', borderWidth:4}}>
-                    {disabled && 
-                    <View style={{position:'absolute', backgroundColor:'rgba(0,0,0,0.5)', width:'100%', height:'100%', zIndex:10, justifyContent:'center', alignItems:'center'}}>
-                        <Text style={{color:'white', fontWeight:'700', textAlign:'center'}}> Account Disabled</Text>
-                    </View>}
-                    {Image1 && 
-                        <FastImage
-                        source={{ uri: `${Image1}`, cache: FastImage.cacheControl.immutable}} 
-                        style={{ width: '100%', height: '100%', borderRadius:5, backgroundColor:'rgba(0,0,0,0.1)'}}
-                        resizeMode="cover"
-                    />}
-                </View>
-            </TouchableOpacity> */}
             <View style={{width:'90%', flexDirection:'row', alignContent:'center', alignSelf:'center', justifyContent:'space-between'}}>
                 <TouchableOpacity onPress={settingsToggle} style={{marginTop:10}}>
                     <icons.FontAwesome6 name='sliders' size={25} color='black' opacity={0.7}/>
@@ -187,7 +176,7 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                     <Text style={style.text1}>{age}</Text>
                 </Pressable>
                 <View style={style.line}/>
-                <Pressable style={style.container1}>
+                <Pressable style={style.container1} onPress={() => editOption(5)}>
                     <Text style={style.text2}>Height</Text>
                     <Text style={style.text1}>{userData.Height}</Text>
                 </Pressable>
@@ -222,11 +211,18 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                 </Pressable>
             </View>
             {/* Pop Ups */}
+            
             <HobbySelection 
                 isVisible={hobbiesPage}
                 setIsVisible={setHobbiesPage}
                 hobbies={hobbies}
                 setHobbies={setHobbies}
+            />
+            <HeightSelection 
+                isVisible={heightPage}
+                setIsVisible={setHeightPage}
+                height={height}
+                setHeight={setHeight}
             />
             <LocationSelection 
                 isVisible={locationSelector}

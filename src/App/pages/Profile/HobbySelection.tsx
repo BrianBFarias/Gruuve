@@ -47,7 +47,7 @@ export function HobbySelection({isVisible, setIsVisible, hobbies, setHobbies}:an
     }
 
     return(
-        <Modal 
+    <Modal 
         isVisible={isVisible} 
         animationOut={'slideOutDown'} 
         animationIn={'slideInUp'}

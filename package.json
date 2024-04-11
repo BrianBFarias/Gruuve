@@ -69,6 +69,7 @@
     "react-native-toggle-element": "^2.0.1",
     "react-native-vector-icons": "^10.0.3",
     "react-native-web": "^0.19.10",
+    "react-native-wheel-scrollview-picker": "^2.0.4",
     "react-navigation": "^5.0.0",
     "rn-range-slider": "^2.2.2",
     "tailwindcss": "^1.9.6"
