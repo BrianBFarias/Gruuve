@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View} from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 import icons from "../components/icons";
 import auth from '@react-native-firebase/auth';
 import firestore, { firebase } from '@react-native-firebase/firestore';
@@ -24,21 +25,21 @@ const Main = () =>{
     const [userData, setUserData] = useState<any>(null);
     const [showIntro, setShowIntro] = useState(false);
     const [hasLikes, setHasLikes] = useState(true);
+    const [fetching, setFetching] = useState(false);
 
     async function fetchUser(){
         const uid = auth().currentUser?.uid;
         const userInfo = await firestore().collection('Users').doc(uid).get();
         if(userInfo?._data){
-            return (userInfo?._data)
+            setUserData(userInfo?._data);
+            const SI = userInfo?._data.newAccount;
+            setShowIntro(SI);
         }
     }
 
     useEffect(() => {
         const fetchData = async () => {
-            const user = await fetchUser();
-            setUserData(user);
-            const SI = user?.newAccount;
-            setShowIntro(SI);
+            await fetchUser();
         };
 
         fetchData();
@@ -78,7 +79,6 @@ const Main = () =>{
                 },
                 headerShown:false, title:route.name, unmountOnBlur:true, tabBarShowLabel:false, tabBarStyle:{zIndex:100, backgroundColor:'#0a1708', borderTopWidth:0}
             })}>
-                {/* userData !== null  */}
                 {userData === null ? 
                     <Tab.Screen name={"Loading"} component={Loading}/>
                 :

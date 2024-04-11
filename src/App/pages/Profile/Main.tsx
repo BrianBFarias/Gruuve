@@ -19,8 +19,11 @@ import {HeightSelection} from"./heightSelection";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {CircleFade} from 'react-native-animated-spinkit'
 
+import auth from '@react-native-firebase/auth';
+
 export default function ProfileMain({userData, disabled, navigation, settingsToggle}:any){
     LogBox.ignoreAllLogs();
+    const [currUserData, setCurrUserData] = useState(userData)
 
     const [Image1, setImage1] = useState<any>();
     const [allImages, setAllImages]  = useState<any>();
@@ -30,16 +33,31 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
 
     // popUps to edit Profile (Not preferences)
     const [hobbiesPage, setHobbiesPage] = useState(false);
-    const [hobbies, setHobbies] = useState(userData.Hobbies);
+    const [hobbies, setHobbies] = useState(currUserData.Hobbies);
     
     const [heightPage, setHeightPage] = useState(false);
-    const [height, setHeight] = useState(userData.Height);
-    
+    const [height, setHeight] = useState(currUserData.Height);
+
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
     const [locationSelector, setLocationSelector] = useState(false)
 
+    async function fetchUser(){
+        const uid = auth().currentUser?.uid;
+        const userInfo = await firestore().collection('Users').doc(uid).get();
+        if(userInfo?._data){
+            setCurrUserData(userInfo?._data);
+            setHobbies(userInfo?._data.Hobbies)
+            setHeight(userInfo?._data.Height)
+        }
+    }
+
     useEffect(()=>{
         fetchImages();
+        const fetchData = async () => {
+            await fetchUser();
+        };
+
+        fetchData();
     },[])
 
     const fetchImages = async() =>{
@@ -194,8 +212,8 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                 <Pressable style={style.container2} onPress={() => editOption(4)}>
                     <Text style={style.text2}>Hobbies</Text>
                     <View style={{flexDirection:'row', flexWrap:'wrap', gap:10, marginTop:3}}>
-                        {userData.Hobbies.map((element:String) => (
-                            <Text style={style.hobby}>{element}</Text>
+                        {hobbies.map((element:String, index:number) => (
+                            <Text style={style.hobby} key={index}>{element}</Text>
                         ))}
                     </View>
                 </Pressable>
