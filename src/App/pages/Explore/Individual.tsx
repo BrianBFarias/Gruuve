@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { View, Text, Animated, StyleSheet, TouchableOpacity, Image, Dimensions, Pressable, Easing, TouchableWithoutFeedback, ScrollView } from "react-native"
+import { View, Text, Animated, StyleSheet, TouchableOpacity, Image, Dimensions, Pressable, Easing, TouchableWithoutFeedback, ScrollView, LayoutRectangle } from "react-native"
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import Swiper from 'react-native-swiper'
@@ -11,7 +11,7 @@ import findAge from "../../../components/ConstantFunctions/Age";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 
 const windowWidth = Dimensions.get('window').width;
-const rotate = new Animated.Value(0);
+const expand = new Animated.Value(0);
 
 const button1 = new Animated.Value(0);
 const button2 = new Animated.Value(0);
@@ -29,6 +29,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     const [age,setAge] = useState<any>()
     const [load, setLoad] = useState(true)
     const [tabSize, setTabSize] = useState(0)
+    const [descriptionHeight, setDescriptionHeight] = useState(0)
 
     const hideDescription = useRef(true);
     const swiperRef = useRef<any>(null)
@@ -49,9 +50,9 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     // [0] = Days till, [1] = weekday, [2] = timestamp
     const [eventDate, setEventDate] = useState<String[]>();
 
-    const move = rotate.interpolate({
+    const opposite = expand.interpolate({
         inputRange: [0, 1],
-        outputRange: [0,  -(windowWidth-15)],
+        outputRange: [1, 0],
       });
 
     // Button Press in and Out Animation
@@ -83,7 +84,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
         }, 200)
         hideDescription.current = true;
         Animated.timing(
-            rotate,
+            expand,
             {
               toValue: 0,
               easing: Easing.elastic(1.1),
@@ -141,30 +142,35 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     async function flip(){
         hideDescription.current = !hideDescription.current;
         Animated.timing(
-            rotate,
+            expand,
             {
               toValue: hideDescription.current ? 0:1,
               easing: Easing.elastic(1.1),
-              duration: 300,
+              duration: 200,
               useNativeDriver: true,
             }
           ).start();
     }
 
+    function find_dimesions(layout: LayoutRectangle){
+        const {x, y, width, height} = layout;
+        setDescriptionHeight(height);
+      }
+
     return(
     <Animated.View style={{ flex:1, opacity:fade, alignSelf:'center', borderRadius:10}}>
         <LinearGradient 
-        colors={['rgb(215,215,215)', 'white']}
+        colors={['whitesmoke', 'white']}
         start={{x: 0, y: 0.6}} end={{x: 0, y: 0.8}}
         locations={[0,1]}
         style={{flex:1}}>
-        <View style={{backgroundColor:'black'}}>
+        <View style={{backgroundColor:'black', zIndex:11}}>
                 {images && !load?
                 <View style={styles.slide}>
                     <View style={{flex:1}}>
                         <Swiper 
                         index={0}
-                        showsButtons={true} 
+                        showsButtons={false} 
                         dot={position()} 
                         activeDot={activePosition()} 
                         paginationStyle={{position:'absolute', bottom:10}} 
@@ -176,22 +182,22 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
                         scrollEnabled={load ? false:true} 
                         bounces={true}
                         buttonWrapperStyle={styles.selectionWrapper}
-                        nextButton={
-                            <TouchableWithoutFeedback onPress={() => {
-                                if (swiperRef.current) {
-                                    swiperRef.current.scrollBy(1);
-                                    ReactNativeHapticFeedback.trigger("impactSmall");
-                            }}}>
-                                <View style={styles.imageTapSection} />
-                            </TouchableWithoutFeedback>}
-                        prevButton={
-                            <TouchableWithoutFeedback onPress={() => {
-                                if (swiperRef.current) {
-                                    swiperRef.current.scrollBy(-1);
-                                    ReactNativeHapticFeedback.trigger("impactSmall");
-                            }}}>
-                                <View style={styles.imageTapSection} />
-                            </TouchableWithoutFeedback>}
+                        // nextButton={
+                        //     <TouchableWithoutFeedback onPress={() => {
+                        //         if (swiperRef.current) {
+                        //             swiperRef.current.scrollBy(1);
+                        //             ReactNativeHapticFeedback.trigger("impactSmall");
+                        //     }}}>
+                        //         <View style={styles.imageTapSection} />
+                        //     </TouchableWithoutFeedback>}
+                        // prevButton={
+                        //     <TouchableWithoutFeedback onPress={() => {
+                        //         if (swiperRef.current) {
+                        //             swiperRef.current.scrollBy(-1);
+                        //             ReactNativeHapticFeedback.trigger("impactSmall");
+                        //     }}}>
+                        //         <View style={styles.imageTapSection} />
+                        //     </TouchableWithoutFeedback>}
                         ref={swiperRef} >
                         
                         {images.map((url, index)=>{
@@ -236,62 +242,80 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
                 </View>  }
         </View>
         {/* More user Info */}
-        {userInfo&&<ScrollView style={{backgroundColor:'white', padding:8, flexDirection:'row',  alignSelf:'center', maxHeight:40, margin:8, borderRadius:10}} horizontal={true} showsHorizontalScrollIndicator={false}>
-            <View style={styles.info}>
-                <Icon.FontAwesome6 name="ruler-vertical" color='#0a1708' style={{alignSelf:'center'}} size={18} />
-                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{userInfo.Height}</Text>
+        {userInfo && <View style={{paddingVertical:8, paddingHorizontal:6, backgroundColor:'white', borderBottomColor:'rgba(0,0,0,0.4)', borderBottomWidth:.5, zIndex:10}}>
+            <ScrollView contentContainerStyle={{ alignSelf:'center', borderRadius:0 }} horizontal={true} showsHorizontalScrollIndicator={false}>
+            <View style={{flexDirection:'row',}}>
+                <View style={styles.info}>
+                    <Icon.FontAwesome6 name="ruler-vertical" color='#0a1708' style={{alignSelf:'center'}} size={18} />
+                    <Text style={{color:'black', fontSize:14, fontWeight:'600', alignSelf:'center'}}>{userInfo.Height}</Text>
+                </View>
+                <View style={styles.line}/>
+                {userInfo.School !==0 && <>
+                <View style={styles.info}>
+                    <Icon.Ionicons name="school" color='#0a1708' style={{alignSelf:'center'}} size={18} />
+                    <Text style={{color:'black', fontSize:14, fontWeight:'600', alignSelf:'center'}}>{userInfo.School}</Text>
+                </View>
+                <View style={styles.line}/></>}
+                <View style={styles.info}>
+                    <Icon.FontAwesome6 name="building-columns" color='#0a1708' style={{alignSelf:'center'}} size={18} />
+                    <Text style={{color:'black', fontSize:14, fontWeight:'600', alignSelf:'center'}}>{userInfo.Organization}</Text>
+                </View>
+                <View style={styles.line}/>
+                <View style={[styles.info, {marginRight:20}]}>
+                    <Icon.FontAwesome6 name="person-running" color='#0a1708' style={{alignSelf:'center'}} size={18} />
+                    {userInfo.Hobbies.map((hobby:string, index:number) => (
+                        <Text key={index} style={{color: 'white', alignSelf:'center', fontSize:12, backgroundColor:'rgb(30,30,30)', padding:4, borderRadius:5, overflow:'hidden', fontWeight:'500'}}>{hobby}</Text>
+                    ))}
+                </View>
             </View>
-            {userInfo.School !==0 && 
-            <View style={styles.info}>
-                <Icon.Ionicons name="school" color='#0a1708' style={{alignSelf:'center'}} size={18} />
-                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{userInfo.School}</Text>
+        </ScrollView>
             </View>}
-            <View style={styles.info}>
-                <Icon.FontAwesome6 name="building-columns" color='#0a1708' style={{alignSelf:'center'}} size={18} />
-                <Text style={{color:'black', fontSize:16, fontWeight:'500', alignSelf:'center'}}>{userInfo.Organization}</Text>
-            </View>
-            <View style={[styles.info, {marginRight:20}]}>
-                <Icon.FontAwesome6 name="person-running" color='#0a1708' style={{alignSelf:'center'}} size={18} />
-                {userInfo.Hobbies.map((hobby:string, index:number) => (
-                    <Text key={index} style={{color: 'white', alignSelf:'center', fontSize:12, backgroundColor:'rgb(30,30,30)', padding:4, borderRadius:5, overflow:'hidden', fontWeight:'500'}}>{hobby}</Text>
-                ))}
-            </View>
-        </ScrollView>}
         {/* Card */}
-        <View style={{marginHorizontal:10, backgroundColor:'transparent'}}>
-            <View style={{overflow:'visible', width:'100%'}}>
-                <Animated.View style={[{backgroundColor:'transparent', flexDirection:'row', width:'200%', transform:[{ translateX: move }]}]}>
-                    <View style={[styles.description]}>
-                        <View style={{flexDirection:'row', width:'100%', justifyContent:'space-between'}}>
-                            <View style={{}}>
-                                <Text style={{fontSize:24, fontWeight:'800'}}>{EventInfo.Title}</Text>
-                                <Text style={{fontSize:18, fontWeight:'700', opacity:0.6}}>in {eventDate && eventDate[0]} Days</Text>
-                            </View>
-                            <View style={{flexDirection:'row', padding:5}}>
-                                <Icon.MaterialIcons name={'location-pin'} size={20} color='green' />
-                                <Text style={{fontSize:18, fontWeight:'500'}}>Gainesville, FL</Text>
-                            </View>
-                        </View>
-                        <View style={{width:'100%', flexDirection:'row', justifyContent:'space-between'}}>
-                            <View style={{alignSelf:'flex-start', flexDirection:'row', gap:10}}>
-                                <Text style={{fontSize:20, fontWeight:'700'}}>{eventDate && eventDate[1]}</Text>
-                                <Text style={{fontSize:20, fontWeight:'600', opacity:0.8}}>{eventDate && eventDate[2]}</Text>
-                            </View>
-                            {EventInfo.Description && 
-                            <TouchableOpacity style={{alignSelf:'center', backgroundColor:'rgba(0,0,0,0.7)', padding:6, borderRadius:20, shadowColor:'black', shadowOpacity:0.4, shadowRadius:3, shadowOffset:{height:0, width:0}}} onPress={flip}>
-                                <Text style={{color:'white', fontWeight:'600', fontSize:12}}> View Description </Text>
-                            </TouchableOpacity>}
-                        </View>
+        <View style={{position: 'relative', flex: 1, marginHorizontal: 10, backgroundColor: 'transparent', overflow: 'visible', zIndex: 9}}>
+            <View style={[styles.description]} onLayout={(event) => find_dimesions(event.nativeEvent.layout)}>
+                <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-between', position: 'relative'}}>
+                    <View>
+                        <Text style={{fontSize: 22, fontWeight: '800'}}>{EventInfo.Title}</Text>
+                        <Text style={{fontSize: 16, fontWeight: '700', opacity: 0.6}}>in {eventDate && eventDate[0]} Days</Text>
                     </View>
-                    <Pressable style={[styles.description2]} onPress={flip}>
-                        <Text style={{fontSize:20, fontWeight:'800'}}>Description</Text>
-                        <Text style={{fontSize:16, textAlign:'center', flexWrap:'wrap'}}>{EventInfo.Description}</Text>
-                    </Pressable>
+                    <View style={{justifyContent: 'center',}}>
+                        <TouchableOpacity style={{backgroundColor:'rgb(30,30,30)', padding:5, borderRadius:5, flexDirection:'row', gap:5}} onPress={flip}>
+                            <Icon.Ionicons name={'expand-outline'} size={20} color='white' />
+                            <Text style={{ color: 'whitesmoke', fontSize:16 }}>Description</Text>
+                        </TouchableOpacity> 
+                    </View>
+                </View>
+                <View style={{width: '100%', flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={{fontSize: 18, fontWeight: '700'}}>{eventDate && eventDate[1]}</Text>
+                        <Text style={{fontSize: 18, fontWeight: '600', opacity: 0.8}}>{eventDate && eventDate[2]}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row', padding: 5}}>
+                        <Icon.MaterialIcons name={'location-pin'} size={20} color='green' />
+                        <Text style={{fontSize: 18, fontWeight: '500', zIndex: 0}}>Gainesville, FL</Text>
+                    </View>
+                </View>
+                <Animated.View style={{position:'absolute', width:'100%', height:'110%', opacity:expand, pointerEvents:'box-none'}}>
+                    <LinearGradient style={{flex:1, pointerEvents:'box-none'}}
+                    colors={['whitesmoke', 'white']}
+                    start={{x: 0, y: -1}} end={{x: 0, y: 1}}
+                    locations={[0,1]}>
+                        <View style={{ pointerEvents:'box-none', justifyContent:'center'}}>
+                            <View style={{pointerEvents:'box-none', alignItems:'center', justifyContent:'center', height:'100%'}}>
+                                <TouchableOpacity style={{padding:14, zIndex:10, backgroundColor:'rgb(30,30,30)', borderRadius:8}} onPress={flip}>
+                                    <Text style={{fontSize:16, textAlign:'center', flexWrap:'wrap', color:'whitesmoke'}}>{EventInfo.Description}</Text>
+                                    <View style={{position:'absolute', justifyContent: 'center', alignItems: 'center', right:-8, bottom:-8, backgroundColor:'rgb(220,220,220)', padding:6, borderRadius:16, zIndex:9}}>
+                                        <Icon.AntDesign name='shrink' size={15} color={'black'}/>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </LinearGradient>
                 </Animated.View>
             </View>
         </View>
         {/* Buttons */}
-        <Animated.View style={{flex:1,flexDirection: 'row', justifyContent: 'space-around', position: 'relative',transform:[{translateY:slideUpButtons}], backgroundColor:'transparent', alignItems:'center'}}>
+        <Animated.View style={{flex:1,flexDirection: 'row', justifyContent: 'space-around', position: 'relative',transform:[{translateY:slideUpButtons}], alignItems:'center', zIndex:12}}>
             <Animated.View style={[styles.button13, {transform: [{scale: scale1}]}]}>
                 <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]} 
                     onPress={() => handleOption({val:1})}
@@ -349,13 +373,7 @@ const styles = StyleSheet.create({
     description:{
         flex: 1,
         justifyContent: 'space-between',
-        alignItems: 'center',
-        padding:10,
-        width:'100%'
-    },
-    description2:{
-        flex: 1,
-        justifyContent: 'space-evenly',
+        marginVertical:6,
         alignItems: 'center',
         padding:10,
         width:'100%'
@@ -414,5 +432,13 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         marginHorizontal:10,
         gap:6,
+    },
+    line:{
+        height:'100%',
+        width:1,
+        backgroundColor:'black',
+        opacity:0.5,
+        alignSelf:'center',
+        borderRadius:10
     }
   })
