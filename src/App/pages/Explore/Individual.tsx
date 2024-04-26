@@ -8,7 +8,6 @@ import { toDate } from "../../../components/ConstantFunctions/Date";
 import { Chase } from 'react-native-animated-spinkit'
 import LinearGradient from "react-native-linear-gradient";
 import findAge from "../../../components/ConstantFunctions/Age";
-import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 
 const windowWidth = Dimensions.get('window').width;
 const expand = new Animated.Value(0);
@@ -30,6 +29,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     const [load, setLoad] = useState(true)
     const [tabSize, setTabSize] = useState(0)
     const [descriptionHeight, setDescriptionHeight] = useState(0)
+    const [transitioning, setTransitioning] = useState(false)
 
     const hideDescription = useRef(true);
     const swiperRef = useRef<any>(null)
@@ -153,7 +153,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
     }
 
     function find_dimesions(layout: LayoutRectangle){
-        const {x, y, width, height} = layout;
+        const {height} = layout;
         setDescriptionHeight(height);
       }
 
@@ -318,6 +318,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
         <Animated.View style={{flex:1,flexDirection: 'row', justifyContent: 'space-around', position: 'relative',transform:[{translateY:slideUpButtons}], alignItems:'center', zIndex:12}}>
             <Animated.View style={[styles.button13, {transform: [{scale: scale1}]}]}>
                 <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]} 
+                    disabled = {transitioning}
                     onPress={() => handleOption({val:1})}
                     onPressIn={() => onPressIn({ val: 1 })}
                     onPressOut={() => onPressOut({ val: 1 })}>
@@ -326,6 +327,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
             </Animated.View>
             <Animated.View style={[styles.button2,{ transform: [{ scale: scaleCenter }]}]}>
                 <Pressable style={[{backgroundColor:'#0a1708', justifyContent:'center', borderRadius:10, paddingVertical:5}]}
+                    disabled = {transitioning}
                     onPress={() => {handleOption({val:2, hideDescription})}}
                     onPressIn={() => onPressIn({ val: 2})}
                     onPressOut={() => onPressOut({ val: 2 })}>
@@ -334,6 +336,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
             </Animated.View>
             <Animated.View style={[styles.button13, { transform: [{ scale: scale2 }] }]}>
                 <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]}
+                    disabled = {transitioning}
                     onPress={() => handleOption({val:3})}
                     onPressIn={() => onPressIn({ val: 3 })}
                     onPressOut={() => onPressOut({ val: 3 })}>

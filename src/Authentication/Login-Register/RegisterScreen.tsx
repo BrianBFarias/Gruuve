@@ -26,6 +26,11 @@ interface ImageRetrieveData {
   y: number | undefined;
 }
 
+interface coordinate {
+  latitude: number | 0;
+  longitude: number | 0;
+}
+
 const ImageURLs = new Map();
 
 const Register = ({navigation}: any) => {
@@ -45,13 +50,8 @@ const Register = ({navigation}: any) => {
   const [birthDate, setBirthDate] = useState(null);
   const [gender, setGender] = useState("");
   const [height, setHeight] = useState<string>();
-  const [location, setLocation] = useState({
-    Location: '',
-    Coordinates: {
-      Longitude: 0,
-      Latitude: 0
-    }
-   });
+  const [location, setLocation] = useState<coordinate>({latitude:27, longitude:-81});
+  const [locationText, setLocationText] = useState<String>('');
 
   // Third Section
   const [hobbies, setHobbies] = useState<string[]>([]);
@@ -122,7 +122,6 @@ const Register = ({navigation}: any) => {
       setSection(section+1);
     }, 600)  
   }
-
 
   function showPage3(){
     // re-establish that section1 is visible (it was set to 0 before)
@@ -202,11 +201,28 @@ const Register = ({navigation}: any) => {
     });
   }
 
-  const onRegister = () => {
+  async function retrieveAddy(){
+    fetch('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + `${location.latitude}` + ',' + `${location.longitude}` + '&key=' + '&key=' + 'AIzaSyBTOio8IArwobWjnwXjukT9PtTNlS3981g')
+    .then((response) => response.json())
+    .then(async (responseJson) => {
+      const tempLocationText = responseJson.results[0].address_components[2].long_name + ', ' + responseJson.results[0].address_components[3].long_name;
+      setLocationText(locationText)
+      return;
+    })
+  } 
+
+  const onRegister = async () => {
     if(!Image1){
       Alert.alert("Please Select a Main Image")
       return;
     }
+    if(location.latitude!=0 && location.longitude == 0){
+      Alert.alert("Please Select Location")
+      return;
+    }
+
+    await retrieveAddy();
+
     setLoad(true)
         auth()
         .createUserWithEmailAndPassword(email, password)
@@ -224,8 +240,8 @@ const Register = ({navigation}: any) => {
                 }
             }
 
-            const lng = location.Coordinates.Longitude
-            const lat = location.Coordinates.Latitude
+            const lng = location.longitude
+            const lat = location.latitude
 
             const data = {
               uid: uid,
@@ -248,7 +264,8 @@ const Register = ({navigation}: any) => {
               },
               premiumMember:false,
               Height:height,
-              School:""
+              School:"",
+              location: location
             };
           firestore().
                 collection('Users')

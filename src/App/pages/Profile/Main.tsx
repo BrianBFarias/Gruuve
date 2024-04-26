@@ -21,6 +21,8 @@ import {CircleFade} from 'react-native-animated-spinkit'
 
 import auth from '@react-native-firebase/auth';
 
+// https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=YOUR_API_KEY
+
 export default function ProfileMain({userData, disabled, navigation, settingsToggle}:any){
     LogBox.ignoreAllLogs();
     const [currUserData, setCurrUserData] = useState(userData)
@@ -28,7 +30,6 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
     const [Image1, setImage1] = useState<any>();
     const [allImages, setAllImages]  = useState<any>();
     const [age,setAge] = useState<any>();
-    const [location, setLocation] = useState('Gainesville, FL')
     const [saving, setSaving] = useState(false);
 
     // popUps to edit Profile (Not preferences)
@@ -37,6 +38,7 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
     
     const [heightPage, setHeightPage] = useState(false);
     const [height, setHeight] = useState(currUserData.Height);
+    const [location, setLocation] = useState(currUserData.Location.area)
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
     const [locationSelector, setLocationSelector] = useState(false)

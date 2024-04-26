@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Image, TouchableOpacity, View, PanResponder, Animated } from "react-native"
+import { Image, TouchableOpacity, View, PanResponder, Animated, Alert } from "react-native"
 import { PERMISSIONS, RESULTS, request } from "react-native-permissions";
 import ImagePicker from 'react-native-image-crop-picker';
 import Icons from "../../../components/icons";
@@ -14,36 +14,39 @@ import auth from '@react-native-firebase/auth';
 export const Images =({allImages, setAllImages, setSaving}:any) =>{
     const [permissionGranted, setPermissionGranted] = useState(false);
 
-    useEffect(()=>{
-        request(PERMISSIONS.IOS.PHOTO_LIBRARY).then((result:any) => {
-            switch (result) {
-                case RESULTS.UNAVAILABLE:
-                    setPermissionGranted(false)
-                  break;
-                case RESULTS.DENIED:
-                    setPermissionGranted(false)
-                  break;
-                case RESULTS.LIMITED:
-                  console.log('The permission is limited: some actions are possible');
-                  break;
-                case RESULTS.GRANTED:
-                    setPermissionGranted(true)
-                  break;
-                case RESULTS.BLOCKED:
-                    setPermissionGranted(false)
-                  break;
-              }
-        });
-    })
+    async function isDuplicate(path:String){
+      let count=0;
+
+      allImages.forEach((string:String) => {
+        // Check if the string contains "ABC"
+        if (string === path) {
+            count++;
+        }
+    });
+        
+      if(count>1){
+        return true;
+      }else{
+        return false;
+      }
+
+    }
+
     async function RemoveImage(index: any) {
-      
       if (index >= 0) {
         setSaving(true)
-        const selectedImageRef = storage().refFromURL(allImages[index]);
+
+        if(await !isDuplicate(allImages[index])){
+          try{
+            const selectedImageRef = storage().refFromURL(allImages[index]);
+            selectedImageRef.delete();
+          }catch(e){
+            Alert.alert("Image Duplicate Detected and refreshed")
+          }
+  
+        }
+
         const uid = auth().currentUser?.uid;
-
-        selectedImageRef.delete();
-
         const updatedImages = [...allImages]; // Create a copy of the original array
         updatedImages.splice(index, 1); // Remove the element at the specified index
         setAllImages(updatedImages); // Update state with the modified array
@@ -104,7 +107,6 @@ export const Images =({allImages, setAllImages, setSaving}:any) =>{
                 setSaving(true)
                 // Adding image to end
                 if(index+1 > allImages.length){
-
                   let path = `${uid}/`;
                   let fileName =path + saveImage.uri.substring(saveImage.uri.lastIndexOf('/') + 1);
 
@@ -237,7 +239,7 @@ export const Images =({allImages, setAllImages, setSaving}:any) =>{
             return (
                 <View style={[{ position: 'relative', width: '100%', height: '100%', overflow: 'visible', borderRadius:6 }, index == 0?{zIndex:19, borderColor:'green', borderWidth:3, borderRadius:8}:null]}>
                     <FastImage
-                        source={{ uri: `${allImages[index]}`, cache: FastImage.cacheControl.immutable}} 
+                        source={{ uri: `${allImages[index]}`, cache: FastImage.cacheControl.immutable, priority: FastImage.priority.high}} 
                         style={{ width: '100%', height: '100%', backgroundColor:'rgba(0,0,0,0.1)', borderRadius:5}}
                         resizeMode="cover"
                     />

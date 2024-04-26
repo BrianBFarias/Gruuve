@@ -2,13 +2,15 @@ import React, {useEffect, useState, } from "react";
 import { View, SafeAreaView, Text, TouchableOpacity, Pressable} from "react-native"
 import LinearGradient from 'react-native-linear-gradient';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+
 import { EventsPage } from "./EventsStack/Events";
 import { NewEvent } from "./EventsStack/CreateEvent";
 import {LikesPage} from "./EventLikes/Likes";
+
+import Loading2 from "../../components/Loading2";
 import icons from "../../components/icons";
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import Loading from "../../components/Loading";
 
 const Stack = createNativeStackNavigator();
 
@@ -131,7 +133,7 @@ const EventsContent = ({ user, loading }:any) => {
     </>:
     <Stack.Screen
     name="Loading"
-    component={Loading}
+    component={Loading2}
     initialParams={{ user: { user } }}
     options={{
       header: () => (

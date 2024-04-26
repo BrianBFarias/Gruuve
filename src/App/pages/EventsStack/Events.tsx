@@ -3,7 +3,6 @@ import { View, FlatList, Text, TouchableOpacity, Button, Dimensions, Pressable, 
 import LinearGradient from "react-native-linear-gradient";
 import icons from "../../../components/icons";
 import Loading from "../../../components/Loading";
-import { Chase } from 'react-native-animated-spinkit'
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Modal from "react-native-modal";
@@ -115,7 +114,6 @@ export const EventsPage = ({navigation, route}:any) =>{
       };
 
       const confirmDeleteItem = ({ item, index }:any) => {
-        console.log(item, index);
         setDeletionSelection([item, index])
         setShowPopup(true)
       };

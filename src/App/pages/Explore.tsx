@@ -2,7 +2,7 @@ import React, {useEffect, useId, useRef, useState} from "react";
 import {SafeAreaView, StyleSheet, Text, View, Animated, StatusBar, Easing} from "react-native"
 import LinearGradient from 'react-native-linear-gradient';
 import { Switch } from 'react-native-switch';
-import Loading from "../../components/Loading";
+import Loading2 from "../../components/Loading2";
 import { Indiivudal } from "./Explore/Individual";
 import { Group } from "./Explore/Group";
 import * as geofirestore from 'geofirestore';
@@ -319,7 +319,7 @@ export const Explore = ({route}:any) =>{
             <Animated.View style={{opacity:eventCard, flex:1, width:'100%', backgroundColor:'whitesmoke', borderTopLeftRadius:10, borderTopRightRadius:10}}>
                 {toggle ?
                 (!EventInfo|| loading ? 
-                    (<View style={{flex:1}}><Loading /></View>):
+                    (<View style={{flex:1}}><Loading2 /></View>):
                     (EventInfoEmpty?
                         empty({text:'No Individual Events'}): 
                         <Indiivudal 
@@ -335,7 +335,7 @@ export const Explore = ({route}:any) =>{
                         setNextPost={setNextPost}
                         />)):
                 (!GroupEventInfo || loading ? 
-                    (<View style={{flex:1}}><Loading /></View>):
+                    (<View style={{flex:1}}><Loading2 /></View>):
                     (GroupEventInfoEmpty ?
                         empty({text:'No Group Events'}): 
                         <Group 

@@ -15,8 +15,8 @@ import { SignInContext } from '../authTriggers/authContext';
 
 
 const LoginScreen = ({ navigation }: any) => {
-    const [email, setemail] = useState("Admin@gmail.com")
-    const [password, setPassword] = useState("12345678")
+    const [email, setemail] = useState("Brian03032003@gmail.com")
+    const [password, setPassword] = useState("850423Ab_GRU")
     const [loading, setLoading] = useState(false)
 
     const {dispatchSignedIn} = useContext(SignInContext)
@@ -52,7 +52,7 @@ const LoginScreen = ({ navigation }: any) => {
                     <Image source={Logo} style={AuthForm.logo} />
                     <View style={AuthForm.back}>
                         <TouchableOpacity onPress={navigation.goBack}>
-                            <Icon1 size={30} color={'#1e451a'} name='chevron-back-outline' />
+                            <Icon1 size={35} color={'#1e451a'} name='chevron-back-outline' />
                         </TouchableOpacity>
                     </View>
                     </View>

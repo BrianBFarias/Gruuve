@@ -1,7 +1,6 @@
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Modal from "react-native-modal";
-import icons from '../../../components/icons';
 import Icons from '../../../components/icons';
 import { LocationName } from '../../../components/ConstantFunctions/LocName';
 import { useEffect, useRef, useState } from 'react';
@@ -81,7 +80,7 @@ export function LocationSelection({isVisible, setIsVisible, currentLocation,}:an
                         </Pressable>
                     </View>
                     <View style={{flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:4, overflow:'hidden'}}>
-                        <MapView
+                    <MapView
                             ref={mapViewRef}
                             rotateEnabled={false}
                             loadingEnabled={true}
