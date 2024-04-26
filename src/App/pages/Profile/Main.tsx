@@ -9,15 +9,13 @@ import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 
 import findAge from "../../../components/ConstantFunctions/Age";
-import { toDate } from "../../../components/ConstantFunctions/Date";
-import { LocationName } from '../../../components/ConstantFunctions/LocName';
 
-import FastImage from "react-native-fast-image";
 import { HobbySelection } from "./HobbySelection";
 import { LocationSelection } from "./LocationSelection";
 import {HeightSelection} from"./heightSelection";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {CircleFade} from 'react-native-animated-spinkit'
+import { Subscription } from './../Subscription';
 
 import auth from '@react-native-firebase/auth';
 
@@ -50,6 +48,7 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
             setCurrUserData(userInfo?._data);
             setHobbies(userInfo?._data.Hobbies)
             setHeight(userInfo?._data.Height)
+            setLocation(userInfo?._data.Location.area)
         }
     }
 
@@ -104,34 +103,6 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
     
     setDatePickerVisibility(false);
   };
-
-    function setMainImage(){
-        ImagePicker.openPicker({
-            width: 300,
-            height: 320,
-            cropping: true,
-            mediaType:'photo',
-            includeBase64:true,
-            forceJpg:true
-          }).then(image => {
-            if (image && image.sourceURL && image.cropRect) {
-                const saveImage = {
-                    uri: image.sourceURL,
-                    data: image.data || '',
-                    mime: image.mime,
-                    height: 320,
-                    width: 300,
-                    x: image.cropRect.x,
-                    y: image.cropRect.y,
-                }
-                // Save new Image
-              }
-        });
-    }
-
-    function refetch(){
-        // refetch all userData
-    }
 
     function editOption(num:number){
         switch(num){
@@ -198,7 +169,7 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                 <View style={style.line}/>
                 <Pressable style={style.container1} onPress={() => editOption(5)}>
                     <Text style={style.text2}>Height</Text>
-                    <Text style={style.text1}>{userData.Height}</Text>
+                    <Text style={style.text1}>{height}</Text>
                 </Pressable>
                 <View style={style.line}/>
                 <Pressable style={style.container1} onPress={() => editOption(3)}>
@@ -241,13 +212,13 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
             <HeightSelection 
                 isVisible={heightPage}
                 setIsVisible={setHeightPage}
-                height={height}
                 setHeight={setHeight}
             />
             <LocationSelection 
                 isVisible={locationSelector}
                 setIsVisible={setLocationSelector}
-                currentLocation={userData.Location}
+                currentLocation={currUserData.Location}
+                setLocation={setLocation}
             />
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}

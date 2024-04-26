@@ -227,7 +227,6 @@ export const Height = [
     'Leathercraft',
     'Woodworking',
     'Scrapbooking',
-    'Knitting',
     'Quilting',
     'Cross-stitching',
     'Glassblowing',

@@ -12,7 +12,7 @@ interface coordinate {
     longitude: number | undefined;
 }
 
-export function LocationSelection({isVisible, setIsVisible, currentLocation,}:any){
+export function LocationSelection({isVisible, setIsVisible, currentLocation, setLocation}:any){
     const [tempLocation, setTempLocation] = useState<coordinate>(currentLocation)
     const [accessable, setAccessable] = useState(false)
     const [locationName, setLocationName] = useState('');
@@ -22,7 +22,8 @@ export function LocationSelection({isVisible, setIsVisible, currentLocation,}:an
     async function confirmation() {
         const currentUser = auth().currentUser;
         if (currentUser) {
-            updateLocationName();
+            const area = await LocationName(tempLocation)
+
             // Perform the Firestore update with the user ID
             await firestore()
                 .collection('Users')
@@ -30,10 +31,12 @@ export function LocationSelection({isVisible, setIsVisible, currentLocation,}:an
                 .update({
                     Location: {
                         Latitude: tempLocation.latitude,
-                        Longitude: tempLocation.longitude
+                        Longitude: tempLocation.longitude,
+                        area: area
                     },
                 })
                 .then(() => {
+                    setLocation(area)
                     setIsVisible(false);
                 })
                 .catch(error => {
@@ -48,13 +51,6 @@ export function LocationSelection({isVisible, setIsVisible, currentLocation,}:an
     function updateLocation(Region:coordinate){
         if(accessable){
             setTempLocation(Region)
-        }
-    }
-
-    async function updateLocationName(){
-        const tempName = await LocationName(tempLocation)
-        if(tempName){
-            setLocationName(tempName);
         }
     }
 

@@ -54,6 +54,7 @@ export default function Section3({ hobbies, setHobbies, nextSection }: any) {
             <FlatList
                 contentContainerStyle={{overflow:'scroll', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', paddingVertical: 5, paddingHorizontal: 5, gap:10, columnGap:14}}
                 data={Hobbies}
+                
                 renderItem={renderItem}
                 keyExtractor={(item) => item}
             />

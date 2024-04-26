@@ -1,15 +1,23 @@
-import { View, Text, TouchableOpacity, Animated, StyleSheet} from "react-native"
+import { View, Text, TouchableOpacity, Animated, StyleSheet, ScrollView} from "react-native"
 import icons from "./icons"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Swiper from "react-native-swiper"
+import firestore from '@react-native-firebase/firestore';
 
 const size = new Animated.Value(0)
 
 export const PopUp = (props) =>{
+    const [betaTag, setBetaTag] = useState('')
 
     useEffect(()=>{
         present()
+        fetchConstants()
     },[])
+
+    async function fetchConstants(){
+        const agreement = (await firestore().collection('Constants').doc('Agreement').get())._data;
+        setBetaTag(agreement.betaTag)
+    }
 
     const present = () =>{
         Animated.timing(size, {
@@ -75,19 +83,24 @@ export const PopUp = (props) =>{
                             </View>
                         </View>
                     </View>
-                    <View  style={styles.slide2}>
-                        <Text style={{alignSelf:'center', fontSize:22, fontWeight:'700', marginBottom:15}}>Additional Info</Text>
-                        <View style={{flexDirection:'row', alignItems:'center', gap:10,}}>
-                            <Text style={styles.text1}>Swipe to Delete Events</Text>
-                        </View>
-                        <View style={{flexDirection:'row', alignItems:'center', gap:10}}>
-                            <Text style={styles.text1}>Tap Event to View More Info</Text>
-                        </View>
-                        <View style={{flex:1}}/>
-                        <TouchableOpacity style={{alignSelf:'center', backgroundColor:'black', paddingVertical:5, paddingHorizontal:'10%', borderRadius:10, marginTop:15}} onPress={handleNext}>
-                            <Text style={{color:'white', fontSize:18}}>Continue</Text>
-                        </TouchableOpacity>
-                        <View style={{flex:1}}/>
+                    <View style={styles.slide2}>
+                        <ScrollView >
+                            <Text style={{alignSelf:'center', fontSize:22, fontWeight:'700', marginBottom:15}}>Beta Gruuve</Text>
+                            <View style={{flexWrap:'wrap', alignItems:'center', gap:10, paddingHorizontal:10}}>
+                                <Text style={styles.text1}>{betaTag} </Text>
+                            </View>
+                            <View style={{width:'100%', alignItems:'center', marginVertical:10}}>
+                                <Text style={styles.text1}>Swipe to Delete Events</Text>
+                            </View>
+                            <View style={{width:'100%', alignItems:'center', marginVertical:10}}>
+                                <Text style={styles.text1}>Tap Event to View More Info</Text>
+                            </View>
+                            <View style={{flex:1}}/>
+                            <TouchableOpacity style={{alignSelf:'center', backgroundColor:'black', paddingVertical:5, paddingHorizontal:'10%', borderRadius:10, marginTop:15}} onPress={handleNext}>
+                                <Text style={{color:'white', fontSize:18}}>Continue</Text>
+                            </TouchableOpacity>
+                            <View style={{flex:1}}/>
+                        </ScrollView>
                     </View>
                 </Swiper>
             </Animated.View>
@@ -97,7 +110,8 @@ export const PopUp = (props) =>{
 
 const styles = StyleSheet.create({
     text1:{
-        fontSize:16
+        fontSize:16,
+        textAlign:'center'
     }, 
     slide1:{
         flex:1,
@@ -110,7 +124,8 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         gap:12,
-        padding:20
+        padding:20,
+        paddingBottom:45
     },
     mockImageClick:{
         height:'95%',

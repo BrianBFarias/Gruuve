@@ -3,6 +3,7 @@ import { View, SafeAreaView, TouchableOpacity, Animated, Keyboard, TouchableWith
 import {AuthForm} from '../AuthenticationStyling'
 import Icon1 from 'react-native-vector-icons/Ionicons'
 import Logo from '../../../assets/images/logo.png'
+import { LocationName } from '../../components/ConstantFunctions/LocName';
 
 import Section1 from './RegisterParts/Register(Section 1)';
 import Section2 from './RegisterParts/Register(Section 2)'
@@ -51,7 +52,6 @@ const Register = ({navigation}: any) => {
   const [gender, setGender] = useState("");
   const [height, setHeight] = useState<string>();
   const [location, setLocation] = useState<coordinate>({latitude:27, longitude:-81});
-  const [locationText, setLocationText] = useState<String>('');
 
   // Third Section
   const [hobbies, setHobbies] = useState<string[]>([]);
@@ -201,16 +201,6 @@ const Register = ({navigation}: any) => {
     });
   }
 
-  async function retrieveAddy(){
-    fetch('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + `${location.latitude}` + ',' + `${location.longitude}` + '&key=' + '&key=' + 'AIzaSyBTOio8IArwobWjnwXjukT9PtTNlS3981g')
-    .then((response) => response.json())
-    .then(async (responseJson) => {
-      const tempLocationText = responseJson.results[0].address_components[2].long_name + ', ' + responseJson.results[0].address_components[3].long_name;
-      setLocationText(locationText)
-      return;
-    })
-  } 
-
   const onRegister = async () => {
     if(!Image1){
       Alert.alert("Please Select a Main Image")
@@ -221,7 +211,7 @@ const Register = ({navigation}: any) => {
       return;
     }
 
-    await retrieveAddy();
+    const locationText = await LocationName({latitude: location.latitude, longitude: location.longitude});
 
     setLoad(true)
         auth()
@@ -251,7 +241,7 @@ const Register = ({navigation}: any) => {
               Last: last,
               Sex: gender,
               Organization: organization,
-              Location: { Latitude: lat, Longitude: lng },
+              Location: { Latitude: lat, Longitude: lng, area:locationText },
               BirthDate: birthDate,
               Hobbies: hobbies,
               ImageURLs: ImageList,
@@ -265,7 +255,6 @@ const Register = ({navigation}: any) => {
               premiumMember:false,
               Height:height,
               School:"",
-              location: location
             };
           firestore().
                 collection('Users')

@@ -1,18 +1,15 @@
-import React, { useEffect, useRef, useState,  } from 'react';
+import React, { useRef, useState,  } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Alert, ScrollView} from "react-native";
 import {AuthForm} from '../../AuthenticationStyling'
-import Icon3 from 'react-native-vector-icons/FontAwesome6'
 import { Dropdown } from 'react-native-element-dropdown';
 import Button1 from '../../../components/Button';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import GetLocation from 'react-native-get-location'
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import MapView from 'react-native-maps';
 import Icons from '../../../components/icons';
 
-import { LocationName } from '../../../components/ConstantFunctions/LocName';
-
+import { HeightSelection } from '../../../App/pages/Profile/heightSelection';
 import findAge from '../../../components/ConstantFunctions/Age';
 import { GreekOptions, Genders, Height } from '../../ProfileOptions';
 
@@ -24,8 +21,7 @@ interface coordinate {
 export default function Section2({location, setLocation, organization, setOrganization, age, setAge, setGender, gender, nextSection, setBirthDate, height, setHeight}:any){
   const [isFocus0, setIsFocus0] = useState(false);
   const [isFocus2, setIsFocus2] = useState(false);
-  const [isFocus4, setIsFocus4] = useState(false);
-  const [locationFetched, setLocationFetched] = useState(false)
+  const [heightSelection, setHeightSelection] = useState(false)
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -83,12 +79,12 @@ export default function Section2({location, setLocation, organization, setOrgani
   }
 
   function next(){
-    if(age.value === 0 || organization === "" || location.Location === "" || age === 0 ){
-      return;
-    }
-    else if(location.Coordinates.longitude === 0 || location.Coordinates.latitude === 0){
-      return;
-    }
+    // if(age.value === 0 || organization === "" || location.Location === "" || age === 0 ){
+    //   return;
+    // }
+    // else if(location.longitude === 0 || location.latitude === 0){
+    //   return;
+    // }
     nextSection()
   }
 
@@ -112,105 +108,8 @@ export default function Section2({location, setLocation, organization, setOrgani
     <View style={{display:'flex', justifyContent:'space-between', height:'100%'}}>
       <Text style={AuthForm.header3}>Setup Your Profile</Text>
     <View style={{backgroundColor:'transparent', marginHorizontal:10, padding:10, paddingVertical:20, borderRadius:10, overflow:'hidden', flex:1}}>
-    <Dropdown
-      style={[styles.dropdown, isFocus0 && { borderColor: 'transparent'}]}
-      placeholderStyle={styles.placeholderStyle}
-      selectedTextStyle={styles.selectedTextStyle}
-      inputSearchStyle={styles.inputSearchStyle}
-      iconStyle={styles.iconStyle}
-      containerStyle={styles.list}
-      activeColor={'rgba(10, 110, 10, .15)'}
-      data={Genders}
-      search={false}
-      onFocus={() => setIsFocus0(true)}
-      onBlur={() => setIsFocus0(false)}
-      maxHeight={300}
-      labelField="label"
-      valueField="value"
-      placeholder="Gender"
-      searchPlaceholder="Search..."
-      value={gender}
-      onChange={item => {
-        setGender(item.value);
-        setIsFocus0(false);
-      }}
-      renderLeftIcon={() => (
-        <Icon3 style={styles.icon} name="person" size={20} />
-      )}
-      renderRightIcon={() => (
-        isFocus0 ? 
-        <Icons.MaterialCommunityIcons style={styles.icon} name="chevron-up" size={30} />:
-        <Icons.MaterialCommunityIcons style={styles.icon} name="chevron-down" size={30} />
-      )} />
-    <Dropdown
-      style={[styles.dropdown, isFocus2 && { borderColor: 'transparent'}]}
-      placeholderStyle={styles.placeholderStyle}
-      containerStyle={styles.list}
-      selectedTextStyle={styles.selectedTextStyle}
-      inputSearchStyle={styles.inputSearchStyle}
-      iconStyle={styles.iconStyle}
-      data={GreekOptions}
-      activeColor={'rgba(10, 110, 10, .15)'}
-      search
-      onFocus={() => setIsFocus2(true)}
-      onBlur={() => setIsFocus2(false)}
-      maxHeight={300}
-      labelField="label"
-      valueField="value"
-      placeholder="Greek Involvment..."
-      searchPlaceholder="Search..."
-      value={organization}
-      onChange={item => {
-        setOrganization(item.value);
-        setIsFocus2(false);
-      }}
-      renderLeftIcon={() => (
-        <Icon3 style={styles.icon} color="#3f8644" name="building-columns" size={20} />
-      )}
-      renderRightIcon={() => (
-        isFocus2 ? 
-        <Icons.MaterialCommunityIcons style={styles.icon} color="#3f8644" name="chevron-up" size={30} />:
-        <Icons.MaterialCommunityIcons style={styles.icon} color="#3f8644" name="chevron-down" size={30} />
-      )}/>
-    <TouchableOpacity style={styles.dropdown} onPress={()=>{setDatePickerVisibility(true);}}>
-      <Text style={[age==0?{opacity:0.6, fontWeight:'500'}:{opacity:1, fontWeight:'600'}, {color:'#194715', fontSize:16}]}>{age === 0 ? 'Birthday': age}</Text>
-    </TouchableOpacity>
-    <DateTimePickerModal
-      isVisible={isDatePickerVisible}
-      mode="date"
-      onConfirm={AgeConfirmation}
-      onCancel={()=>{ setDatePickerVisibility(false);}}
-      />
-      <Dropdown
-      style={[styles.dropdown, isFocus4 && { borderColor: 'tnsparent'}]}
-      placeholderStyle={styles.placeholderStyle}
-      containerStyle={styles.list}
-      selectedTextStyle={styles.selectedTextStyle}
-      inputSearchStyle={styles.inputSearchStyle}
-      iconStyle={styles.iconStyle}
-      data={Height}
-      activeColor={'rgba(10, 110, 10, .15)'}
-      onFocus={() => setIsFocus4(true)}
-      onBlur={() => setIsFocus4(false)}
-      maxHeight={300}
-      labelField="label"
-      valueField="value"
-      placeholder="Height"
-      searchPlaceholder="Search..."
-      value={height}
-      onChange={item => {
-        setHeight(item);
-        setIsFocus4(false);
-      }}
-      renderLeftIcon={() => (
-        <Icon3 style={styles.icon} color="#3f8644" name="ruler-vertical" size={20} />
-      )}
-      renderRightIcon={() => (
-        isFocus4 ? 
-        <Icons.MaterialCommunityIcons style={styles.icon} color="#3f8644" name="chevron-up" size={30} />:
-        <Icons.MaterialCommunityIcons style={styles.icon} color="#3f8644" name="chevron-down" size={30} />
-      )}/>
-      <View style={{flex:1, width:'100%', borderRadius:6, overflow:'hidden'}}>
+      {/* Map */}
+    <View style={{flex:1, width:'100%', borderRadius:6, overflow:'hidden'}}>
          <MapView
           ref={mapViewRef}
           rotateEnabled={false}
@@ -241,12 +140,96 @@ export default function Section2({location, setLocation, organization, setOrgani
             <View style={{borderBottomRightRadius:6, position:'absolute', left:0, top:0, overflow:'hidden', backgroundColor:'rgba(255,255,255,0.8)', padding:6}}>
               <Text style={{fontWeight:'600', fontSize:12}}>Your Location</Text>
             </View>
-          </View>
+        </View>
+    </View>
+    <Dropdown
+      style={[styles.dropdown, isFocus0 && { borderColor: 'transparent'}]}
+      placeholderStyle={styles.placeholderStyle}
+      selectedTextStyle={styles.selectedTextStyle}
+      inputSearchStyle={styles.inputSearchStyle}
+      iconStyle={styles.iconStyle}
+      containerStyle={styles.list}
+      activeColor={'rgba(10, 110, 10, .15)'}
+      data={Genders}
+      search={false}
+      onFocus={() => setIsFocus0(true)}
+      onBlur={() => setIsFocus0(false)}
+      maxHeight={300}
+      labelField="label"
+      valueField="value"
+      placeholder="Gender"
+      searchPlaceholder="Search..."
+      value={gender}
+      onChange={item => {
+        setGender(item.value);
+        setIsFocus0(false);
+      }}
+      renderLeftIcon={() => (
+        <Icons.FontAwesome6 style={styles.icon} name="person" size={20} />
+      )}
+      renderRightIcon={() => (
+        isFocus0 ? 
+        <Icons.MaterialCommunityIcons style={styles.icon} name="chevron-up" size={30} />:
+        <Icons.MaterialCommunityIcons style={styles.icon} name="chevron-down" size={30} />
+      )} />
+    <Dropdown
+      style={styles.dropdown}
+      dropdownPosition='top'
+      placeholderStyle={styles.placeholderStyle}
+      containerStyle={styles.list2}
+      selectedTextStyle={styles.selectedTextStyle}
+      inputSearchStyle={styles.inputSearchStyle}
+      iconStyle={styles.iconStyle}
+      data={GreekOptions}
+      activeColor={'rgba(10, 110, 10, .15)'}
+      search
+      onFocus={() => setIsFocus2(true)}
+      onBlur={() => setIsFocus2(false)}
+      maxHeight={300}
+      labelField="label"
+      valueField="value"
+      placeholder="Greek Involvment..."
+      searchPlaceholder="Search..."
+      value={organization}
+      onChange={item => {
+        setOrganization(item.value);
+        setIsFocus2(false);
+      }}
+      renderLeftIcon={() => (
+        <Icons.FontAwesome6 style={styles.icon} color="#3f8644" name="building-columns" size={20} />
+      )}
+      renderRightIcon={() => (
+        isFocus2 ? 
+        <Icons.MaterialCommunityIcons style={styles.icon} color="#3f8644" name="chevron-up" size={30} />:
+        <Icons.MaterialCommunityIcons style={styles.icon} color="#3f8644" name="chevron-down" size={30} />
+      )}/>
+    <TouchableOpacity style={styles.dropdown} onPress={()=>{setDatePickerVisibility(true);}}>
+      <View style={{flexDirection:'row'}}>
+        <Icons.FontAwesome style={styles.icon} color="#3f8644" name="birthday-cake" size={20} />
+        <Text style={[age==0?{opacity:0.6, fontWeight:'500'}:{opacity:1, fontWeight:'600'}, {color:'#194715', fontSize:16}]}>{age === 0 ? 'Birthday': age}</Text>
       </View>
+    </TouchableOpacity>
+    <DateTimePickerModal
+      isVisible={isDatePickerVisible}
+      mode="date"
+      onConfirm={AgeConfirmation}
+      onCancel={()=>{ setDatePickerVisibility(false);}}
+      />
+      <TouchableOpacity style={styles.dropdown} onPress={()=>{setHeightSelection(true);}}>
+        <View style={{flexDirection:'row'}}>
+          <Icons.FontAwesome6 style={styles.icon} color="#3f8644" name="ruler-vertical" size={20} />
+          <Text style={[age==0?{opacity:0.6, fontWeight:'500'}:{opacity:1, fontWeight:'600'}, {color:'#194715', fontSize:16}]}>{!height ? 'Height': height}</Text>
+        </View>
+      </TouchableOpacity>
     </View>
     <TouchableOpacity style={{alignSelf:'center'}} onPress={next}>
       <Button1 text={'Continue'}/>
     </TouchableOpacity>
+      <HeightSelection 
+        isVisible={heightSelection}
+        setIsVisible={setHeightSelection}
+        setHeight={setHeight}
+      />
     </View>
   )
 }
@@ -320,6 +303,14 @@ const styles = StyleSheet.create({
         borderRadius:6,
         shadowColor:'black',
         shadowOffset:{width:0, height:5},
+        shadowRadius:4,
+        shadowOpacity:0.5
+      },
+      list2:{
+        borderRadius:6,
+        paddingTop:4,
+        shadowColor:'black',
+        shadowOffset:{width:0, height:-2},
         shadowRadius:4,
         shadowOpacity:0.5
       }

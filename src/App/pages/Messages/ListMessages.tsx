@@ -13,13 +13,14 @@ type Message ={
 
 export const ListMessages = ({navigation, route}:any) =>{
     const [messages, setMessages] = useState<Message[]>([])
-    const [fetching, setFetching] = useState(true)
+    const [fetching, setFetching] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     let prevOpenedRow:any;
     let row: Array<any> = [];
 
     useEffect(()=>{
-        setFetching(false)
+        setLoading(false)
     },[])
 
     const renderItem = (item:any, index:any , onClick:any) => {
@@ -110,7 +111,7 @@ export const ListMessages = ({navigation, route}:any) =>{
             locations={[0.4,1]}
             style={{flex:1}}>
             
-            {fetching ?
+            {loading ?
                 <Loading2 />:
                 <GestureHandlerRootView style={{ flex: 1}}>
                 {messages && messages.length == 0 && !fetching ?

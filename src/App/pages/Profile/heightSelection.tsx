@@ -1,16 +1,16 @@
 import { View, Text} from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Modal from "react-native-modal";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
-import { Height } from "../../../Authentication/ProfileOptions";
 
-export function HeightSelection({isVisible, setIsVisible, height, setHeight}:any){
-    const [footSelectedIndex, setFootSelectedIndex] = useState(1)
-    const [inchSelectedIndex, setInchSelectedIndex] = useState(1)
-
+export function HeightSelection({isVisible, setIsVisible, setHeight}:any){
+    const [footSelectedIndex, setFootSelectedIndex] = useState(2)
+    const [inchSelectedIndex, setInchSelectedIndex] = useState(0)
 
     function update(){
         setIsVisible(false)
+        const tempHeight = `${footSelectedIndex+3}`+"' "+`${inchSelectedIndex}`
+        setHeight(tempHeight)
     }
 
     return(
@@ -22,9 +22,9 @@ export function HeightSelection({isVisible, setIsVisible, height, setHeight}:any
         hideModalContentWhileAnimating={true} 
         backdropOpacity={0.4}
         onBackdropPress={()=>{update()}}
-        style={{flex: 1, margin: 0}}>
-            <View style={{width:'100%', height:'30%', position:'absolute', bottom:0}}>
-                <View style={{backgroundColor:'white', borderTopLeftRadius:20, borderTopRightRadius:20, overflow:'hidden', flex:1, flexDirection:'row'}}>
+        style={{flex: 1, margin: 10, marginBottom:20}}>
+            <View style={{width:'100%', height:'28%', position:'absolute', bottom:0}}>
+                <View style={{backgroundColor:'white', borderRadius:20, overflow:'hidden', flex:1, flexDirection:'row'}}>
                     <ScrollPicker
                         dataSource={["3", "4", "5", "6", "7"]}
                         selectedIndex={footSelectedIndex}

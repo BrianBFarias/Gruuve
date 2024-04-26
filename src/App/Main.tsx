@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View} from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
+import { createStackNavigator } from '@react-navigation/stack';
 import icons from "../components/icons";
 import auth from '@react-native-firebase/auth';
-import firestore, { firebase } from '@react-native-firebase/firestore';
-import * as geofirestore from 'geofirestore';
+import firestore from '@react-native-firebase/firestore';
 
 import Loading from "../components/Loading";
 
@@ -15,11 +14,11 @@ import { Explore } from "./pages/Explore";
 import { Events } from "./pages/Events";
 import { Messages } from "./pages/Messages";
 
-import Logo from '../../assets/images/logo.png'
+import Logo from '../../assets/images/logo.png';
 import { PopUp } from "../components/popUpIntro";
 
-
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 const Main = () =>{
     const [userData, setUserData] = useState<any>(null);
@@ -54,7 +53,7 @@ const Main = () =>{
     return(
         <>
         {showIntro && <PopUp onAccept={closeIntro}/>}
-            <Tab.Navigator 
+        <Tab.Navigator 
             initialRouteName={"Profile"}
             screenOptions={({route}) => ({
                 tabBarIcon:({focused, color, size}) =>{
@@ -67,28 +66,30 @@ const Main = () =>{
                     }
                     else if(rn === 'Events'){
                         return(
-                        <View>
-                            <icons.MaterialCommunityIcons name={'reorder-horizontal'} size={size+4} color={focused? 'white':'white'} opacity={focused? 1:0.65} />
-                            {hasLikes && <View style={{backgroundColor:'green', height:9, width:9, position:'absolute', borderRadius:10, right:0, top:2, shadowColor:'white', shadowRadius:3, shadowOffset:{width:-2, height:2}, shadowOpacity:0}}/>}
-                        </View>)
+                            <View>
+                                <icons.MaterialCommunityIcons name={'reorder-horizontal'} size={size+4} color={focused? 'white':'white'} opacity={focused? 1:0.65} />
+                                {hasLikes && <View style={{backgroundColor:'green', height:9, width:9, position:'absolute', borderRadius:10, right:0, top:2, shadowColor:'white', shadowRadius:3, shadowOffset:{width:-2, height:2}, shadowOpacity:0}}/>}
+                            </View>)
                     }
                     else if(rn === 'Profile'){
                         return <icons.FontAwesome6 name={'user-large'} size={size} color={focused? 'white':'white'} opacity={focused? 1:0.65} />
                     }
-
                 },
                 headerShown:false, title:route.name, unmountOnBlur:true, tabBarShowLabel:false, tabBarStyle:{zIndex:100, backgroundColor:'#0a1708', borderTopWidth:0}
-            })}>
-                {userData === null ? 
-                    <Tab.Screen name={"Loading"} component={Loading}/>
-                :
-                (<>
+            })}
+        >
+            {userData === null ? 
+                <Tab.Screen name={"Loading"} component={Loading}/>
+            :
+            (
+                <>
                     <Tab.Screen name={"Explore"} component={Explore} initialParams={{userData}} />
                     <Tab.Screen name={"Messages"} component={Messages} initialParams={{userData}}/>
-                    <Tab.Screen name={"Events"} component={Events} initialParams={{userData}}/>
+                    <Tab.Screen name={"Events"} component={Events} initialParams={{userData}} />
                     <Tab.Screen name={"Profile"} component={Profile} initialParams={{userData}}/>
-                </>)}
-            </Tab.Navigator>
+                </>
+            )}
+        </Tab.Navigator>
         </>
     )
 }
