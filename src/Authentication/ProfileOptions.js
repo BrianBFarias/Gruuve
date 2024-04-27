@@ -17,7 +17,6 @@ export const GreekOptions = [
     { label: 'Alpha Xi Delta', value: 'Alpha Xi Delta' },
     { label: 'Delta Phi Epsilon', value: 'Delta Phi Epsilon' },
     { label: 'Alpha Omicron Pi', value: 'Alpha Omicron Pi' },
-    { label: 'Gamma Phi Beta', value: 'Gamma Phi Beta' },
     { label: 'Phi Sigma Sigma', value: 'Phi Sigma Sigma' },
     { label: 'Sigma Delta Tau', value: 'Sigma Delta Tau' },
     { label: 'Alpha Sigma Alpha', value: 'Alpha Sigma Alpha' },
@@ -27,8 +26,6 @@ export const GreekOptions = [
     { label: 'Delta Phi Lambda', value: 'Delta Phi Lambda' },
     { label: 'Gamma Sigma Sigma', value: 'Gamma Sigma Sigma' },
     { label: 'Delta Phi Mu', value: 'Delta Phi Mu' },
-    { label: 'Zeta Phi Beta', value: 'Zeta Phi Beta' },
-    { label: 'Sigma Gamma Rho', value: 'Sigma Gamma Rho' },
     { label: 'Alpha Kappa Alpha', value: 'Alpha Kappa Alpha' },
     { label: 'Delta Sigma Theta', value: 'Delta Sigma Theta' },
     { label: 'Zeta Phi Beta', value: 'Zeta Phi Beta' },
@@ -68,6 +65,7 @@ export const GreekOptions = [
     { label: 'Theta Delta Chi', value: 'Theta Delta Chi' },
     { label: 'Theta Xi', value: 'Theta Xi' },
     { label: 'Zeta Beta Tau', value: 'Zeta Beta Tau' },
+    { label: 'Tri Delta', value: 'Tri Delta' },
     { label: 'Alpha Kappa Brolic', value: 'Alpha Kappa Brolic' }
 ];
 

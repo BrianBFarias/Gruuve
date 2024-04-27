@@ -87,7 +87,7 @@ export const PopUp = (props) =>{
                         <ScrollView >
                             <Text style={{alignSelf:'center', fontSize:22, fontWeight:'700', marginBottom:15}}>Beta Gruuve</Text>
                             <View style={{flexWrap:'wrap', alignItems:'center', gap:10, paddingHorizontal:10}}>
-                                <Text style={styles.text1}>{betaTag} </Text>
+                                <Text style={styles.text2}>{betaTag} </Text>
                             </View>
                             <View style={{width:'100%', alignItems:'center', marginVertical:10}}>
                                 <Text style={styles.text1}>Swipe to Delete Events</Text>
@@ -111,6 +111,10 @@ export const PopUp = (props) =>{
 const styles = StyleSheet.create({
     text1:{
         fontSize:16,
+        textAlign:'center'
+    }, 
+    text2:{
+        fontSize:12,
         textAlign:'center'
     }, 
     slide1:{

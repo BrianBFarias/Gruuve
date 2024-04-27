@@ -10,7 +10,7 @@ export function SubscriptionPopUp({isVisible, setIsVisible}:any){
         isVisible={isVisible} 
         animationOut={'slideOutDown'} 
         animationIn={'slideInUp'}
-        useNativeDriver={true}
+        useNativeDriver={false}
         backdropColor="white"
         backdropOpacity={0}
         style={{flex: 1, margin: 0}}

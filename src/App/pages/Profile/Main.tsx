@@ -12,7 +12,8 @@ import findAge from "../../../components/ConstantFunctions/Age";
 
 import { HobbySelection } from "./HobbySelection";
 import { LocationSelection } from "./LocationSelection";
-import {SubscriptionPopUp} from './../Subscription';
+import {SubscriptionPopUp} from '../Subscription';
+import { Organization } from "./Organization";
 
 import {HeightSelection} from"./heightSelection";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -29,13 +30,15 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
     const [saving, setSaving] = useState(false);
 
     // popUps to edit Profile (Not preferences)
-    const [hobbiesPage, setHobbiesPage] = useState(false);
     const [hobbies, setHobbies] = useState(currUserData.Hobbies);
     
-    const [heightPage, setHeightPage] = useState(false);
     const [height, setHeight] = useState(currUserData.Height);
+    const [currOrg, setCurrOrg] = useState(currUserData.Organization)
     
-    const [subscription, setSubscription] = useState(false)
+    const [subscriptionPage, setSubscriptionPage] = useState(false)
+    const [organizationPage, setOrganizationPage] = useState(false)
+    const [hobbiesPage, setHobbiesPage] = useState(false);
+    const [heightPage, setHeightPage] = useState(false);
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
     const [locationSelector, setLocationSelector] = useState(false)
@@ -49,6 +52,7 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
             setHobbies(userInfo?._data.Hobbies)
             setHeight(userInfo?._data.Height)
             setLocation(userInfo?._data.Location.area)
+            setCurrOrg(userInfo?._data.Organization)
         }
     }
 
@@ -101,6 +105,9 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
 
     function editOption(num:number){
         switch(num){
+            case 6:
+                setOrganizationPage(true)
+                break;
             case 5:setHeightPage(true) 
                 break; 
             case 4: setHobbiesPage(true) 
@@ -131,7 +138,7 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                     // refetch = {refetch}
                     setSaving={setSaving} />
             </View>
-            {!userData.premiumMember && <TouchableOpacity style={{marginHorizontal:8, shadowColor:'black', shadowRadius:6, shadowOffset:{height:1, width:0}, shadowOpacity:0.5}} onPress={() =>{setSubscription(true)}}>
+            {!userData.premiumMember && <TouchableOpacity style={{marginHorizontal:8, shadowColor:'black', shadowRadius:6, shadowOffset:{height:1, width:0}, shadowOpacity:0.5}} onPress={() =>{setSubscriptionPage(true)}}>
                 <LinearGradient
                     colors={['#295d16', '#558843']}
                     start={{x: 0.0, y: 0.25}} end={{x: 0.5, y: 1.0}}
@@ -190,9 +197,9 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                     </View>
                 </Pressable>
                 <View style={style.line}/>
-                <Pressable style={style.container1}>
+                <Pressable style={style.container1} onPress={() =>{editOption(6)}}>
                     <Text style={style.text2}>Organization</Text>
-                    <Text style={userData.Organization.length === 0 ? style.empty:style.text1}>{userData.Organization.length === 0 ? 'None': userData.Organization}</Text>
+                    <Text style={userData.Organization.length === 0 ? style.empty:style.text1}>{currOrg.length === 0 ? 'None': currOrg}</Text>
                 </Pressable>
                 <View style={style.line}/>
                 <Pressable style={style.container1}>
@@ -201,7 +208,6 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                 </Pressable>
             </View>
             {/* Pop Ups */}
-            
             <HobbySelection 
                 isVisible={hobbiesPage}
                 setIsVisible={setHobbiesPage}
@@ -227,9 +233,16 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                 onCancel={()=>{ setDatePickerVisibility(false);}}
             />
             <SubscriptionPopUp
-                isVisible={subscription}
-                setIsVisible={setSubscription}
+                isVisible={subscriptionPage}
+                setIsVisible={setSubscriptionPage}
             />
+            <Organization 
+                isVisible={organizationPage}
+                setIsVisible={setOrganizationPage}
+                currOrg={currOrg}
+                setCurrOrg={setCurrOrg}
+            />
+
         </ScrollView>
         {saving && 
             <View style={{width:'100%', height:'100%', left:0, top:0, backgroundColor:'rgba(0,0,0,0.6)', zIndex:200, position:'absolute', justifyContent:'center'}}>

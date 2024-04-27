@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Image, TouchableOpacity, View, PanResponder, Animated, Alert } from "react-native"
+import { Image, TouchableOpacity, View, PanResponder, Animated, Alert, Easing } from "react-native"
 import { PERMISSIONS, RESULTS, request } from "react-native-permissions";
 import ImagePicker from 'react-native-image-crop-picker';
 import Icons from "../../../components/icons";
-import { Chase } from 'react-native-animated-spinkit'
 import FastImage from 'react-native-fast-image';
 
 import storage from '@react-native-firebase/storage';
@@ -12,7 +11,24 @@ import auth from '@react-native-firebase/auth';
 
 
 export const Images =({allImages, setAllImages, setSaving}:any) =>{
-    const [permissionGranted, setPermissionGranted] = useState(false);
+  const glowAnimation = new Animated.Value(0)
+
+  const opacity = glowAnimation.interpolate({
+      inputRange: [0, 0.5, 1],
+      outputRange: [0.1, 0.3, 0.1],
+  });
+
+  Animated.loop(
+    Animated.timing(
+      glowAnimation,
+      {
+        toValue: 1,
+        delay:500,
+        duration: 1500,
+        useNativeDriver: true,
+      }
+    )
+  ).start();
 
     async function isDuplicate(path:String){
       let count=0;
@@ -219,17 +235,16 @@ export const Images =({allImages, setAllImages, setSaving}:any) =>{
     function renderCroppedImage({index}:any) {
         if(index == -1){
             return(
-            <View
+            <Animated.View
                 style={{
                   flex: 1,
-                  backgroundColor: "rgba(0,0,0,0.25)",
+                  backgroundColor: "black",
+                  opacity:opacity,
                   justifyContent: "center",
-                  alignItems: "center",
                   borderRadius:5,
                   zIndex:4
                 }} >
-                <Chase size={40} color="white" />
-            </View>
+            </Animated.View>
             )
         }
         // console.log(index)

@@ -72,17 +72,14 @@ export function HobbySelection({isVisible, setIsVisible, hobbies, setHobbies}:an
                         <Text style={style.button}>Ok</Text>
                     </Pressable>
                 </View>
-            <ScrollView style={{flex:1}}>
-            <View style={{ flex: 1, justifyContent: 'space-between'}}>
-                <FlatList
-                    contentContainerStyle={{flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', paddingVertical: 5, paddingHorizontal: 5, gap:10, columnGap:14}}
-                    data={Hobbies}
-                    renderItem={renderHobby}
-                    keyExtractor={(item) => item}
-                />
-            </View>
-            </ScrollView>
-            <SafeAreaView/>
+                <View style={{ flex: 1, justifyContent: 'space-between', padding:3, borderBottomLeftRadius:55, borderBottomRightRadius:55, overflow:'hidden'}}>
+                    <FlatList
+                        contentContainerStyle={{flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', paddingVertical: 5, paddingHorizontal: 5, gap:10, paddingBottom:'10%'}}
+                        data={Hobbies}
+                        renderItem={renderHobby}
+                        keyExtractor={(item) => item}
+                    />
+                </View>
             </View>
     </Modal>
     )
