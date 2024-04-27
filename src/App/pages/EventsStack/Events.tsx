@@ -194,11 +194,11 @@ export const EventsPage = ({navigation, route}:any) =>{
           <Text style={{textAlign:'center', fontSize:20, fontWeight:'700', paddingHorizontal:10}}>Confirm Event Deletion?</Text>
           <Text style={{textAlign:'center', fontSize:12, fontWeight:'500', opacity:0.8, flexWrap:'wrap', paddingHorizontal:10, marginBottom:10}}>This action is irreversible and you will lose all you're likes for this event.</Text>
           <View style={{flexDirection:'row', justifyContent:'space-around', backgroundColor:'rgba(0,0,0,.15)', paddingHorizontal:20, paddingBottom:45, paddingVertical:10}}>
-            <TouchableOpacity onPress={deleteEvent} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'green', padding:15, borderRadius:10, width:'40%'}}>
-              <Text style={[styles.confirmationOption, {color:'white',}]}>Yes</Text>
+            <TouchableOpacity onPress={deleteEvent} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'white', padding:15, borderRadius:10, width:'40%'}}>
+              <Text style={[styles.confirmationOption, {color:'green',}]}>Yes, Please</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>{setShowPopup(false)}} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'white', padding:15, borderRadius:10, width:'40%'}}>
-              <Text style={[styles.confirmationOption,  {color:'green'}]}>No</Text>
+            <TouchableOpacity onPress={()=>{setShowPopup(false)}} style={{justifyContent:'space-between', marginVertical:6, backgroundColor:'black', padding:15, borderRadius:10, width:'40%'}}>
+              <Text style={[styles.confirmationOption,  {color:'white'}]}>Naaaa</Text>
             </TouchableOpacity>
           </View>
         </View>
