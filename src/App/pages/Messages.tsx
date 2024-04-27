@@ -39,7 +39,6 @@ export const Messages = () =>{
       })
 
     //   colors={['#29612F', '#0a400b']}
-
     return(
     <View style={{flex:1, backgroundColor:'white'}}>
         <SafeAreaView />

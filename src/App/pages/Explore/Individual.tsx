@@ -22,14 +22,13 @@ const scale1 = button1.interpolate({inputRange, outputRange});
 const scale2 = button2.interpolate({inputRange, outputRange});
 const scaleCenter = centerButton.interpolate({inputRange, outputRange});
 
-export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline, user, setNextPost, slideUp}:any) =>{
+export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, decline, user, setNextPost, slideUp, nextPost}:any) =>{
     const [images, setImages] = useState<string[]>();
     const [userInfo,setUserInfo] = useState<any>()
     const [age,setAge] = useState<any>()
     const [load, setLoad] = useState(true)
     const [tabSize, setTabSize] = useState(0)
     const [descriptionHeight, setDescriptionHeight] = useState(0)
-    const [transitioning, setTransitioning] = useState(false)
 
     const hideDescription = useRef(true);
     const swiperRef = useRef<any>(null)
@@ -49,11 +48,6 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
 
     // [0] = Days till, [1] = weekday, [2] = timestamp
     const [eventDate, setEventDate] = useState<String[]>();
-
-    const opposite = expand.interpolate({
-        inputRange: [0, 1],
-        outputRange: [1, 0],
-      });
 
     // Button Press in and Out Animation
     const onPressIn = ({val}:any) => {
@@ -80,8 +74,11 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
 
         setNextPost(-1)
         setTimeout(()=>{
-            swiperRef.current.scrollTo(0)
+            try{
+                swiperRef.current.scrollTo(0)
+            }catch{}
         }, 200)
+
         hideDescription.current = true;
         Animated.timing(
             expand,
@@ -182,22 +179,6 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
                         scrollEnabled={load ? false:true} 
                         bounces={true}
                         buttonWrapperStyle={styles.selectionWrapper}
-                        // nextButton={
-                        //     <TouchableWithoutFeedback onPress={() => {
-                        //         if (swiperRef.current) {
-                        //             swiperRef.current.scrollBy(1);
-                        //             ReactNativeHapticFeedback.trigger("impactSmall");
-                        //     }}}>
-                        //         <View style={styles.imageTapSection} />
-                        //     </TouchableWithoutFeedback>}
-                        // prevButton={
-                        //     <TouchableWithoutFeedback onPress={() => {
-                        //         if (swiperRef.current) {
-                        //             swiperRef.current.scrollBy(-1);
-                        //             ReactNativeHapticFeedback.trigger("impactSmall");
-                        //     }}}>
-                        //         <View style={styles.imageTapSection} />
-                        //     </TouchableWithoutFeedback>}
                         ref={swiperRef} >
                         
                         {images.map((url, index)=>{
@@ -318,7 +299,6 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
         <Animated.View style={{flex:1,flexDirection: 'row', justifyContent: 'space-around', position: 'relative',transform:[{translateY:slideUpButtons}], alignItems:'center', zIndex:12}}>
             <Animated.View style={[styles.button13, {transform: [{scale: scale1}]}]}>
                 <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]} 
-                    disabled = {transitioning}
                     onPress={() => handleOption({val:1})}
                     onPressIn={() => onPressIn({ val: 1 })}
                     onPressOut={() => onPressOut({ val: 1 })}>
@@ -327,8 +307,7 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
             </Animated.View>
             <Animated.View style={[styles.button2,{ transform: [{ scale: scaleCenter }]}]}>
                 <Pressable style={[{backgroundColor:'#0a1708', justifyContent:'center', borderRadius:10, paddingVertical:5}]}
-                    disabled = {transitioning}
-                    onPress={() => {handleOption({val:2, hideDescription})}}
+                    onPress={() => {handleOption({val:2})}}
                     onPressIn={() => onPressIn({ val: 2})}
                     onPressOut={() => onPressOut({ val: 2 })}>
                     <Text style={styles.buttonText}><Icon.Entypo name="infinity" size={40} color={'white'} /></Text>
@@ -336,7 +315,6 @@ export const Indiivudal = ({fade, startFadeIn, EventInfo, reject, accept, declin
             </Animated.View>
             <Animated.View style={[styles.button13, { transform: [{ scale: scale2 }] }]}>
                 <Pressable style={[{ flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:40}]}
-                    disabled = {transitioning}
                     onPress={() => handleOption({val:3})}
                     onPressIn={() => onPressIn({ val: 3 })}
                     onPressOut={() => onPressOut({ val: 3 })}>

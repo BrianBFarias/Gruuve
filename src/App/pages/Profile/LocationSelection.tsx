@@ -12,8 +12,8 @@ interface coordinate {
     longitude: number | undefined;
 }
 
-export function LocationSelection({isVisible, setIsVisible, currentLocation, setLocation, prevAddy}:any){
-    const [tempLocation, setTempLocation] = useState<coordinate>(currentLocation)
+export function LocationSelection({isVisible, setIsVisible, setLocation, prevAddy, coordinates, setCoordinates }:any){
+    const [tempLocation, setTempLocation] = useState<coordinate>(coordinates)
     const [accessable, setAccessable] = useState(false)
     const [locationName, setLocationName] = useState('');
 
@@ -51,6 +51,7 @@ export function LocationSelection({isVisible, setIsVisible, currentLocation, set
     function updateLocation(Region:coordinate){
         if(accessable){
             setTempLocation(Region)
+            setCoordinates(Region)
         }
     }
 
@@ -89,8 +90,8 @@ export function LocationSelection({isVisible, setIsVisible, currentLocation, set
                                 onRegionChange={()=>{}}
                                 style={{height:'100%', width:'100%', backgroundColor:'white', justifyContent:'center', position:'absolute'}}
                                 initialRegion={{
-                                    latitude: currentLocation.Latitude,
-                                    longitude: currentLocation.Longitude,
+                                    latitude: coordinates.latitude,
+                                    longitude: coordinates.longitude,
                                     latitudeDelta: 0.09,
                                     longitudeDelta: 0.09,
                                 }}>

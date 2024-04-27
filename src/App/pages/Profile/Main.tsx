@@ -43,6 +43,7 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
     const [locationSelector, setLocationSelector] = useState(false)
     const [location, setLocation] = useState(currUserData.Location.area)
+    const [coordinates, setCoordinates] = useState({latitude:currUserData.Location.Latitude, longitude: currUserData.Location.Longitude})
 
     async function fetchUser(){
         const uid = auth().currentUser?.uid;
@@ -222,8 +223,9 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
             <LocationSelection 
                 isVisible={locationSelector}
                 setIsVisible={setLocationSelector}
-                currentLocation={currUserData.Location}
                 setLocation={setLocation}
+                setCoordinates={setCoordinates}
+                coordinates={coordinates}
                 prevAddy={location}
             />
             <DateTimePickerModal

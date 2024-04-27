@@ -29,6 +29,7 @@ export const Explore = ({route}:any) =>{
     const [nextPost, setNextPost] = useState(0)
 
     const transitionIconName = useRef('');
+    const disableScreen = useRef<any>(null);
 
     const transitionIconPop = nextAnimation.interpolate({
         inputRange: [0, 2],
@@ -121,8 +122,6 @@ export const Explore = ({route}:any) =>{
         const {userData} = route.params
         setUser(userData)
 
-        console.log(GroupEventInfo)
-
         if((!EventInfo || EventInfo.length===0 )|| (!GroupEventInfo || GroupEventInfo.length===0)){
             const fetchData = async () => {
                 fetchEvent({userData});
@@ -142,6 +141,7 @@ export const Explore = ({route}:any) =>{
     // 3 - Like/fetching new Post
     useEffect(() => {
         if (nextPost >= 1 && nextPost <= 3) {
+            disableScreen.current.setNativeProps({ style: { pointerEvents: 'none' } })
             switch (nextPost) {
                 case 1:
                     transitionIconName.current = 'close';
@@ -175,6 +175,7 @@ export const Explore = ({route}:any) =>{
             setNextPost(0);
             setTimeout(() => {
                 fadeInCard();
+                disableScreen.current.setNativeProps({ style: { pointerEvents: 'auto' } })
             }, 800);
         }
     }, [nextPost]);
@@ -238,9 +239,7 @@ export const Explore = ({route}:any) =>{
         const lng = userData.Location.Longitude;
         const minAge = userData.Preference.AgeRange.min;
         const maxAge = userData.Preference.AgeRange.max;
-        const desiredSex = userData.Preference.Sex;
-        console.log('askdfh4wh5b245h')
-    
+        const desiredSex = userData.Preference.Sex;    
         const firestoreRef = firebase.firestore();
     
         // @ts-ignore
@@ -316,7 +315,7 @@ export const Explore = ({route}:any) =>{
                         size={80}/>
                     </Animated.View>
                 </Animated.View>
-            <Animated.View style={{opacity:eventCard, flex:1, width:'100%', backgroundColor:'whitesmoke', borderTopLeftRadius:10, borderTopRightRadius:10}}>
+            <Animated.View style={{opacity:eventCard, flex:1, width:'100%', backgroundColor:'whitesmoke', borderTopLeftRadius:10, borderTopRightRadius:10}} ref={disableScreen}>
                 {toggle ?
                 (!EventInfo|| loading ? 
                     (<View style={{flex:1}}><Loading2 /></View>):
@@ -333,6 +332,7 @@ export const Explore = ({route}:any) =>{
                         accept={accept} 
                         user={user}
                         setNextPost={setNextPost}
+                        nextPost={nextPost}
                         />)):
                 (!GroupEventInfo || loading ? 
                     (<View style={{flex:1}}><Loading2 /></View>):
