@@ -12,20 +12,18 @@ import findAge from "../../../components/ConstantFunctions/Age";
 
 import { HobbySelection } from "./HobbySelection";
 import { LocationSelection } from "./LocationSelection";
+import {SubscriptionPopUp} from './../Subscription';
+
 import {HeightSelection} from"./heightSelection";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {CircleFade} from 'react-native-animated-spinkit'
-import { Subscription } from './../Subscription';
 
 import auth from '@react-native-firebase/auth';
-
-// https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=YOUR_API_KEY
 
 export default function ProfileMain({userData, disabled, navigation, settingsToggle}:any){
     LogBox.ignoreAllLogs();
     const [currUserData, setCurrUserData] = useState(userData)
 
-    const [Image1, setImage1] = useState<any>();
     const [allImages, setAllImages]  = useState<any>();
     const [age,setAge] = useState<any>();
     const [saving, setSaving] = useState(false);
@@ -36,10 +34,12 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
     
     const [heightPage, setHeightPage] = useState(false);
     const [height, setHeight] = useState(currUserData.Height);
-    const [location, setLocation] = useState(currUserData.Location.area)
+    
+    const [subscription, setSubscription] = useState(false)
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
     const [locationSelector, setLocationSelector] = useState(false)
+    const [location, setLocation] = useState(currUserData.Location.area)
 
     async function fetchUser(){
         const uid = auth().currentUser?.uid;
@@ -79,18 +79,13 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
             });
 
             const downloadedUrls = await Promise.all(downloadPromises);
-            setImage1(downloadedUrls[0])
             // downloadedUrls.shift()
             // console.log(downloadedUrls)
             setAllImages(downloadedUrls)
         }
     }
 
-    function Subscription(){
-        // Show Subscription Page
-    }
-
-// Confirm Age
+    // Confirm Age
   const AgeConfirmation = (date:any) => {
     const ageNum = findAge(date)
     if(ageNum<18){
@@ -136,7 +131,7 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                     // refetch = {refetch}
                     setSaving={setSaving} />
             </View>
-            {!userData.premiumMember && <TouchableOpacity style={{marginHorizontal:8, shadowColor:'black', shadowRadius:6, shadowOffset:{height:1, width:0}, shadowOpacity:0.5}} onPress={Subscription}>
+            {!userData.premiumMember && <TouchableOpacity style={{marginHorizontal:8, shadowColor:'black', shadowRadius:6, shadowOffset:{height:1, width:0}, shadowOpacity:0.5}} onPress={() =>{setSubscription(true)}}>
                 <LinearGradient
                     colors={['#295d16', '#558843']}
                     start={{x: 0.0, y: 0.25}} end={{x: 0.5, y: 1.0}}
@@ -151,7 +146,11 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                     </View>
                 </LinearGradient>
             </TouchableOpacity>}
-            <View style={{flex:1, backgroundColor:'rgba(255,255,255,0.9)', marginTop:12, minHeight:317, paddingVertical:10}}>
+            <View style={{marginTop:12}}/>
+            {disabled && <View style={{marginTop:12, width:'100%', padding:10, backgroundColor:'rgba(0,0,0,0.2)', alignItems:'center'}}>
+                <Text style={{fontWeight:'700', fontFamily:'Arial'}}>Account Hidden</Text>
+            </View>}
+            <View style={{flex:1, backgroundColor:'rgba(255,255,255,0.9)', minHeight:317, paddingVertical:10}}>
                 <Pressable style={style.container1}>
                     <Text style={style.text2}>First Name</Text>
                     <Text style={style.text3}>{userData.First}</Text>
@@ -219,12 +218,17 @@ export default function ProfileMain({userData, disabled, navigation, settingsTog
                 setIsVisible={setLocationSelector}
                 currentLocation={currUserData.Location}
                 setLocation={setLocation}
+                prevAddy={location}
             />
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="date"
                 onConfirm={AgeConfirmation}
                 onCancel={()=>{ setDatePickerVisibility(false);}}
+            />
+            <SubscriptionPopUp
+                isVisible={subscription}
+                setIsVisible={setSubscription}
             />
         </ScrollView>
         {saving && 

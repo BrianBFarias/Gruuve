@@ -236,6 +236,7 @@ const Register = ({navigation}: any) => {
             const data = {
               uid: uid,
               newAccount: true,
+              disabled:false,
               Email: email,
               First: first,
               Last: last,

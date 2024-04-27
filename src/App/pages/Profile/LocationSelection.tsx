@@ -12,7 +12,7 @@ interface coordinate {
     longitude: number | undefined;
 }
 
-export function LocationSelection({isVisible, setIsVisible, currentLocation, setLocation}:any){
+export function LocationSelection({isVisible, setIsVisible, currentLocation, setLocation, prevAddy}:any){
     const [tempLocation, setTempLocation] = useState<coordinate>(currentLocation)
     const [accessable, setAccessable] = useState(false)
     const [locationName, setLocationName] = useState('');
@@ -76,26 +76,30 @@ export function LocationSelection({isVisible, setIsVisible, currentLocation, set
                         </Pressable>
                     </View>
                     <View style={{flex:1, backgroundColor:'white', justifyContent:'center', borderRadius:4, overflow:'hidden'}}>
-                    <MapView
-                            ref={mapViewRef}
-                            rotateEnabled={false}
-                            loadingEnabled={true}
-                            showsPointsOfInterest={true}
-                            showsIndoorLevelPicker={true}
-                            followsUserLocation={true}
-                            onRegionChangeComplete={(Region) => updateLocation(Region)}
-                            userLocationCalloutEnabled={true}
-                            loadingBackgroundColor='white'
-                            onRegionChange={()=>{}}
-                            style={{height:'100%', width:'100%', backgroundColor:'white', justifyContent:'center', position:'absolute'}}
-                            initialRegion={{
-                                latitude: currentLocation.Latitude,
-                                longitude: currentLocation.Longitude,
-                                latitudeDelta: 0.09,
-                                longitudeDelta: 0.09,
-                            }}>
-                        <Icons.MaterialIcons name="location-on" style={{alignSelf:'center'}} size={50} color='#539953'/>
-                    </MapView>
+                        <MapView
+                                ref={mapViewRef}
+                                rotateEnabled={false}
+                                loadingEnabled={true}
+                                showsPointsOfInterest={true}
+                                showsIndoorLevelPicker={true}
+                                followsUserLocation={true}
+                                onRegionChangeComplete={(Region) => updateLocation(Region)}
+                                userLocationCalloutEnabled={true}
+                                loadingBackgroundColor='white'
+                                onRegionChange={()=>{}}
+                                style={{height:'100%', width:'100%', backgroundColor:'white', justifyContent:'center', position:'absolute'}}
+                                initialRegion={{
+                                    latitude: currentLocation.Latitude,
+                                    longitude: currentLocation.Longitude,
+                                    latitudeDelta: 0.09,
+                                    longitudeDelta: 0.09,
+                                }}>
+                            <Icons.MaterialIcons name="location-on" style={{alignSelf:'center'}} size={50} color='#539953'/>
+                        </MapView>
+                        <View style={{position:'absolute', bottom:0, marginBottom:'10%', width:'100%', alignItems:'center'}}>
+                            <Text style={{fontSize:26}}>{prevAddy}</Text>
+                            <Text style={{opacity:0.6}}>Last Saved Location</Text>
+                        </View>
                     {accessable && <View style={{bottom:'10%', position:'absolute', width:'100%', alignItems:'center'}}>
                         <Text style={{fontSize:26, fontWeight:'800', shadowColor:'white', shadowOffset:{height:0, width:0}, shadowOpacity:0.1, shadowRadius:3, color:'#052605'}}>{locationName}</Text>
                         <SafeAreaView />

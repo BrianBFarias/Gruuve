@@ -28,7 +28,7 @@ export const Profile = ({route}:any) =>{
     const [radius, setRadius] = useState(userData.Preference.Radius) 
     const [genderPreference, setGenderPreference] = useState(userData.Preference.Sex);
 
-    const [isDisabled, setIsDisabled] = useState(userData);
+    const [isDisabled, setIsDisabled] = useState(userData.disabled);
     const toggleSwitch = () => setIsDisabled(!isDisabled);
 
     const [isFocus0, setIsFocus0] = useState(false);
@@ -149,7 +149,7 @@ export const Profile = ({route}:any) =>{
             <View style={{flex:.1}}/>
             <View style={{width:windowWidth*.6, alignSelf:'center', flexDirection:'column', gap:5}}>
                 <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-                    <Text style={{alignSelf:'center', fontSize:16, fontWeight:'600'}}>Disable Account</Text>
+                    <Text style={{alignSelf:'center', fontSize:16, fontWeight:'600'}}>Hide Account</Text>
                     <Switch
                         trackColor={{false: '#767577', true: 'green'}}
                         thumbColor={isDisabled ? '#f4f3f4' : '#f4f3f4'}
@@ -158,8 +158,8 @@ export const Profile = ({route}:any) =>{
                         value={isDisabled}
                     />
                 </View>
-                <Text style={{fontSize:11, fontWeight:'500', color:'black', opacity:0.6}}>Disabling Your Account will not Make you delete any Data. It will only stop your Events 
-                    from being displayed to others
+                <Text style={{fontSize:11, fontWeight:'500', color:'black', opacity:0.6}}>Hiding Your Account will not Make you delete any Data. It will only stop your Events 
+                    from being displayed to others.
                 </Text>
             </View>
             <View style={{flex:1}}/>
