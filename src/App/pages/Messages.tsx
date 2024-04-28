@@ -41,13 +41,18 @@ export const Messages = () =>{
     //   colors={['#29612F', '#0a400b']}
     return(
     <View style={{flex:1, backgroundColor:'white'}}>
+        <LinearGradient 
+            colors={['rgb(255,255,255)', 'rgb(215,215,215)']}
+            start={{x: 0.0, y: 0}} end={{x: 0, y: 1}}
+            locations={[0,1]}
+            style={{flex:1}}>
         <SafeAreaView />
         {fetching ?
-            <View style={{flex:1, backgroundColor:'red'}}>
+            <View style={{flex:1}}>
                 <LinearGradient 
                 colors={['rgb(255,255,255)', 'rgb(215,215,215)']}
                 start={{x: 0.0, y: 0}} end={{x: 0, y: 1}}
-                locations={[0.4,1]}
+                locations={[0,1]}
                 style={{flex:1}}>
                     <Loading2 />
                 </LinearGradient>
@@ -61,10 +66,9 @@ export const Messages = () =>{
                     initialParams={{ user }}
                     options={{
                         header: ({ navigation }) => (
-                        <View style={{ paddingBottom: 10, paddingHorizontal: 20, backgroundColor:'transparent'}}>
-                            <SafeAreaView />
+                        <View style={{ paddingBottom: 10, paddingHorizontal: 20, backgroundColor:'white'}}>
                             <View style={{ flexDirection: 'row', justifyContent: 'center', paddingTop: 10, alignItems: 'center' }}>
-                            <Text style={{ fontWeight: '700', fontSize: 20, opacity: 1, color: '#0a400b' }}>Messages</Text>
+                                <Text style={{ fontWeight: '700', fontSize: 20, opacity: 1, color: '#0a400b' }}>Messages</Text>
                             </View>
                         </View>
                         ),
@@ -78,17 +82,18 @@ export const Messages = () =>{
                 />
                 <Stack.Screen
                     name="Message"
-                    component={ListMessages}
+                    component={Message}
                     initialParams={{ user }}
                     options={{
                         header: ({ navigation }) => (
-                        <View style={{ paddingBottom: 10, paddingHorizontal: 20, backgroundColor:'rgba(245,245,245,1)'}}>
+                        <View style={{ paddingHorizontal: '7%', backgroundColor:'white'}}>
                             <SafeAreaView />
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', paddingTop: 10, alignItems: 'center' }}>
-                            <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 0, bottom: 0, height: 30, width: 30 }}>
-                                <icons.FontAwesome size={30} name={'chevron-left'} color={'#0a400b'} />
-                            </TouchableOpacity>
-                            <Text style={{ fontWeight: '600', fontSize: 26, opacity: 1, color: '#0a400b' }}>New Event</Text>
+                            <View>
+                                <View style={{ position:'absolute'}}>
+                                <TouchableOpacity onPress={() => navigation.goBack()} style={{left: 0, bottom: 0, height: 30, width: 30 }}>
+                                    <icons.FontAwesome size={30} name={'chevron-left'} color={'#0a400b'} />
+                                </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                         ),
@@ -97,12 +102,14 @@ export const Messages = () =>{
                         headerStyle: {
                         backgroundColor: 'rgb(255,255,255)',
                         },
-                        animation: 'simple_push'
+                        animation:'slide_from_right',
+                        presentation:'fullScreenModal'
                     }}
                 />
             </Stack.Navigator>
 
         </>}
+        </LinearGradient>
     </View>
     )
 }

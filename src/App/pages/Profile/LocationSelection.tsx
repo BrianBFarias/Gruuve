@@ -21,6 +21,8 @@ export function LocationSelection({isVisible, setIsVisible, setLocation, prevAdd
 
     async function confirmation() {
         const currentUser = auth().currentUser;
+        setCoordinates(tempLocation)
+
         if (currentUser) {
             const area = await LocationName(tempLocation)
 
@@ -51,7 +53,6 @@ export function LocationSelection({isVisible, setIsVisible, setLocation, prevAdd
     function updateLocation(Region:coordinate){
         if(accessable){
             setTempLocation(Region)
-            setCoordinates(Region)
         }
     }
 

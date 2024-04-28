@@ -1,18 +1,33 @@
 import { useEffect, useState } from "react"
-import { View, Text, Button, FlatList, TouchableOpacity, Pressable } from "react-native"
+import { View, Text, Button, FlatList, TouchableOpacity, Pressable, Dimensions } from "react-native"
 import LinearGradient from "react-native-linear-gradient"
 import Loading2 from "../../../components/Loading2"
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler"
 import icons from "../../../components/icons"
+import FastImage from "react-native-fast-image"
 
 type Message ={
     id:string,
     lastMessage:string,
     to:string,
+    newMessage:boolean
 }
 
+type Preview ={
+    id:string,
+    lastMessage:string,
+    url:string,
+    toFirst:string,
+    toLast:string,
+    newMessage:boolean
+}
+
+const windowWidth= Dimensions.get('window').width
+
 export const ListMessages = ({navigation, route}:any) =>{
-    const [messages, setMessages] = useState<Message[]>([])
+    const [messages, setMessages] = useState<Message[]>(route.params.messages)
+    const [messagePreviews, setMessagePreviews] = useState<Preview[]>(route.params.messages)
+
     const [fetching, setFetching] = useState(false)
     const [loading, setLoading] = useState(true)
 
@@ -21,9 +36,28 @@ export const ListMessages = ({navigation, route}:any) =>{
 
     useEffect(()=>{
         setLoading(false)
+        // TODO: fetch Message Data Here
+        setTimeout(()=>{
+            setMessagePreviews([
+                {id:'123',
+                lastMessage:'Heyyyy',
+                url:`https://picsum.photos/320/300`,
+                newMessage:true,
+                toFirst:'Yaki',
+                toLast:'Locki'
+                },
+                {id:'135',
+                lastMessage:'Thanks see u then',
+                url:`https://picsum.photos/320/300`,
+                newMessage:false,
+                toFirst:'Jackie',
+                toLast:'Miata'
+                }
+            ])
+        },200)
     },[])
 
-    const renderItem = (item:any, index:any , onClick:any) => {
+    const renderItem = (item:Preview, index:number , onClick:Function) => {
         const closeRow = (index:any) => {
           if (prevOpenedRow && prevOpenedRow !== row[index]) {
             prevOpenedRow.close();
@@ -32,19 +66,20 @@ export const ListMessages = ({navigation, route}:any) =>{
         };
     
         const renderRightActions = (onClick:any) => {
-
+            // end convo option
           return (
             <TouchableOpacity
               style={{
                 margin: 0,
                 alignContent: 'center',
                 justifyContent: 'center',
-                backgroundColor:'#9c2222',
-                opacity:0.8
+                backgroundColor:'rgb(200,200,200)',
+                zIndex:20
               }}
               onPress={onClick} >
-              <View style={{marginHorizontal:30}}>
-                <icons.FontAwesome6 name='trash' color="whitesmoke" size={20} style={{shadowColor:'black', shadowRadius:3, shadowOpacity:0.4, shadowOffset:{height:0, width:0}}} />
+              <View style={{marginHorizontal:30, alignItems:'center'}}>
+                <icons.Ionicons name='close' color="black" size={30}/>
+                <Text style={{opacity:0.5, fontWeight:'600', fontSize:12}}>Close</Text>
               </View>
             </TouchableOpacity>
           );
@@ -52,7 +87,7 @@ export const ListMessages = ({navigation, route}:any) =>{
 
     
         return (
-            <View style={{backgroundColor:'#9c2222'}}>
+            <View style={{position:'relative',backgroundColor:'rgb(120,120,120)',marginVertical:0, zIndex:22}}>
                 <Swipeable
                 renderRightActions={() =>
                 renderRightActions(onClick)
@@ -60,30 +95,24 @@ export const ListMessages = ({navigation, route}:any) =>{
                 onSwipeableOpen={() => closeRow(index)}
                 ref={(ref) => (row[index] = ref)}
                 >
-                <Pressable onPress={()=>{navigation.navigate('Event', { eventId: item.id })}}>
-                  <LinearGradient 
-                      colors={['white', 'whitesmoke']}
-                      start={{x: 0, y: 0}} end={{x: 1, y: 0}}
-                      locations={[0.4,1]}
-                      style={{padding: 10, paddingVertical:14}}>
-
-                  {/* TOP */}
-                  <View style={{flexDirection:'row', justifyContent:'space-between'}} >
-                      <View style={{flexDirection:'row', justifyContent:'flex-start', gap:10, padding:2}}>
-                        <Text style={{color:'black', fontWeight:'700', fontSize:25, opacity:0.7}}>{item.weekday}</Text>
-                        <Text style={{color:'black', fontWeight:'500', fontSize:18, opacity:0.5, alignSelf:'flex-end', marginBottom:3}}> {item.days == 'Today'? 'Today' :  (`in ${item.days} `+ (item.days === '1' ? `Day`:'Days'))}</Text>
-                      </View>
-                      <icons.Foundation name='torsos-all' size={30} color={'#3c6941'} style={{alignSelf:'center', opacity:0.8}}/>
+                <Pressable onPress={()=>{navigation.navigate('Message', { messageId: item.id, name:`${item.toFirst} ${item.toLast}` })}}>
+                  <View style={{flex:1, backgroundColor:'white', paddingHorizontal:'5%', paddingVertical:10, flexDirection:'row', gap:10}}>
+                    <View style={[{width:windowWidth/5, height:windowWidth/5, borderRadius:windowWidth/4, overflow:'hidden', borderWidth:3, borderColor:'transparent',}, item.newMessage && {borderWidth:2, borderColor:'green', padding:1}]}>
+                        <FastImage
+                            source={{ uri: `${item.url}`, cache: FastImage.cacheControl.immutable, priority: FastImage.priority.high}} 
+                            style={[{ width: '100%', height: '100%', backgroundColor:'rgba(0,0,0,0.1)', borderRadius:windowWidth/4}]}
+                            resizeMode="cover"
+                        />
+                    </View>
+                    <View style={{alignSelf:'center'}}>
+                        <View>
+                            <Text style={{fontWeight:'700', fontSize:18}}>{item.toFirst}</Text>
+                        </View>
+                        <View style={[item.newMessage? {opacity:1}:{opacity:0.4}]}>
+                            <Text style={{fontWeight:'600',fontSize:14}}>{item.lastMessage}</Text>
+                        </View>
+                    </View>
                   </View>
-
-                  <View style={{backgroundColor:'black', borderRadius:10, height:2, width:'80%', opacity:0.3}} />
-
-                  {/* Bottom */}
-                  <View style={{flexDirection:'row', justifyContent:'space-between', width:'96%', marginTop:6, paddingHorizontal:4}}>
-                    <Text style={{color:'black', fontWeight:'600', opacity:0.5, fontSize:20, shadowColor:'green', shadowOffset:{width:0, height:0}, shadowRadius:2, shadowOpacity:0.3}}>{item.title}</Text>
-                    <Text style={{color:'black', fontWeight:'600', opacity:0.5, fontSize:16, alignSelf:'center', shadowColor:'green', shadowOffset:{width:0, height:0}, shadowRadius:2, shadowOpacity:0.3}}> {item.time}</Text>
-                  </View>
-                  </LinearGradient>
                 </Pressable>
             </Swipeable>
             </View>
@@ -114,7 +143,7 @@ export const ListMessages = ({navigation, route}:any) =>{
             {loading ?
                 <Loading2 />:
                 <GestureHandlerRootView style={{ flex: 1}}>
-                {messages && messages.length == 0 && !fetching ?
+                {messagePreviews && messagePreviews.length == 0 && !fetching ?
                 <FlatList
                 data={[{}]}
                 onRefresh={() => onRefresh()}
@@ -127,12 +156,11 @@ export const ListMessages = ({navigation, route}:any) =>{
                 }
                 />:
                 <>
-                    <View style={{height: 4, backgroundColor:'#3c6941'}} />
                     <FlatList
-                    data={messages}
+                    data={messagePreviews}
                     onRefresh={() => onRefresh()}
                     refreshing={fetching}
-                    ItemSeparatorComponent={() => <View style={{height: 4, backgroundColor:'#3c6941'}} />}
+                    ItemSeparatorComponent={() => <View style={{position:'relative', height: 1, backgroundColor:'black', width:'90%', alignSelf:'center', borderRadius:4, opacity:0.1, zIndex:100}} />}
                     renderItem={({ item, index }) =>
                     renderItem(item, index, () => {
                         // confirm deletion here

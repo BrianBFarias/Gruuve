@@ -24,6 +24,7 @@ export const EventsPage = ({navigation, route}:any) =>{
     const [showPopup, setShowPopup] = useState(false);
     const [deletionSelection, setDeletionSelection] = useState([{} as EventProp, -1]);
     const [fetching, setFetching] = useState(false)
+
     let prevOpenedRow:any;
     let row: Array<any> = [];
 
@@ -60,13 +61,14 @@ export const EventsPage = ({navigation, route}:any) =>{
             <TouchableOpacity
               style={{
                 margin: 0,
+                width:'72%',
                 alignContent: 'center',
                 justifyContent: 'center',
                 backgroundColor:'#9c2222',
                 opacity:0.8
               }}
               onPress={onClick} >
-              <View style={{marginHorizontal:30}}>
+              <View style={{width:'100%', alignItems:'center'}}>
                 <icons.FontAwesome6 name='trash' color="whitesmoke" size={20} style={{shadowColor:'black', shadowRadius:3, shadowOpacity:0.4, shadowOffset:{height:0, width:0}}} />
               </View>
             </TouchableOpacity>
@@ -75,7 +77,7 @@ export const EventsPage = ({navigation, route}:any) =>{
 
     
         return (
-            <View style={{backgroundColor:'#9c2222'}}>
+            <View style={{backgroundColor:'#9c2222', margin:10, borderRadius:10, overflow:'hidden', minWidth:windowWidth/2.4}}>
                 <Swipeable
                 renderRightActions={() =>
                 renderRightActions(onClick)
@@ -85,12 +87,18 @@ export const EventsPage = ({navigation, route}:any) =>{
                 >
                 <Pressable onPress={()=>{navigation.navigate('Event', { eventId: item.id })}}>
                   <LinearGradient 
-                      colors={['white', 'whitesmoke']}
-                      start={{x: 0, y: 0}} end={{x: 1, y: 0}}
+                      colors={['#4A8050', '#5EAC52']}
+                      start={{x: 0, y: 0}} end={{x: 0.5, y: 1}}
                       locations={[0.4,1]}
-                      style={{padding: 10, paddingVertical:14}}>
+                      style={{}}>
 
-                  {/* TOP */}
+                  {/* <View style={{flexDirection:'row', justifyContent:'space-between', width:'96%', marginTop:6, paddingHorizontal:4}}>
+                    <Text style={{color:'black', fontWeight:'600', opacity:0.5, fontSize:20, shadowColor:'green', shadowOffset:{width:0, height:0}, shadowRadius:2, shadowOpacity:0.3}}>{item.title}</Text>
+                    <Text style={{color:'black', fontWeight:'600', opacity:0.5, fontSize:16, alignSelf:'center', shadowColor:'green', shadowOffset:{width:0, height:0}, shadowRadius:2, shadowOpacity:0.3}}> {item.time}</Text>
+                  </View>
+                  
+                  <View style={{backgroundColor:'black', borderRadius:10, height:2, width:'80%', opacity:0.3}} />
+
                   <View style={{flexDirection:'row', justifyContent:'space-between'}} >
                       <View style={{flexDirection:'row', justifyContent:'flex-start', gap:10, padding:2}}>
                         <Text style={{color:'black', fontWeight:'700', fontSize:25, opacity:0.7}}>{item.weekday}</Text>
@@ -99,12 +107,27 @@ export const EventsPage = ({navigation, route}:any) =>{
                       <icons.Foundation name='torsos-all' size={30} color={'#3c6941'} style={{alignSelf:'center', opacity:0.8}}/>
                   </View>
 
-                  <View style={{backgroundColor:'black', borderRadius:10, height:2, width:'80%', opacity:0.3}} />
+                  <View style={{backgroundColor:'black', borderRadius:10, height:2, width:'80%', opacity:0.3}} /> */}
 
-                  {/* Bottom */}
-                  <View style={{flexDirection:'row', justifyContent:'space-between', width:'96%', marginTop:6, paddingHorizontal:4}}>
-                    <Text style={{color:'black', fontWeight:'600', opacity:0.5, fontSize:20, shadowColor:'green', shadowOffset:{width:0, height:0}, shadowRadius:2, shadowOpacity:0.3}}>{item.title}</Text>
-                    <Text style={{color:'black', fontWeight:'600', opacity:0.5, fontSize:16, alignSelf:'center', shadowColor:'green', shadowOffset:{width:0, height:0}, shadowRadius:2, shadowOpacity:0.3}}> {item.time}</Text>
+                  <View style={{padding:10}}>
+                    <View>
+                      <Text style={{color:'black', fontWeight:'600', opacity:0.9, fontSize:20, shadowColor:'green', shadowOffset:{width:0, height:0}, shadowRadius:2, shadowOpacity:0.3}}>{item.title}</Text>
+                    </View>
+                    <View style={{backgroundColor:'black', borderRadius:10, height:2, width:'80%', opacity:0.3}} />
+
+                    <View style={{flexDirection:'row', alignItems:'flex-end'}}>
+                      <Text style={{color:'white', fontWeight:'700', fontSize:25, opacity:0.8}}>{item.weekday}</Text>
+                      <Text style={{color:'black', fontWeight:'600', opacity:0.5, fontSize:16, shadowColor:'green', shadowOffset:{width:0, height:0}, shadowRadius:2, shadowOpacity:0.3, marginBottom:2}}> {item.time}</Text>
+                    </View>
+                  </View>
+                  <View style={{flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', backgroundColor:'rgba(0,0,0,0.5)', paddingHorizontal:6, paddingVertical:2}}>
+                    <Text style={{color:'white', fontWeight:'500', fontSize:14, opacity:0.5, alignSelf:'flex-end', marginBottom:3}}> {item.days == 'Today'? 'Today' :  (`in ${item.days} `+ (item.days === '1' ? `Day`:'Days'))}</Text>
+                    <View>
+                      <icons.Foundation name='torsos-all' size={35} color={'white'} style={{alignSelf:'center', opacity:0.8}}/>
+                      <View style={{position:'absolute', justifyContent:'center', alignItems:'center', top:0, left:0, width:'100%', height:'100%'}}>
+                        <Text style={{fontWeight:'700', fontSize:12, color:'black', shadowColor:'white', shadowOffset:{width:0, height:0}, shadowRadius:4, shadowOpacity:0.8}}>2</Text>
+                      </View>
+                    </View>
                   </View>
                   </LinearGradient>
                 </Pressable>
@@ -165,8 +188,8 @@ export const EventsPage = ({navigation, route}:any) =>{
             <FlatList
             data={Events}
             onRefresh={() => onRefresh()}
+            contentContainerStyle={{flexWrap:'wrap', flexDirection: 'row', justifyContent:'space-around'}}
             refreshing={fetching}
-            ItemSeparatorComponent={() => <View style={{height: 4, backgroundColor:'#3c6941'}} />}
             renderItem={({ item, index }) =>
               renderItem(item, index, () => {
                 // confirm deletion here

@@ -86,9 +86,7 @@ export function Organization({isVisible, setIsVisible, currOrg, setCurrOrg}:any)
                         style={style.input}
                         onChangeText={(value)=>{updateFilter(value)}}
                         value={search}
-                        placeholder="Search Organization"
-                        keyboardType="numeric"
-                    />
+                        placeholder="Search Organization"/>
                     <View style={{width:'90%',height:2, borderRadius:10, backgroundColor:'black', marginBottom:2, opacity:0.6}}/>
                 </View>
                 <View style={{flex:0.8, margin:4, borderBottomLeftRadius:50, borderBottomRightRadius:50, overflow:'hidden'}}>

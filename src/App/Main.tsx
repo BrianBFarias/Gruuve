@@ -18,31 +18,58 @@ import Logo from '../../assets/images/logo.png';
 import { PopUp } from "../components/popUpIntro";
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
+
+type Message ={
+    id:string,
+    lastMessage:string,
+    to:string,
+    newMessage:boolean
+}
 
 const Main = () =>{
     const [userData, setUserData] = useState<any>(null);
     const [showIntro, setShowIntro] = useState(false);
     const [hasLikes, setHasLikes] = useState(true);
-    const [fetching, setFetching] = useState(false);
+    const [messages, setMessages] = useState<Message[]>([])
 
     async function fetchUser(){
         const uid = auth().currentUser?.uid;
         const userInfo = await firestore().collection('Users').doc(uid).get();
         if(userInfo?._data){
             setUserData(userInfo?._data);
-            const SI = userInfo?._data.newAccount;
-            setShowIntro(SI);
+            const newAcc = userInfo?._data.newAccount;
+            setShowIntro(newAcc);
         }
+    }
+
+    async function fetchMessages(){
+        setMessages([
+            {id:'123',
+            lastMessage:'Heyyyy',
+            to:`HgXtNxSmWcaZMB5KC7X90p7eLel1`,
+            newMessage:true},
+            {id:'135',
+            lastMessage:'Thanks see u then',
+            to:`xiMgRF8f8SVs0SlmTRD8A7fxwLM2`,
+            newMessage:false}
+        ])
     }
 
     useEffect(() => {
         const fetchData = async () => {
-            await fetchUser();
+            await fetchUser(); // Wait for userData to be fetched and set
         };
-
         fetchData();
     }, []);
+
+    useEffect(()=>{
+        if(userData){
+            const fetchData = async () => {
+                await fetchMessages(); // Wait for userData to be fetched and set
+            };
+            fetchData();
+        }
+    },[userData])
 
     async function closeIntro(){
         const uid = auth().currentUser?.uid;
@@ -84,7 +111,7 @@ const Main = () =>{
             (
                 <>
                     <Tab.Screen name={"Explore"} component={Explore} initialParams={{userData}} />
-                    <Tab.Screen name={"Messages"} component={Messages} initialParams={{userData}}/>
+                    <Tab.Screen name={"Messages"} component={Messages} initialParams={{userData, messages}}/>
                     <Tab.Screen name={"Events"} component={Events} initialParams={{userData}} />
                     <Tab.Screen name={"Profile"} component={Profile} initialParams={{userData}}/>
                 </>
